@@ -1,0 +1,959 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Gestión de Datos Personales - COAC</title>
+    <link rel="stylesheet" href="{{ asset('styles/styles.css') }}">
+    <!-- jQuery  -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+    <!-- jQuery Validation -->
+    <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/jquery.validate.min.js"></script>
+
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="{{ asset('scripts/scripts.js') }}"></script>
+    
+
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔒 Sistema de Gestión de Datos Personales</h1>
+            <p>Cooperativa de Ahorro y Crédito - Protección de Datos</p>
+        </div>
+        
+        <div class="nav-tabs">
+            <button class="active" onclick="showSection('usuarios'); resetFormularioUsuarios();">👥 Usuarios</button>
+            <button onclick="showSection('sujetos')">📋 Sujetos de Datos</button>
+            <button onclick="showSection('miembros')">🏦 Miembros COAC</button>
+            <button onclick="showSection('productos')">💳 Productos Financieros</button>
+            <button onclick="showSection('consentimientos')">✅ Consentimientos</button>
+            <button onclick="showSection('dsar')">📨 Solicitudes DSAR</button>
+            <button onclick="showSection('incidentes')">⚠️ Incidentes</button>
+            <button onclick="showSection('procesamiento')">⚙️ Act. Procesamiento</button>
+            <button onclick="showSection('auditorias')">🔍 Auditorías</button>
+            <button onclick="showSection('reportes')">📊 Reportes</button>
+        </div>
+        
+        <!-- USUARIOS ----------------------------------------------------------------------------------------->
+        <div id="usuarios" class="content-section active">
+            <h2 class="section-title">Gestión de Usuarios del Sistema</h2>
+
+            <form id="formUsuarios"  method="POST" action="{{ url('/usuarios') }}">
+                @csrf
+                <input type="hidden" name="_method" id="form_method" value="POST">
+                <input type="hidden" name="id" id="usuario_id">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Nombre Completo *</label>
+                        <input type="text" name="nombre_completo" id="nombre_completo">
+
+                    </div>
+                    <div class="form-group">
+                        <label>Email *</label>
+                        <input type="email" name="email" >
+                    </div>
+                    <div class="form-group">
+                        <label>Rol *</label>
+                        <select name="rol" id="rol" >
+                            <option value="">Seleccionar...</option>
+                            <option value="admin">Administrador</option>
+                            <option value="dpo">DPO (Oficial de Protección)</option>
+                            <option value="auditor">Auditor</option>
+                            <option value="operador">Operador</option>
+                        </select>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary">Agregar Usuario</button>
+            </form>
+            
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nombre</th>
+                            <th>Email</th>
+                            <th>Rol</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    @foreach ($usuarios as $usuario)
+                        <tr>
+                            <td>{{ $usuario->id }}</td>
+                            <td>{{ $usuario->nombre_completo }}</td>
+                            <td>{{ $usuario->email }}</td>
+                            <td>{{ ucfirst($usuario->rol) }}</td>
+                            <td>
+                                @if($usuario->estado === 'activo')
+                                    <span class="badge badge-success">Activo</span>
+                                @else
+                                    <span class="badge badge-danger">Inactivo</span>
+                                @endif
+                            </td>
+
+
+                            <td>
+                                <button class="btn btn-secondary" style="padding: 8px 15px;"
+                                    onclick="editarUsuario({{ $usuario->id }}, 
+                                    '{{ $usuario->nombre_completo }}', 
+                                    '{{ $usuario->email }}', 
+                                    '{{ $usuario->rol }}')">
+                                    Editar
+                                </button>
+
+                                <form action="{{ route('usuarios.estado', $usuario->id) }}"
+                                    method="POST"
+                                    style="display:inline;">
+                                    @csrf
+                                    @method('PUT')
+                                    <button type="submit" class="btn btn-warning">
+                                        Cambiar estado
+                                    </button>
+                                </form>
+                                <form action="{{ route('usuarios.destroy', $usuario->id) }}"
+                                    method="POST"
+                                    style="display:inline;">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="button"
+                                        class="btn btn-danger"
+                                        onclick="confirmarEliminacion(this)">
+                                        Eliminar
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    @endforeach
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- SUJETOS DE DATOS -------------------------------------------------------------------------------->
+        <div id="sujetos"  class="content-section">
+            <h2 class="section-title">Registro de Sujetos de Datos</h2>
+            
+            <form id="formSujetos" method="POST" action="{{ route('sujetos.store') }}">
+            @csrf
+            <<input type="hidden" name="_method" id="form_sujeto_method" value="POST">
+
+            <input type="hidden" id="sujeto_id">
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Cédula/Identificación *</label>
+                        <input type="text" name="cedula" >
+                    </div>
+                    <div class="form-group">
+                        <label>Nombre Completo *</label>
+                        <input type="text" name="nombre" >
+                    </div>
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" name="email">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Teléfono</label>
+                        <input type="tel" name="telefono">
+                    </div>
+                    <div class="form-group">
+                        <label>Dirección</label>
+                        <input type="text" name="direccion">
+                    </div>
+                    <div class="form-group">
+                        <label>Tipo de Sujeto *</label>
+                        <select name="tipo" >
+                            <option value="">Seleccionar...</option>
+                            <option value="cliente">Cliente</option>
+                            <option value="empleado">Empleado</option>
+                            <option value="proveedor">Proveedor</option>
+                            <option value="tercero">Tercero</option>
+                        </select>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary">Registrar Sujeto</button>
+            </form>
+            
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Cédula</th>
+                            <th>Nombre</th>
+                            <th>Email</th>
+                            <th>Teléfono</th>
+                            <th>Tipo</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($sujetos as $sujeto)
+                        <tr>
+                            <td>{{ $sujeto->cedula }}</td>
+                            <td>{{ $sujeto->nombre_completo }}</td>
+                            <td>{{ $sujeto->email }}</td>
+                            <td>{{ $sujeto->telefono }}</td>
+                            <td>
+                                <span class="badge badge-info">{{ ucfirst($sujeto->tipo) }}</span>
+                            </td>
+                            <td>
+                                <button class="btn btn-secondary"
+                                    onclick="editarSujeto(
+                                        {{ $sujeto->id }},
+                                        '{{ $sujeto->cedula }}',
+                                        '{{ $sujeto->nombre_completo }}',
+                                        '{{ $sujeto->email }}',
+                                        '{{ $sujeto->telefono }}',
+                                        '{{ $sujeto->direccion }}',
+                                        '{{ $sujeto->tipo }}'
+                                    )">
+                                    Editar
+                                </button>
+
+                                <form action="{{ route('sujetos.destroy', $sujeto->id) }}"
+                                    method="POST"
+                                    style="display:inline;">
+                                    @csrf
+                                    @method('DELETE')
+
+                                    <button type="button"
+                                        class="btn btn-danger"
+                                        onclick="confirmarEliminacion(this)">
+                                        Eliminar
+                                    </button>
+                                </form>
+
+                            </td>
+                        </tr>
+                        @endforeach
+                        </tbody>
+
+                </table>
+            </div>
+        </div>
+        
+        <!-- MIEMBROS COAC -->
+        <div id="miembros" class="content-section">
+            <h2 class="section-title">Gestión de Miembros de la Cooperativa</h2>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3>1,234</h3>
+                    <p>Total Miembros</p>
+                </div>
+                <div class="stat-card">
+                    <h3>856</h3>
+                    <p>Activos</p>
+                </div>
+                <div class="stat-card">
+                    <h3>378</h3>
+                    <p>Inactivos</p>
+                </div>
+            </div>
+            
+            <form id="formMiembros">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Número de Socio *</label>
+                        <input type="text" name="numero_socio" >
+                    </div>
+                    <div class="form-group">
+                        <label>Cédula *</label>
+                        <input type="text" name="cedula" >
+                    </div>
+                    <div class="form-group">
+                        <label>Nombre Completo *</label>
+                        <input type="text" name="nombre" >
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Fecha de Ingreso *</label>
+                        <input type="date" name="fecha_ingreso" >
+                    </div>
+                    <div class="form-group">
+                        <label>Categoría *</label>
+                        <select name="categoria" >
+                            <option value="">Seleccionar...</option>
+                            <option value="activo">Activo</option>
+                            <option value="inactivo">Inactivo</option>
+                            <option value="honorario">Honorario</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Aportación Inicial</label>
+                        <input type="number" name="aportacion" step="0.01">
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary">Registrar Miembro</button>
+            </form>
+            
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>N° Socio</th>
+                            <th>Cédula</th>
+                            <th>Nombre</th>
+                            <th>Fecha Ingreso</th>
+                            <th>Categoría</th>
+                            <th>Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>00123</td>
+                            <td>0103456789</td>
+                            <td>Carlos Ramírez</td>
+                            <td>15/01/2023</td>
+                            <td>Activo</td>
+                            <td><span class="badge badge-success">Vigente</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- PRODUCTOS FINANCIEROS -->
+        <div id="productos" class="content-section">
+            <h2 class="section-title">Productos Financieros</h2>
+            
+            <form id="formProductos">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Código Producto *</label>
+                        <input type="text" name="codigo" >
+                    </div>
+                    <div class="form-group">
+                        <label>Nombre del Producto *</label>
+                        <input type="text" name="nombre" >
+                    </div>
+                    <div class="form-group">
+                        <label>Tipo *</label>
+                        <select name="tipo" >
+                            <option value="">Seleccionar...</option>
+                            <option value="ahorro">Cuenta de Ahorro</option>
+                            <option value="credito">Crédito</option>
+                            <option value="inversion">Inversión</option>
+                            <option value="seguros">Seguros</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Descripción</label>
+                    <textarea name="descripcion" rows="3"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Datos Personales Procesados</label>
+                    <textarea name="datos_procesados" rows="3" placeholder="Ej: Nombre, cédula, información financiera, historial crediticio..."></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Registrar Producto</button>
+            </form>
+            
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Código</th>
+                            <th>Producto</th>
+                            <th>Tipo</th>
+                            <th>Clientes Activos</th>
+                            <th>Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>AH-001</td>
+                            <td>Ahorro Programado</td>
+                            <td>Ahorro</td>
+                            <td>342</td>
+                            <td><span class="badge badge-success">Activo</span></td>
+                        </tr>
+                        <tr>
+                            <td>CR-002</td>
+                            <td>Crédito Consumo</td>
+                            <td>Crédito</td>
+                            <td>189</td>
+                            <td><span class="badge badge-success">Activo</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- CONSENTIMIENTOS -->
+        <div id="consentimientos" class="content-section">
+            <h2 class="section-title">Gestión de Consentimientos</h2>
+            
+            <form id="formConsentimientos">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Sujeto de Datos (Cédula) *</label>
+                        <input type="text" name="cedula_sujeto" >
+                    </div>
+                    <div class="form-group">
+                        <label>Propósito del Tratamiento *</label>
+                        <select name="proposito" >
+                            <option value="">Seleccionar...</option>
+                            <option value="productos">Oferta de Productos</option>
+                            <option value="marketing">Marketing</option>
+                            <option value="analisis">Análisis Crediticio</option>
+                            <option value="cumplimiento">Cumplimiento Legal</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Estado *</label>
+                        <select name="estado" >
+                            <option value="">Seleccionar...</option>
+                            <option value="otorgado">Otorgado</option>
+                            <option value="revocado">Revocado</option>
+                            <option value="pendiente">Pendiente</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Fecha de Otorgamiento</label>
+                        <input type="date" name="fecha_otorgamiento">
+                    </div>
+                    <div class="form-group">
+                        <label>Método de Obtención</label>
+                        <select name="metodo">
+                            <option value="presencial">Presencial</option>
+                            <option value="digital">Digital</option>
+                            <option value="telefono">Telefónico</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Fecha de Expiración</label>
+                        <input type="date" name="fecha_expiracion">
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary">Registrar Consentimiento</button>
+            </form>
+            
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Sujeto</th>
+                            <th>Propósito</th>
+                            <th>Fecha Otorgamiento</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>CONS-001</td>
+                            <td>0102345678 - María González</td>
+                            <td>Marketing</td>
+                            <td>01/03/2024</td>
+                            <td><span class="badge badge-success">Otorgado</span></td>
+                            <td>
+                                <button class="btn btn-danger" style="padding: 8px 15px;">Revocar</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- SOLICITUDES DSAR -->
+        <div id="dsar" class="content-section">
+            <h2 class="section-title">Solicitudes de Derechos (DSAR)</h2>
+            <p style="margin-bottom: 20px; color: #666;">Gestión de solicitudes de Acceso, Rectificación, Cancelación y Oposición</p>
+            
+            <form id="formDSAR">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Número de Solicitud *</label>
+                        <input type="text" name="numero" >
+                    </div>
+                    <div class="form-group">
+                        <label>Cédula del Solicitante *</label>
+                        <input type="text" name="cedula" >
+                    </div>
+                    <div class="form-group">
+                        <label>Tipo de Solicitud *</label>
+                        <select name="tipo" >
+                            <option value="">Seleccionar...</option>
+                            <option value="acceso">Derecho de Acceso</option>
+                            <option value="rectificacion">Rectificación</option>
+                            <option value="cancelacion">Cancelación</option>
+                            <option value="oposicion">Oposición</option>
+                            <option value="portabilidad">Portabilidad</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Descripción de la Solicitud *</label>
+                    <textarea name="descripcion" rows="4" ></textarea>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Fecha de Solicitud *</label>
+                        <input type="date" name="fecha_solicitud" >
+                    </div>
+                    <div class="form-group">
+                        <label>Plazo de Respuesta</label>
+                        <input type="date" name="fecha_limite">
+                    </div>
+                    <div class="form-group">
+                        <label>Estado *</label>
+                        <select name="estado" >
+                            <option value="pendiente">Pendiente</option>
+                            <option value="proceso">En Proceso</option>
+                            <option value="completada">Completada</option>
+                            <option value="rechazada">Rechazada</option>
+                        </select>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary">Registrar Solicitud</button>
+            </form>
+            
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>N° Solicitud</th>
+                            <th>Solicitante</th>
+                            <th>Tipo</th>
+                            <th>Fecha</th>
+                            <th>Plazo</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>DSAR-2024-001</td>
+                            <td>0102345678</td>
+                            <td>Acceso</td>
+                            <td>10/12/2024</td>
+                            <td>25/12/2024</td>
+                            <td><span class="badge badge-warning">En Proceso</span></td>
+                            <td>
+                                <button class="btn btn-secondary" style="padding: 8px 15px;">Ver</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- INCIDENTES -->
+        <div id="incidentes" class="content-section">
+            <h2 class="section-title">Registro de Incidentes de Seguridad</h2>
+            
+            <div class="alert alert-danger">
+                <strong>⚠️ Atención:</strong> Registre todos los incidentes de seguridad que involucren datos personales
+            </div>
+            
+            <form id="formIncidentes">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Código de Incidente *</label>
+                        <input type="text" name="codigo" >
+                    </div>
+                    <div class="form-group">
+                        <label>Fecha del Incidente *</label>
+                        <input type="datetime-local" name="fecha" >
+                    </div>
+                    <div class="form-group">
+                        <label>Severidad *</label>
+                        <select name="severidad" >
+                            <option value="">Seleccionar...</option>
+                            <option value="baja">Baja</option>
+                            <option value="media">Media</option>
+                            <option value="alta">Alta</option>
+                            <option value="critica">Crítica</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Descripción del Incidente *</label>
+                    <textarea name="descripcion" rows="4" ></textarea>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Tipo de Incidente *</label>
+                        <select name="tipo" >
+                            <option value="">Seleccionar...</option>
+                            <option value="fuga">Fuga de Información</option>
+                            <option value="acceso">Acceso No Autorizado</option>
+                            <option value="perdida">Pérdida de Datos</option>
+                            <option value="ransomware">Ransomware</option>
+                            <option value="otro">Otro</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Sujetos Afectados</label>
+                        <input type="number" name="afectados">
+                    </div>
+                    <div class="form-group">
+                        <label>Estado *</label>
+                        <select name="estado" >
+                            <option value="abierto">Abierto</option>
+                            <option value="investigacion">En Investigación</option>
+                            <option value="contenido">Contenido</option>
+                            <option value="resuelto">Resuelto</option>
+                        </select>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary">Registrar Incidente</button>
+            </form>
+            
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Código</th>
+                            <th>Fecha</th>
+                            <th>Tipo</th>
+                            <th>Severidad</th>
+                            <th>Afectados</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>INC-2024-001</td>
+                            <td>05/12/2024 14:30</td>
+                            <td>Acceso No Autorizado</td>
+                            <td><span class="badge badge-danger">Crítica</span></td>
+                            <td>125</td>
+                            <td><span class="badge badge-warning">Investigación</span></td>
+                            <td>
+                                <button class="btn btn-secondary" style="padding: 8px 15px;">Ver</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- ACTIVIDADES DE PROCESAMIENTO -->
+        <div id="procesamiento" class="content-section">
+            <h2 class="section-title">Registro de Actividades de Procesamiento</h2>
+            <p style="margin-bottom: 20px; color: #666;">Inventario de todas las actividades de tratamiento de datos personales</p>
+            
+            <form id="formProcesamiento">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Código de Actividad *</label>
+                        <input type="text" name="codigo_act" >
+                    </div>
+                    <div class="form-group">
+                        <label>Nombre de la Actividad *</label>
+                        <input type="text" name="nombre_act" >
+                    </div>
+                    <div class="form-group">
+                        <label>Responsable *</label>
+                        <input type="text" name="responsable" >
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Finalidad del Tratamiento *</label>
+                    <textarea name="finalidad" rows="3" ></textarea>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Base Legal *</label>
+                        <select name="base_legal" >
+                            <option value="">Seleccionar...</option>
+                            <option value="consentimiento">Consentimiento</option>
+                            <option value="contrato">Ejecución de Contrato</option>
+                            <option value="legal">Obligación Legal</option>
+                            <option value="interes">Interés Legítimo</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Categorías de Datos</label>
+                        <input type="text" name="categorias" placeholder="Ej: Identificativos, financieros, laborales">
+                    </div>
+                    <div class="form-group">
+                        <label>Plazo de Conservación</label>
+                        <input type="text" name="plazo" placeholder="Ej: 5 años">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Medidas de Seguridad Implementadas</label>
+                    <textarea name="medidas" rows="3"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Registrar Actividad</button>
+            </form>
+            
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Código</th>
+                            <th>Actividad</th>
+                            <th>Responsable</th>
+                            <th>Base Legal</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>ACT-001</td>
+                            <td>Gestión de Créditos</td>
+                            <td>Dpto. Crédito</td>
+                            <td>Contrato</td>
+                            <td><span class="badge badge-success">Activa</span></td>
+                            <td>
+                                <button class="btn btn-secondary" style="padding: 8px 15px;">Ver</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>ACT-002</td>
+                            <td>Marketing Digital</td>
+                            <td>Dpto. Marketing</td>
+                            <td>Consentimiento</td>
+                            <td><span class="badge badge-success">Activa</span></td>
+                            <td>
+                                <button class="btn btn-secondary" style="padding: 8px 15px;">Ver</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- AUDITORÍAS -->
+        <div id="auditorias" class="content-section">
+            <h2 class="section-title">Gestión de Auditorías</h2>
+            
+            <form id="formAuditorias">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Código de Auditoría *</label>
+                        <input type="text" name="codigo_aud" >
+                    </div>
+                    <div class="form-group">
+                        <label>Tipo de Auditoría *</label>
+                        <select name="tipo_aud" >
+                            <option value="">Seleccionar...</option>
+                            <option value="interna">Interna</option>
+                            <option value="externa">Externa</option>
+                            <option value="cumplimiento">Cumplimiento</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Auditor Responsable *</label>
+                        <input type="text" name="auditor" >
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Fecha de Inicio *</label>
+                        <input type="date" name="fecha_inicio" >
+                    </div>
+                    <div class="form-group">
+                        <label>Fecha de Finalización</label>
+                        <input type="date" name="fecha_fin">
+                    </div>
+                    <div class="form-group">
+                        <label>Estado *</label>
+                        <select name="estado_aud" >
+                            <option value="planificada">Planificada</option>
+                            <option value="proceso">En Proceso</option>
+                            <option value="completada">Completada</option>
+                            <option value="revisada">Revisada</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Alcance de la Auditoría</label>
+                    <textarea name="alcance" rows="3"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Hallazgos y Observaciones</label>
+                    <textarea name="hallazgos" rows="4"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Registrar Auditoría</button>
+            </form>
+            
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Código</th>
+                            <th>Tipo</th>
+                            <th>Auditor</th>
+                            <th>Fecha Inicio</th>
+                            <th>Fecha Fin</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>AUD-2024-001</td>
+                            <td>Interna</td>
+                            <td>Juan Pérez</td>
+                            <td>01/11/2024</td>
+                            <td>15/11/2024</td>
+                            <td><span class="badge badge-success">Completada</span></td>
+                            <td>
+                                <button class="btn btn-secondary" style="padding: 8px 15px;">Ver</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>AUD-2024-002</td>
+                            <td>Externa</td>
+                            <td>Auditoría XYZ</td>
+                            <td>10/12/2024</td>
+                            <td>-</td>
+                            <td><span class="badge badge-warning">En Proceso</span></td>
+                            <td>
+                                <button class="btn btn-secondary" style="padding: 8px 15px;">Ver</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- REPORTES -->
+        <div id="reportes" class="content-section">
+            <h2 class="section-title">Dashboard de Reportes y Estadísticas</h2>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3>1,234</h3>
+                    <p>Total Sujetos Registrados</p>
+                </div>
+                <div class="stat-card">
+                    <h3>856</h3>
+                    <p>Consentimientos Activos</p>
+                </div>
+                <div class="stat-card">
+                    <h3>24</h3>
+                    <p>Solicitudes DSAR</p>
+                </div>
+                <div class="stat-card">
+                    <h3>3</h3>
+                    <p>Incidentes Abiertos</p>
+                </div>
+            </div>
+            
+            <div style="margin: 30px 0;">
+                <h3 style="color: #667eea; margin-bottom: 15px;">Filtros de Reporte</h3>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Fecha Desde</label>
+                        <input type="date" name="fecha_desde">
+                    </div>
+                    <div class="form-group">
+                        <label>Fecha Hasta</label>
+                        <input type="date" name="fecha_hasta">
+                    </div>
+                    <div class="form-group">
+                        <label>Tipo de Reporte</label>
+                        <select name="tipo_reporte">
+                            <option value="general">General</option>
+                            <option value="consentimientos">Consentimientos</option>
+                            <option value="dsar">Solicitudes DSAR</option>
+                            <option value="incidentes">Incidentes</option>
+                            <option value="auditorias">Auditorías</option>
+                        </select>
+                    </div>
+                </div>
+                <button class="btn btn-primary">Generar Reporte</button>
+                <button class="btn btn-success">Exportar a Excel</button>
+            </div>
+            
+            <div class="chart-container">
+                <h3 style="color: #667eea; margin-bottom: 15px;">📈 Evolución de Consentimientos</h3>
+                <p style="color: #666;">Gráfico mostrando la tendencia de consentimientos otorgados y revocados por mes</p>
+                <div style="height: 200px; background: white; border-radius: 8px; display: flex; align-items: center; justify-content: center; margin-top: 15px;">
+                    <span style="color: #999;">Gráfico de líneas - Implementar con Chart.js o similar</span>
+                </div>
+            </div>
+            
+            <div class="chart-container">
+                <h3 style="color: #667eea; margin-bottom: 15px;">📊 Distribución de Solicitudes DSAR</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-top: 15px;">
+                    <div style="background: white; padding: 20px; border-radius: 8px; text-align: center;">
+                        <h4 style="color: #667eea; font-size: 2em;">45%</h4>
+                        <p style="color: #666;">Acceso</p>
+                    </div>
+                    <div style="background: white; padding: 20px; border-radius: 8px; text-align: center;">
+                        <h4 style="color: #667eea; font-size: 2em;">25%</h4>
+                        <p style="color: #666;">Rectificación</p>
+                    </div>
+                    <div style="background: white; padding: 20px; border-radius: 8px; text-align: center;">
+                        <h4 style="color: #667eea; font-size: 2em;">20%</h4>
+                        <p style="color: #666;">Cancelación</p>
+                    </div>
+                    <div style="background: white; padding: 20px; border-radius: 8px; text-align: center;">
+                        <h4 style="color: #667eea; font-size: 2em;">10%</h4>
+                        <p style="color: #666;">Oposición</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="chart-container">
+                <h3 style="color: #667eea; margin-bottom: 15px;">⚠️ Resumen de Incidentes</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Severidad</th>
+                            <th>Total</th>
+                            <th>Abiertos</th>
+                            <th>En Proceso</th>
+                            <th>Resueltos</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><span class="badge badge-danger">Crítica</span></td>
+                            <td>2</td>
+                            <td>0</td>
+                            <td>1</td>
+                            <td>1</td>
+                        </tr>
+                        <tr>
+                            <td><span class="badge badge-warning">Alta</span></td>
+                            <td>5</td>
+                            <td>1</td>
+                            <td>2</td>
+                            <td>2</td>
+                        </tr>
+                        <tr>
+                            <td><span class="badge badge-info">Media</span></td>
+                            <td>12</td>
+                            <td>2</td>
+                            <td>3</td>
+                            <td>7</td>
+                        </tr>
+                        <tr>
+                            <td><span class="badge badge-success">Baja</span></td>
+                            <td>8</td>
+                            <td>0</td>
+                            <td>1</td>
+                            <td>7</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <script>
+        const csrf = "{{ csrf_token() }}";
+    </script>
+
+    
+    
