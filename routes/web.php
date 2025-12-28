@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UsuarioController;
 use App\Http\Controllers\SujetoDatoController;
 use App\Http\Controllers\ProductoFinancieroController;
-
+use App\Http\Controllers\ConsentimientoController;
 use App\Http\Controllers\IncidenteSeguridadController;
 
 
@@ -25,6 +25,11 @@ Route::put('/productos/{id}', [ProductoFinancieroController::class, 'update'])->
 Route::put('/productos/{id}/estado', [ProductoFinancieroController::class, 'cambiarEstado'])->name('productos.estado');
 Route::delete('/productos/{id}', [ProductoFinancieroController::class, 'destroy'])->name('productos.destroy');
 Route::delete('/productos/{id}', [ProductoFinancieroController::class, 'destroy'])->name('productos.destroy');
+
+// Rutas de consentimientos ---------------------------------
+Route::post('/consentimientos', [ConsentimientoController::class, 'store'])->name('consentimientos.store');
+Route::put('/consentimientos/{id}', [ConsentimientoController::class, 'update'])->name('consentimientos.update');
+Route::delete('/consentimientos/{id}', [ConsentimientoController::class, 'destroy'])->name('consentimientos.destroy');
 
 // rutas de Incidentes ---------------------------------
 Route::post('/incidentes', [IncidenteSeguridadController::class, 'store'])->name('incidentes.store');

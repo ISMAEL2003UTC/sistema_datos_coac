@@ -29,7 +29,7 @@
             <button onclick="showSection('sujetos')">📋 Sujetos de Datos</button>
             <button onclick="showSection('miembros')">🏦 Miembros COAC</button>
             <button onclick="showSection('productos'); resetFormularioProductos();">💳 Productos Financieros</button>
-            <button onclick="showSection('consentimientos')">✅ Consentimientos</button>
+            <button onclick="showSection('consentimientos'); resetFormularioConsentimientos();">✅ Consentimientos</button>
             <button onclick="showSection('dsar')">📨 Solicitudes DSAR</button>
             <button onclick="showSection('incidentes')">⚠️ Incidentes</button>
             <button onclick="showSection('procesamiento')">⚙️ Act. Procesamiento</button>
@@ -455,15 +455,24 @@
         <div id="consentimientos" class="content-section">
             <h2 class="section-title">Gestión de Consentimientos</h2>
             
-            <form id="formConsentimientos">
+            <form id="formConsentimientos" method="POST" action="{{ route('consentimientos.store') }}">
+                @csrf
+                <input type="hidden" name="_method" id="form_consentimiento_method" value="POST">
+                <input type="hidden" name="id" id="consentimiento_id">
+                
                 <div class="form-row">
                     <div class="form-group">
-                        <label>Sujeto de Datos (Cédula) *</label>
-                        <input type="text" name="cedula_sujeto" >
+                        <label>Sujeto de Datos (ID) *</label>
+                        <select name="sujeto_id" id="consentimiento_sujeto_id">
+                            <option value="">Seleccionar...</option>
+                            @foreach($sujetos as $sujeto)
+                                <option value="{{ $sujeto->id }}">{{ $sujeto->cedula }} - {{ $sujeto->nombre_completo }}</option>
+                            @endforeach
+                        </select>
                     </div>
                     <div class="form-group">
                         <label>Propósito del Tratamiento *</label>
-                        <select name="proposito" >
+                        <select name="proposito" id="consentimiento_proposito">
                             <option value="">Seleccionar...</option>
                             <option value="productos">Oferta de Productos</option>
                             <option value="marketing">Marketing</option>
@@ -473,7 +482,7 @@
                     </div>
                     <div class="form-group">
                         <label>Estado *</label>
-                        <select name="estado" >
+                        <select name="estado" id="consentimiento_estado">
                             <option value="">Seleccionar...</option>
                             <option value="otorgado">Otorgado</option>
                             <option value="revocado">Revocado</option>
@@ -484,11 +493,12 @@
                 <div class="form-row">
                     <div class="form-group">
                         <label>Fecha de Otorgamiento</label>
-                        <input type="date" name="fecha_otorgamiento">
+                        <input type="date" name="fecha_otorgamiento" id="consentimiento_fecha_otorgamiento">
                     </div>
                     <div class="form-group">
                         <label>Método de Obtención</label>
-                        <select name="metodo">
+                        <select name="metodo" id="consentimiento_metodo">
+                            <option value="">Seleccionar...</option>
                             <option value="presencial">Presencial</option>
                             <option value="digital">Digital</option>
                             <option value="telefono">Telefónico</option>
@@ -496,7 +506,7 @@
                     </div>
                     <div class="form-group">
                         <label>Fecha de Expiración</label>
-                        <input type="date" name="fecha_expiracion">
+                        <input type="date" name="fecha_expiracion" id="consentimiento_fecha_expiracion">
                     </div>
                 </div>
                 <button type="submit" class="btn btn-primary">Registrar Consentimiento</button>
@@ -510,21 +520,80 @@
                             <th>Sujeto</th>
                             <th>Propósito</th>
                             <th>Fecha Otorgamiento</th>
+                            <th>Método</th>
                             <th>Estado</th>
                             <th>Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
+                        @forelse($consentimientos as $consentimiento)
                         <tr>
-                            <td>CONS-001</td>
-                            <td>0102345678 - María González</td>
-                            <td>Marketing</td>
-                            <td>01/03/2024</td>
-                            <td><span class="badge badge-success">Otorgado</span></td>
+                            <td>{{ $consentimiento->id }}</td>
+                            <td>{{ $consentimiento->sujeto->cedula }} - {{ $consentimiento->sujeto->nombre_completo }}</td>
                             <td>
-                                <button class="btn btn-danger" style="padding: 8px 15px;">Revocar</button>
+                                @if($consentimiento->proposito === 'productos')
+                                    <span class="badge badge-info">Oferta de Productos</span>
+                                @elseif($consentimiento->proposito === 'marketing')
+                                    <span class="badge badge-success">Marketing</span>
+                                @elseif($consentimiento->proposito === 'analisis')
+                                    <span class="badge badge-warning">Análisis Crediticio</span>
+                                @elseif($consentimiento->proposito === 'cumplimiento')
+                                    <span class="badge badge-primary">Cumplimiento Legal</span>
+                                @endif
+                            </td>
+                            <td>{{ $consentimiento->fecha_otorgamiento ? \Carbon\Carbon::parse($consentimiento->fecha_otorgamiento)->format('d/m/Y') : 'N/A' }}</td>
+                            <td>
+                                @if($consentimiento->metodo === 'presencial')
+                                    <span class="badge badge-success">Presencial</span>
+                                @elseif($consentimiento->metodo === 'digital')
+                                    <span class="badge badge-info">Digital</span>
+                                @elseif($consentimiento->metodo === 'telefono')
+                                    <span class="badge badge-warning">Telefónico</span>
+                                @else
+                                    <span class="badge badge-secondary">N/A</span>
+                                @endif
+                            </td>
+                            <td>
+                                @if($consentimiento->estado === 'otorgado')
+                                    <span class="badge badge-success">Otorgado</span>
+                                @elseif($consentimiento->estado === 'revocado')
+                                    <span class="badge badge-danger">Revocado</span>
+                                @elseif($consentimiento->estado === 'pendiente')
+                                    <span class="badge badge-warning">Pendiente</span>
+                                @endif
+                            </td>
+                            <td>
+                                <button class="btn btn-secondary" style="padding: 8px 15px;"
+                                    onclick="editarConsentimiento(
+                                        {{ $consentimiento->id }},
+                                        {{ $consentimiento->sujeto_id }},
+                                        '{{ $consentimiento->proposito }}',
+                                        '{{ $consentimiento->estado }}',
+                                        '{{ $consentimiento->fecha_otorgamiento }}',
+                                        '{{ $consentimiento->metodo }}',
+                                        '{{ $consentimiento->fecha_expiracion }}'
+                                    )">
+                                    Editar
+                                </button>
+
+                                <form action="{{ route('consentimientos.destroy', $consentimiento->id) }}"
+                                    method="POST"
+                                    style="display:inline;">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="button"
+                                        class="btn btn-danger"
+                                        onclick="confirmarEliminacion(this)">
+                                        Eliminar
+                                    </button>
+                                </form>
                             </td>
                         </tr>
+                        @empty
+                        <tr>
+                            <td colspan="7" style="text-align: center;">No hay consentimientos registrados</td>
+                        </tr>
+                        @endforelse
                     </tbody>
                 </table>
             </div>

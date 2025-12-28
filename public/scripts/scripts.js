@@ -337,6 +337,44 @@ function editarProducto(id, codigo, nombre, tipo, descripcion, datos) {
     $('#formProductos button[type="submit"]').text('Actualizar Producto');
 }
 
+// ========== RESETEAR FORMULARIO CONSENTIMIENTOS ==========
+function resetFormularioConsentimientos() {
+    const form = $('#formConsentimientos');
+    form.attr('action', '/consentimientos');
+    $('#form_consentimiento_method').val('POST');
+    $('#consentimiento_id').val('');
+    $('#consentimiento_sujeto_id').val('');
+    $('#consentimiento_proposito').val('');
+    $('#consentimiento_estado').val('');
+    $('#consentimiento_fecha_otorgamiento').val('');
+    $('#consentimiento_metodo').val('');
+    $('#consentimiento_fecha_expiracion').val('');
+    form.find('button[type="submit"]').text('Registrar Consentimiento');
+    $('.is-invalid').removeClass('is-invalid');
+    $('.invalid-feedback').remove();
+}
+
+// ========== EDITAR CONSENTIMIENTO ==========
+function editarConsentimiento(id, sujeto_id, proposito, estado, fecha_otorgamiento, metodo, fecha_expiracion) {
+    Swal.fire({
+        icon: 'info',
+        title: 'Editar consentimiento',
+        text: 'El formulario ha entrado en modo edición',
+        timer: 2000
+    });
+
+    $('#consentimiento_id').val(id);
+    $('#consentimiento_sujeto_id').val(sujeto_id);
+    $('#consentimiento_proposito').val(proposito);
+    $('#consentimiento_estado').val(estado);
+    $('#consentimiento_fecha_otorgamiento').val(fecha_otorgamiento);
+    $('#consentimiento_metodo').val(metodo);
+    $('#consentimiento_fecha_expiracion').val(fecha_expiracion);
+    $('#form_consentimiento_method').val('PUT');
+    $('#formConsentimientos').attr('action', '/consentimientos/' + id);
+    $('#formConsentimientos button[type="submit"]').text('Actualizar Consentimiento');
+}
+
 // ========== CONFIRMAR ELIMINACIÓN ==========
 function confirmarEliminacion(boton) {
     event.preventDefault();
@@ -444,6 +482,29 @@ $(document).ready(function () {
                 minlength: "Debe tener al menos 3 caracteres"
             },
             tipo: { required: "Seleccione el tipo de producto" }
+        },
+        errorElement: "div",
+        errorClass: "invalid-feedback",
+        highlight: function (element) { $(element).addClass("is-invalid"); },
+        unhighlight: function (element) { $(element).removeClass("is-invalid"); }
+    });
+
+    // VALIDACIÓN CONSENTIMIENTOS
+    $("#formConsentimientos").validate({
+        rules: {
+            sujeto_id: { required: true },
+            proposito: { required: true },
+            estado: { required: true },
+            fecha_otorgamiento: { date: true },
+            metodo: {},
+            fecha_expiracion: { date: true }
+        },
+        messages: {
+            sujeto_id: { required: "Seleccione un sujeto de datos" },
+            proposito: { required: "Seleccione el propósito del tratamiento" },
+            estado: { required: "Seleccione el estado del consentimiento" },
+            fecha_otorgamiento: { date: "Ingrese una fecha válida" },
+            fecha_expiracion: { date: "Ingrese una fecha válida" }
         },
         errorElement: "div",
         errorClass: "invalid-feedback",
