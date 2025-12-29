@@ -6,8 +6,8 @@ use App\Http\Controllers\SujetoDatoController;
 use App\Http\Controllers\ProductoFinancieroController;
 use App\Http\Controllers\ConsentimientoController;
 use App\http\Controllers\ActividadProcesamientoController;
-use App\Http\Controllers\AuditoriaController;
 
+use App\Http\Controllers\AuditoriaController;
 use App\Http\Controllers\IncidenteSeguridadController;
 
 
@@ -46,7 +46,7 @@ Route::get('/actividades-procesamiento', [ActividadProcesamientoController::clas
 Route::post('/actividades-procesamiento', [ActividadProcesamientoController::class, 'store'])->name('actividades.store');
 Route::get('/actividad-procesamiento/ver/{id}',[ActividadProcesamientoController::class, 'ver'])->name('actividad_procesamiento.ver');
 
+
 Route::get('/auditorias', [AuditoriaController::class, 'index'])->name('auditorias.index');
 Route::post('/auditorias', [AuditoriaController::class, 'store'])->name('auditorias.store');
 Route::get('/auditoria/ver/{id}', [AuditoriaController::class, 'ver'])->name('auditoria.ver');
-
