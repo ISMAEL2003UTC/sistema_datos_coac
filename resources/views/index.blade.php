@@ -356,9 +356,8 @@
             </div>
         </div>
         
-        <!-- PRODUCTOS FINANCIEROS -->
         
-        <!-- PRODUCTOS FINANCIEROS -->
+        <!-- PRODUCTOS FINANCIEROS ------------------------------------------------------>
         <div id="productos" class="content-section">
             <h2 class="section-title">Productos Financieros</h2>
             
@@ -634,88 +633,191 @@
         </div>
         
         <!-- SOLICITUDES DSAR ---------------------------------------------------------------------------->
-        <div id="dsar" class="content-section">
-            <h2 class="section-title">Solicitudes de Derechos (DSAR)</h2>
-            <p style="margin-bottom: 20px; color: #666;">Gestión de solicitudes de Acceso, Rectificación, Cancelación y Oposición</p>
-            
-            <form id="formDSAR">
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Número de Solicitud *</label>
-                        <input type="text" name="numero" >
-                    </div>
-                    <div class="form-group">
-                        <label>Cédula del Solicitante *</label>
-                        <input type="text" name="cedula" >
-                    </div>
-                    <div class="form-group">
-                        <label>Tipo de Solicitud *</label>
-                        <select name="tipo" >
-                            <option value="">Seleccionar...</option>
-                            <option value="acceso">Derecho de Acceso</option>
-                            <option value="rectificacion">Rectificación</option>
-                            <option value="cancelacion">Cancelación</option>
-                            <option value="oposicion">Oposición</option>
-                            <option value="portabilidad">Portabilidad</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label>Descripción de la Solicitud *</label>
-                    <textarea name="descripcion" rows="4" ></textarea>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Fecha de Solicitud *</label>
-                        <input type="date" name="fecha_solicitud" >
-                    </div>
-                    <div class="form-group">
-                        <label>Plazo de Respuesta</label>
-                        <input type="date" name="fecha_limite">
-                    </div>
-                    <div class="form-group">
-                        <label>Estado *</label>
-                        <select name="estado" >
-                            <option value="pendiente">Pendiente</option>
-                            <option value="proceso">En Proceso</option>
-                            <option value="completada">Completada</option>
-                            <option value="rechazada">Rechazada</option>
-                        </select>
-                    </div>
-                </div>
-                <button type="submit" class="btn btn-primary">Registrar Solicitud</button>
-            </form>
-            
-            <div class="table-container">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>N° Solicitud</th>
-                            <th>Solicitante</th>
-                            <th>Tipo</th>
-                            <th>Fecha</th>
-                            <th>Plazo</th>
-                            <th>Estado</th>
-                            <th>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>DSAR-2024-001</td>
-                            <td>0102345678</td>
-                            <td>Acceso</td>
-                            <td>10/12/2024</td>
-                            <td>25/12/2024</td>
-                            <td><span class="badge badge-warning">En Proceso</span></td>
-                            <td>
-                                <button class="btn btn-secondary" style="padding: 8px 15px;">Ver</button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+<div id="dsar" class="content-section">
+    <h2 class="section-title">Solicitudes de Derechos (DSAR)</h2>
+    <p style="margin-bottom: 20px; color: #666;">
+        Gestión de solicitudes de Acceso, Rectificación, Cancelación y Oposición
+    </p>
+
+    {{-- ERRORES --}}
+    @if ($errors->any())
+        <div style="background:#ffe0e0; padding:10px; margin-bottom:15px;">
+            <ul style="margin:0;">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
+    {{-- FORMULARIO --}}
+    <form id="formDSAR" method="POST" action= "/dsar">
+        @csrf
+        <input type="hidden" name="_method" id="form_dsar_method" value="POST">
+        <input type="hidden" id="dsar_id">
+
+        <div class="form-row">
+            <div class="form-group">
+                <label>Número de Solicitud *</label>
+                <input type="text" name="numero_solicitud" id="dsar_numero" >
+            </div>
+
+            <select name="cedula" id="dsar_cedula" class="select-sujeto" >
+                <option value="">Seleccione un Sujeto de Datos</option>
+                @foreach ($sujetos as $s)
+                    <option value="{{ $s->cedula }}">
+                        {{ $s->cedula }} — {{ $s->nombre_completo }}
+                    </option>
+                @endforeach
+            </select>
+
+
+            <div class="form-group">
+                <label>Tipo de Solicitud *</label>
+                <select name="tipo" id="dsar_tipo" >
+                    <option value="">Seleccionar...</option>
+                    <option value="acceso">Acceso</option>
+                    <option value="rectificacion">Rectificación</option>
+                    <option value="cancelacion">Cancelación</option>
+                    <option value="oposicion">Oposición</option>
+                    <option value="portabilidad">Portabilidad</option>
+                </select>
             </div>
         </div>
-        
+
+        <div class="form-group">
+            <label>Descripción *</label>
+            <textarea name="descripcion" id="dsar_descripcion" rows="4" ></textarea>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label>Fecha de Solicitud *</label>
+                <input type="date" name="fecha_solicitud" id="dsar_fecha_solicitud" >
+            </div>
+
+            <div class="form-group">
+                <label>Plazo de Respuesta</label>
+                <input type="date" name="fecha_limite" id="dsar_fecha_limite">
+            </div>
+
+            <div class="form-group">
+                <label>Estado *</label>
+                <select name="estado" id="dsar_estado" >
+                    <option value="pendiente">Pendiente</option>
+                    <option value="proceso">En Proceso</option>
+                    <option value="completada">Completada</option>
+                    <option value="rechazada">Rechazada</option>
+                </select>
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary" id="btnDsarGuardar">
+            Registrar Solicitud
+        </button>
+
+        <button type="button" class="btn btn-secondary"
+                onclick="resetFormularioDSAR()" style="margin-left:10px;">
+            Cancelar Edición
+        </button>
+    </form>
+
+    {{-- TABLA --}}
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>N° Solicitud</th>
+                    <th>Solicitante</th>
+                    <th>Tipo</th>
+                    <th>Fecha</th>
+                    <th>Plazo</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+
+            <tbody>
+            @forelse($dsars  as $d)
+                <tr>
+                    <td>{{ $d->numero_solicitud }}</td>
+                    <td>{{ $d->sujeto?->cedula ?? 'N/A' }}</td>
+                    <td>{{ ucfirst($d->tipo) }}</td>
+                    <td>{{ $d->fecha_solicitud }}</td>
+                    <td>{{ $d->fecha_limite ?? 'N/A' }}</td>
+                    <td>
+                        <span class="badge badge-warning">
+                            {{ ucfirst($d->estado) }}
+                        </span>
+                    </td>
+
+                    <td style="display:flex; gap:8px; flex-wrap:wrap;">
+                        {{-- EDITAR --}}
+                        <button type="button"
+                            class="btn btn-secondary btn-editar-dsar"
+                            data-id="{{ $d->id }}"
+                            data-numero="{{ $d->numero_solicitud }}"
+                            data-cedula="{{ $d->sujeto?->cedula }}"
+                            data-tipo="{{ $d->tipo }}"
+                            data-descripcion="{{ $d->descripcion }}"
+                            data-fecha="{{ $d->fecha_solicitud }}"
+                            data-limite="{{ $d->fecha_limite }}"
+                            data-estado="{{ $d->estado }}">
+                        Editar
+                    </button>
+
+
+                        {{-- ELIMINAR --}}
+                        <form method="POST"
+                              action="{{ route('dsar.destroy', $d->id) }}"
+                              onsubmit="return confirm('¿Eliminar solicitud?')">
+                            @csrf
+                            @method('DELETE')
+                            <button type="button" class="btn btn-danger"
+                                onclick="confirmarEliminarDSAR(this)">
+                                Eliminar
+                            </button>
+
+                        </form>
+
+                        {{-- CAMBIAR ESTADO --}}
+                        <form method="POST"
+                              action="{{ route('dsar.update', $d->id) }}">
+                            @csrf
+                            @method('PUT')
+
+                            <input type="hidden" name="numero_solicitud" value="{{ $d->numero_solicitud }}">
+                            <input type="hidden" name="cedula" value="{{ $d->sujeto?->cedula }}">
+                            <input type="hidden" name="tipo" value="{{ $d->tipo }}">
+                            <input type="hidden" name="descripcion" value="{{ $d->descripcion }}">
+                            <input type="hidden" name="fecha_solicitud" value="{{ $d->fecha_solicitud }}">
+                            <input type="hidden" name="fecha_limite" value="{{ $d->fecha_limite }}">
+
+                            <select name="estado">
+                                <option value="pendiente" {{ $d->estado=='pendiente'?'selected':'' }}>Pendiente</option>
+                                <option value="proceso" {{ $d->estado=='proceso'?'selected':'' }}>En Proceso</option>
+                                <option value="completada" {{ $d->estado=='completada'?'selected':'' }}>Completada</option>
+                                <option value="rechazada" {{ $d->estado=='rechazada'?'selected':'' }}>Rechazada</option>
+                            </select>
+
+                            <button type="submit" class="btn btn-warning">
+                                Cambiar
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+            @empty
+                <tr>
+                    <td colspan="7" style="text-align:center;">
+                        No hay solicitudes DSAR registradas
+                    </td>
+                </tr>
+            @endforelse
+            </tbody>
+        </table>
+    </div>
+</div>
+
         <!-- INCIDENTES------------------------------------------------------------------------------------->
         <div id="incidentes" class="content-section">
     <h2 class="section-title">Registro de Incidentes de Seguridad</h2>
@@ -724,7 +826,7 @@
         <strong>⚠️ Atención:</strong> Registre todos los incidentes de seguridad que involucren datos personales
     </div>
 
-    <!-- Formulario para crear/editar incidente -->
+    <!-- Formulario para crear/editar incidente -------------------------------->
     <form id="formIncidentes" method="POST" action="{{ route('incidentes.store') }}">
         @csrf
         <input type="hidden" name="_method" id="form_incidente_method" value="POST">
@@ -786,7 +888,7 @@
         <button type="submit" class="btn btn-primary">Registrar Incidente</button>
     </form>
 
-    <!-- Tabla de incidentes -->
+    <!-- Tabla de incidentes ------------------------------------------------>
     <div class="table-container">
         <table>
             <thead>
@@ -901,7 +1003,7 @@ Swal.fire({
 @endif
 </script>
 
-        <!-- ACTIVIDADES DE PROCESAMIENTO -->
+        <!-- ACTIVIDADES DE PROCESAMIENTO ----------------------------------------------------------->
 <div id="procesamiento" class="content-section">
 
     <h2 class="section-title">Registro de Actividades de Procesamiento</h2>
@@ -1023,7 +1125,7 @@ Swal.fire({
 </div> 
 
         
-        <!-- AUDITORÍAS -->
+        <!-- AUDITORÍAS ----------------------------------------------------------->
         <div id="auditorias" class="content-section">
     <h2 class="section-title">Gestión de Auditorías</h2>
 
@@ -1248,7 +1350,7 @@ Swal.fire({
 
            
         
-        <!-- REPORTES -->
+        <!-- REPORTES ----------------------------------------------------------->
         <div id="reportes" class="content-section">
             <h2 class="section-title">Dashboard de Reportes y Estadísticas</h2>
             
@@ -1401,6 +1503,16 @@ Swal.fire({
         document.getElementById('panelActividad').style.display = 'none';
     }
 </script>
+@if(session('swal'))
+<script>
+    Swal.fire({
+        icon: "{{ session('swal.icon') }}",
+        title: "{{ session('swal.title') }}",
+        text: "{{ session('swal.text') }}",
+        confirmButtonText: 'Aceptar'
+    });
+</script>
+@endif
 
     
 

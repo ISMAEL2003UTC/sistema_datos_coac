@@ -6,7 +6,7 @@ use App\Http\Controllers\SujetoDatoController;
 use App\Http\Controllers\ProductoFinancieroController;
 use App\Http\Controllers\ConsentimientoController;
 use App\http\Controllers\ActividadProcesamientoController;
-
+use App\http\Controllers\SolicitudDsarController;
 use App\Http\Controllers\AuditoriaController;
 use App\Http\Controllers\IncidenteSeguridadController;
 
@@ -46,7 +46,16 @@ Route::get('/actividades-procesamiento', [ActividadProcesamientoController::clas
 Route::post('/actividades-procesamiento', [ActividadProcesamientoController::class, 'store'])->name('actividades.store');
 Route::get('/actividad-procesamiento/ver/{id}',[ActividadProcesamientoController::class, 'ver'])->name('actividad_procesamiento.ver');
 
-
+// rutas de auditorias ---------------------------------
 Route::get('/auditorias', [AuditoriaController::class, 'index'])->name('auditorias.index');
 Route::post('/auditorias', [AuditoriaController::class, 'store'])->name('auditorias.store');
 Route::get('/auditoria/ver/{id}', [AuditoriaController::class, 'ver'])->name('auditoria.ver');
+
+// Rutas solicitudes DSAR ------------------------------
+
+Route::post('/dsar', [SolicitudDsarController::class, 'store'])->name('dsar.store');
+Route::put('/dsar/{id}', [SolicitudDsarController::class, 'update'])->name('dsar.update');
+Route::delete('/dsar/{id}', [SolicitudDsarController::class, 'destroy'])->name('dsar.destroy');
+Route::put('/dsar/{id}/estado', [SolicitudDsarController::class, 'cambiarEstado'])->name('dsar.estado');
+
+

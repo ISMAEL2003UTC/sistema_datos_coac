@@ -454,7 +454,7 @@ $(document).ready(function () {
         unhighlight: function (element) { $(element).removeClass("is-invalid"); }
     });
 
-    // VALIDACIÓN PRODUCTOS FINANCIEROS
+    // VALIDACIÓN PRODUCTOS FINANCIEROS---------------------------------------------
     $("#formProductos").validate({
         rules: {
             codigo: { required: true, minlength: 2 },
@@ -478,7 +478,7 @@ $(document).ready(function () {
         unhighlight: function (element) { $(element).removeClass("is-invalid"); }
     });
 
-    // VALIDACIÓN CONSENTIMIENTOS
+    // VALIDACIÓN CONSENTIMIENTOS---------------------------------------------------
     $("#formConsentimientos").validate({
         rules: {
             sujeto_id: { required: true },
@@ -500,6 +500,178 @@ $(document).ready(function () {
         highlight: function (element) { $(element).addClass("is-invalid"); },
         unhighlight: function (element) { $(element).removeClass("is-invalid"); }
     });
+});
+// solicitudes DSAR-----------------------------------------
+window.editarDSAR = function (
+    id,
+    numero,
+    cedula,
+    tipo,
+    descripcion,
+    fechaSolicitud,
+    fechaLimite,
+    estado
+) {
+    Swal.fire({
+        icon: 'info',
+        title: 'Editar solicitud',
+        text: 'El formulario ha entrado en modo edición',
+        timer: 2000,
+        showConfirmButton: false
+    });
+
+    const form = document.getElementById('formDSAR');
+
+    form.action = `/dsar/${id}`;
+    document.getElementById('form_dsar_method').value = 'PUT';
+
+    document.getElementById('dsar_numero').value = numero;
+    document.getElementById('dsar_cedula').value = cedula;
+    document.getElementById('dsar_tipo').value = tipo;
+    document.getElementById('dsar_descripcion').value = descripcion;
+    document.getElementById('dsar_fecha_solicitud').value = fechaSolicitud;
+    document.getElementById('dsar_fecha_limite').value = fechaLimite ?? '';
+    document.getElementById('dsar_estado').value = estado;
+
+    document.getElementById('btnDsarGuardar').innerText = 'Actualizar Solicitud';
+};
+
+
+
+window.resetFormularioDSAR = function () {
+    const form = document.getElementById('formDSAR');
+    form.reset();
+
+    form.action = "/dsar";
+    document.getElementById('form_dsar_method').value = 'POST';
+    document.getElementById('btnDsarGuardar').innerText = 'Registrar Solicitud';
+};
+
+
+function confirmarEliminacion(button) {
+    if (confirm('¿Está seguro de eliminar esta solicitud DSAR?')) {
+        button.closest('form').submit();
+    }
+}
+// ===== MÉTODOS PERSONALIZADOS =====
+$.validator.addMethod("soloNumeros", function (value, element) {
+    return this.optional(element) || /^[0-9]+$/.test(value);
+}, "Solo se permiten números");
+
+$.validator.addMethod("soloLetras", function (value, element) {
+    return this.optional(element) || /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/.test(value);
+}, "Solo se permiten letras");
+
+// ===== VALIDACIÓN SOLICITUD DSAR =====
+$(document).ready(function () {
+
+    $("#formDSAR").validate({
+        rules: {
+            numero_solicitud: {
+                required: true,
+                minlength: 5,
+                soloNumeros: true
+            },
+            cedula: {
+                required: true
+                
+                
+            },
+            tipo: {
+                required: true
+            },
+            descripcion: {
+                required: true,
+                minlength: 10,
+                soloLetras: true
+            },
+            fecha_solicitud: {
+                required: true,
+                date: true
+            },
+            estado: {
+                required: true
+            }
+        },
+        messages: {
+            numero_solicitud: {
+                required: "El número de solicitud es obligatorio",
+                minlength: "Debe tener al menos 5 dígitos",
+                soloNumeros: "Solo se permiten números"
+            },
+            cedula: {
+                required: "Seleccione un sujeto de datos"
+            },
+            tipo: {
+                required: "Seleccione el tipo de solicitud"
+            },
+            descripcion: {
+                required: "La descripción es obligatoria",
+                minlength: "Debe tener al menos 10 caracteres",
+                soloLetras: "Solo se permiten letras y espacios"
+            },
+            fecha_solicitud: {
+                required: "La fecha de solicitud es obligatoria",
+                date: "Fecha no válida"
+            },
+            estado: {
+                required: "Seleccione el estado"
+            }
+        },
+        errorElement: "div",
+        errorClass: "invalid-feedback",
+        highlight: function (element) {
+            $(element).addClass("is-invalid");
+        },
+        unhighlight: function (element) {
+            $(element).removeClass("is-invalid");
+        }
+    });
+
+});
+// mensaje de alerta
+document.addEventListener('DOMContentLoaded', () => {
+    if (window.__swalData) {
+        Swal.fire({
+            icon: window.__swalData.icon,
+            title: window.__swalData.title,
+            text: window.__swalData.text,
+            confirmButtonText: 'OK'
+        });
+    }
+});
+function confirmarEliminarDSAR(btn) {
+    Swal.fire({
+        title: '¿Eliminar solicitud?',
+        text: 'Esta acción no se puede deshacer',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#6c757d',
+        confirmButtonText: 'Sí, eliminar',
+        cancelButtonText: 'Cancelar'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            btn.closest('form').submit();
+        }
+    });
+}
+document.addEventListener('click', function (e) {
+    if (e.target.classList.contains('btn-editar-dsar')) {
+
+        const b = e.target;
+
+        editarDSAR(
+            b.dataset.id,
+            b.dataset.numero,
+            b.dataset.cedula,
+            b.dataset.tipo,
+            b.dataset.descripcion,
+            b.dataset.fecha,
+            b.dataset.limite,
+            b.dataset.estado
+        );
+    }
 });
 
 
