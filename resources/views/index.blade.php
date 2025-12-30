@@ -1024,7 +1024,7 @@ Swal.fire({
 
         
         <!-- AUDITORÍAS -->
-        <div id="auditorias" class="content-section">
+<div id="auditorias" class="content-section">
     <h2 class="section-title">Gestión de Auditorías</h2>
 
     {{-- FORMULARIO --}}
@@ -1034,12 +1034,12 @@ Swal.fire({
         <div class="form-row">
             <div class="form-group">
                 <label>Código de Auditoría *</label>
-                <input type="text" name="codigo" required>
+                <input type="text" name="codigo_aud" required>  {{-- Cambiado --}}
             </div>
 
             <div class="form-group">
                 <label>Tipo de Auditoría *</label>
-                <select name="tipo" required>
+                <select name="tipo_aud" required>  {{-- Cambiado --}}
                     <option value="">Seleccionar...</option>
                     <option value="interna">Interna</option>
                     <option value="externa">Externa</option>
@@ -1066,7 +1066,7 @@ Swal.fire({
 
             <div class="form-group">
                 <label>Estado *</label>
-                <select name="estado" required>
+                <select name="estado_aud" required>  {{-- Cambiado --}}
                     <option value="planificada">Planificada</option>
                     <option value="proceso">En Proceso</option>
                     <option value="completada">Completada</option>
@@ -1110,118 +1110,24 @@ Swal.fire({
                     <td>{{ $auditoria->codigo }}</td>
                     <td>{{ ucfirst($auditoria->tipo) }}</td>
                     <td>{{ $auditoria->auditor }}</td>
-                    <td>{{ $auditoria->fecha_inicio }}</td>
-                    <td>{{ $auditoria->fecha_fin ?? '-' }}</td>
-                    <td>{{ $auditoria->estado }}</td>
+                    <td>{{ \Carbon\Carbon::parse($auditoria->fecha_inicio)->format('d/m/Y') }}</td>
+                    <td>{{ $auditoria->fecha_fin ? \Carbon\Carbon::parse($auditoria->fecha_fin)->format('d/m/Y') : '-' }}</td>
                     <td>
-                        <a href="{{ route('auditoria.ver', $auditoria->id) }}"
-                           class="btn btn-secondary"
-                           style="padding: 8px 15px;">
-                            Ver
-                        </a>
+                        @if($auditoria->estado == 'completada')
+                            <span class="badge badge-success">Completada</span>
+                        @elseif($auditoria->estado == 'proceso')
+                            <span class="badge badge-warning">En Proceso</span>
+                        @elseif($auditoria->estado == 'planificada')
+                            <span class="badge badge-info">Planificada</span>
+                        @elseif($auditoria->estado == 'revisada')
+                            <span class="badge badge-primary">Revisada</span>
+                        @else
+                            <span class="badge badge-secondary">{{ $auditoria->estado }}</span>
+                        @endif
                     </td>
-                </tr>
-                @endforeach
-
-                @if($auditorias->isEmpty())
-                <tr>
-                    <td colspan="7" style="text-align:center;">
-                        No hay auditorías registradas
-                    </td>
-                </tr>
-                @endif
-            </tbody>
-        </table><div id="auditorias" class="content-section">
-    <h2 class="section-title">Gestión de Auditorías</h2>
-
-    {{-- FORMULARIO --}}
-    <form method="POST" action="{{ route('auditorias.store') }}">
-        @csrf
-
-        <div class="form-row">
-            <div class="form-group">
-                <label>Código de Auditoría *</label>
-                <input type="text" name="codigo" required>
-            </div>
-
-            <div class="form-group">
-                <label>Tipo de Auditoría *</label>
-                <select name="tipo" required>
-                    <option value="">Seleccionar...</option>
-                    <option value="interna">Interna</option>
-                    <option value="externa">Externa</option>
-                    <option value="cumplimiento">Cumplimiento</option>
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label>Auditor Responsable *</label>
-                <input type="text" name="auditor" required>
-            </div>
-        </div>
-
-        <div class="form-row">
-            <div class="form-group">
-                <label>Fecha de Inicio *</label>
-                <input type="date" name="fecha_inicio" required>
-            </div>
-
-            <div class="form-group">
-                <label>Fecha de Finalización</label>
-                <input type="date" name="fecha_fin">
-            </div>
-
-            <div class="form-group">
-                <label>Estado *</label>
-                <select name="estado" required>
-                    <option value="planificada">Planificada</option>
-                    <option value="proceso">En Proceso</option>
-                    <option value="completada">Completada</option>
-                    <option value="revisada">Revisada</option>
-                </select>
-            </div>
-        </div>
-
-        <div class="form-group">
-            <label>Alcance de la Auditoría</label>
-            <textarea name="alcance" rows="3"></textarea>
-        </div>
-
-        <div class="form-group">
-            <label>Hallazgos y Observaciones</label>
-            <textarea name="hallazgos" rows="4"></textarea>
-        </div>
-
-        <button type="submit" class="btn btn-primary">
-            Registrar Auditoría
-        </button>
-    </form>
-
-    {{-- TABLA --}}
-    <div class="table-container">
-        <table>
-            <thead>
-                <tr>
-                    <th>Código</th>
-                    <th>Tipo</th>
-                    <th>Auditor</th>
-                    <th>Fecha Inicio</th>
-                    <th>Fecha Fin</th>
-                    <th>Estado</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach($auditorias as $auditoria)
-                <tr>
-                    <td>{{ $auditoria->codigo }}</td>
-                    <td>{{ ucfirst($auditoria->tipo) }}</td>
-                    <td>{{ $auditoria->auditor }}</td>
-                    <td>{{ $auditoria->fecha_inicio }}</td>
-                    <td>{{ $auditoria->fecha_fin ?? '-' }}</td>
-                    <td>{{ $auditoria->estado }}</td>
                     <td>
-                        <a href="{{ route('auditoria.ver', $auditoria->id) }}"
+                        {{-- OPCIÓN 1: Si usas Route Model Binding --}}
+                        <a href="{{ route('auditorias.show', $auditoria->id) }}"
                            class="btn btn-secondary"
                            style="padding: 8px 15px;">
                             Ver
@@ -1242,12 +1148,6 @@ Swal.fire({
     </div>
 </div>
 
-    </div>
-</div>
-
-
-           
-        
         <!-- REPORTES -->
         <div id="reportes" class="content-section">
             <h2 class="section-title">Dashboard de Reportes y Estadísticas</h2>

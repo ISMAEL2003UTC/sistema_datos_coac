@@ -47,6 +47,7 @@ Route::post('/actividades-procesamiento', [ActividadProcesamientoController::cla
 Route::get('/actividad-procesamiento/ver/{id}',[ActividadProcesamientoController::class, 'ver'])->name('actividad_procesamiento.ver');
 
 
+// Asegúrate de que tengas estas rutas
 Route::get('/auditorias', [AuditoriaController::class, 'index'])->name('auditorias.index');
+Route::get('/auditorias/{id}', [AuditoriaController::class, 'show'])->name('auditorias.show');
 Route::post('/auditorias', [AuditoriaController::class, 'store'])->name('auditorias.store');
-Route::get('/auditoria/ver/{id}', [AuditoriaController::class, 'ver'])->name('auditoria.ver');
