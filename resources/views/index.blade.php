@@ -1172,13 +1172,9 @@ Swal.fire({
 </div> 
 
         
-        <!-- AUDITORÍAS -->
-<div id="auditorias" class="content-section">
-        <!-- AUDITORÍAS ----------------------------------------------------------->
-
+        
 
 <!-- AUDITORÍAS -->
->>>>>>> f9e4110c2f8d5b1f8561024713a2639e67f2dbc8
         <div id="auditorias" class="content-section">
     <h2 class="section-title">Gestión de Auditorías</h2>
 
