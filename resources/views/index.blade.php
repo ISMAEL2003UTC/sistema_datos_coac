@@ -1171,9 +1171,6 @@ Swal.fire({
     </div>
 </div> 
 
-        
-        
-
 <!-- AUDITORÍAS -->
         <div id="auditorias" class="content-section">
     <h2 class="section-title">Gestión de Auditorías</h2>
