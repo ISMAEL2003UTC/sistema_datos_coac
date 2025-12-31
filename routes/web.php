@@ -55,12 +55,8 @@ Route::post('/dsar', [SolicitudDsarController::class, 'store'])->name('dsar.stor
 Route::put('/dsar/{id}', [SolicitudDsarController::class, 'update'])->name('dsar.update');
 Route::delete('/dsar/{id}', [SolicitudDsarController::class, 'destroy'])->name('dsar.destroy');
 Route::put('/dsar/{id}/estado', [SolicitudDsarController::class, 'cambiarEstado'])->name('dsar.estado');
-
-//ruta mienboscouse
-
 // Rutas para miembros
 // CRUD miembros
-
 Route::get('/miembros', [MiembroController::class, 'index'])->name('miembros.index');
 
 // Rutas CRUD para miembros
