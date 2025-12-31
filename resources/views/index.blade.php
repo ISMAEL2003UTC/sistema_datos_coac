@@ -1175,6 +1175,10 @@ Swal.fire({
         <!-- AUDITORÍAS -->
 <div id="auditorias" class="content-section">
         <!-- AUDITORÍAS ----------------------------------------------------------->
+
+
+<!-- AUDITORÍAS -->
+>>>>>>> f9e4110c2f8d5b1f8561024713a2639e67f2dbc8
         <div id="auditorias" class="content-section">
     <h2 class="section-title">Gestión de Auditorías</h2>
 
@@ -1308,6 +1312,7 @@ Swal.fire({
            
         
         <!-- REPORTES ----------------------------------------------------------->
+        <!-- REPORTES -->
         <div id="reportes" class="content-section">
             <h2 class="section-title">Dashboard de Reportes y Estadísticas</h2>
             
