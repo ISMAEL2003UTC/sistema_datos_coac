@@ -47,17 +47,10 @@ Route::get('/actividades-procesamiento', [ActividadProcesamientoController::clas
 Route::post('/actividades-procesamiento', [ActividadProcesamientoController::class, 'store'])->name('actividades.store');
 Route::get('/actividad-procesamiento/ver/{id}',[ActividadProcesamientoController::class, 'ver'])->name('actividad_procesamiento.ver');
 
-<<<<<<< HEAD
-
-// Asegúrate de que tengas estas rutas
-=======
 // rutas de auditorias ---------------------------------
->>>>>>> 94db0671b03df8ce52e512be2c5b93d745fa6f55
 Route::get('/auditorias', [AuditoriaController::class, 'index'])->name('auditorias.index');
 Route::get('/auditorias/{id}', [AuditoriaController::class, 'show'])->name('auditorias.show');
 Route::post('/auditorias', [AuditoriaController::class, 'store'])->name('auditorias.store');
-<<<<<<< HEAD
-=======
 Route::get('/auditoria/ver/{id}', [AuditoriaController::class, 'ver'])->name('auditoria.ver');
 
 // Rutas solicitudes DSAR ------------------------------
@@ -74,4 +67,3 @@ Route::post('/miembros', [MiembroController::class, 'store'])->name('miembros.st
 Route::put('/miembros/{id}', [MiembroController::class, 'update'])->name('miembros.update');
 Route::delete('/miembros/{id}', [MiembroController::class, 'destroy'])->name('miembros.destroy');
 Route::put('/miembros/{id}/estado', [MiembroController::class, 'cambiarEstado'])->name('miembros.estado');
->>>>>>> 94db0671b03df8ce52e512be2c5b93d745fa6f55
