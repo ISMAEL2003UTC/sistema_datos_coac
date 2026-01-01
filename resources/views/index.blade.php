@@ -16,14 +16,7 @@
 
     <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<<<<<<< HEAD
     <script src="{{ secure_asset('scripts/scripts.js') }}"></script>
-=======
-    <!-- Font -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-
-    <script src="{{ asset('scripts/scripts.js') }}"></script>
->>>>>>> upstream/main
 
     
 
