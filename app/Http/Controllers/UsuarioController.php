@@ -18,14 +18,10 @@ use Illuminate\Http\Request;
 
 class UsuarioController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+    
     public function index()
     {
-        // =========================
-        // LISTADOS EXISTENTES (NO SE TOCAN)
-        // =========================
+        
         $usuarios = Usuario::orderBy('id')->get();
         $sujetos = SujetoDato::orderBy('id')->get();
         $miembros = MiembroCoac::orderBy('id')->get();
