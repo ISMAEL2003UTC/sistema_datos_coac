@@ -12,7 +12,8 @@
             <i class="fa-solid fa-right-from-bracket"></i> Cerrar sesión
         </button>
     </form>
-    <link rel="stylesheet" href="{{ secure_asset('styles/styles.css') }}">
+    <link rel="stylesheet" href="{{ asset('styles/styles.css') }}">
+
 
     <!-- jQuery  -->
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
@@ -24,7 +25,7 @@
 
     <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="{{ secure_asset('scripts/scripts.js') }}"></script>
+    <script src="{{ asset('scripts/scripts.js') }}"></script>
 
     
 
