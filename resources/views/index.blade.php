@@ -10,7 +10,8 @@
             <i class="fa-solid fa-right-from-bracket"></i> Cerrar sesión
         </button>
     </form>
-    <link rel="stylesheet" href="{{ asset('styles/styles.css') }}">
+    <link rel="stylesheet" href="{{ secure_asset('styles/styles.css') }}">
+
     <!-- jQuery  -->
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 
