@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistema de Gestión de Datos Personales - COAC</title>
     
-    {{-- boton de cerrar sesion desactivado
+    {{-- boton de cerrar sesion desactivado en pruebas con commit
     <form action="{{ route('logout') }}" method="POST" style="position:absolute; top:20px; right:20px;">
         @csrf
         <button type="submit" class="btn btn-danger">
