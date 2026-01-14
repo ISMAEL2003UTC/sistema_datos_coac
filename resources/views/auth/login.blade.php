@@ -1,4 +1,4 @@
-<!-- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -28,6 +28,11 @@
         <button type="submit" class="btn btn-primary">
             Ingresar
         </button>
+        <p style="margin-top:15px; text-align:center;">
+            ¿No tienes cuenta?
+            <a href="{{ route('register') }}">Crear una cuenta</a>
+        </p>
+
     </form>
 </div>
 
