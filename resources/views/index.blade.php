@@ -5,14 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistema de Gestión de Datos Personales - COAC</title>
     
+<<<<<<< HEAD
     {{-- boton de cerrar sesion desactivado en pruebas con commit
+=======
+>>>>>>> 035e6f84e6e832c200e6011fa5665eae9545cd48
     <form action="{{ route('logout') }}" method="POST" style="position:absolute; top:20px; right:20px;">
         @csrf
         <button type="submit" class="btn btn-danger">
             <i class="fa-solid fa-right-from-bracket"></i> Cerrar sesión
         </button>
     </form>
-    --}}
+    
 
     <link rel="stylesheet" href="{{ secure_asset('styles/styles.css') }}">
 
@@ -47,7 +50,7 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>🔒 Sistema de Gestión de Datos Personales</h1>
+            <h1> Sistema de Gestión de Datos Personales</h1>
             <p>Cooperativa de Ahorro y Crédito - Protección de Datos</p>
         </div>
         
