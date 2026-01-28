@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <title>Registro</title>
-    <link rel="stylesheet" href="{{ asset('styles/styles.css') }}">
-    <link rel="stylesheet" href="{{ asset('styles/estilos_registro.css') }}">
+    <link rel="stylesheet" href="{{ secure_asset('styles/styles.css') }}">
+    <link rel="stylesheet" href="{{ secure_asset('styles/estilos_registro.css') }}">
 
 </head>
 <body>
