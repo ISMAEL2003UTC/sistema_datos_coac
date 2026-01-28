@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <title>Registro</title>
     <link rel="stylesheet" href="{{ asset('styles/styles.css') }}">
+    <link rel="stylesheet" href="{{ asset('styles/estilos_registro.css') }}">
+
 </head>
 <body>
 
