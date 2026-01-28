@@ -178,11 +178,7 @@
                                     style="display:inline;">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="button"
-                                        class="btn btn-danger"
-                                        onclick="confirmarEliminacion(this)">
-                                        Eliminar
-                                    </button>
+                                    
                                 </form>
                             </td>
                         </tr>
@@ -282,11 +278,7 @@
                                     @csrf
                                     @method('DELETE')
 
-                                    <button type="button"
-                                        class="btn btn-danger"
-                                        onclick="confirmarEliminacion(this)">
-                                        Eliminar
-                                    </button>
+                                    
                                 </form>
 
                             </td>
