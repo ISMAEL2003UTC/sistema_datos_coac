@@ -1234,6 +1234,7 @@ Swal.fire({
 </div> 
 
 <!-- AUDITORÍAS -->
+<<<<<<< HEAD
 <div id="auditorias" class="content-section">
     <h2 class="section-title">Gestión de Auditorías</h2>
 
@@ -1297,11 +1298,40 @@ Swal.fire({
                     {{ $message }}
                 </span>
                 @enderror
+=======
+        <div id="auditorias" class="content-section">
+    <h2 class="section-title">Gestión de Auditorías</h2>
+
+    {{-- FORMULARIO --}}
+    <form method="POST" action="{{ route('auditorias.store') }}">
+        @csrf
+
+        <div class="form-row">
+            <div class="form-group">
+                <label>Código de Auditoría *</label>
+                <input type="text" name="codigo_aud" required>  {{-- Cambiado --}}
+            </div>
+
+            <div class="form-group">
+                <label>Tipo de Auditoría *</label>
+                <select name="tipo_aud" required>  {{-- Cambiado --}}
+                    <option value="">Seleccionar...</option>
+                    <option value="interna">Interna</option>
+                    <option value="externa">Externa</option>
+                    <option value="cumplimiento">Cumplimiento</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Auditor Responsable *</label>
+                <input type="text" name="auditor" required>
+>>>>>>> c0e64851bf9ae583ba037482d3a3ae7e736629c6
             </div>
         </div>
 
         <div class="form-row">
             <div class="form-group">
+<<<<<<< HEAD
                 <label for="fecha_inicio">Fecha de Inicio *</label>
                 <input type="date" id="fecha_inicio" name="fecha_inicio" 
                        value="{{ old('fecha_inicio') }}"
@@ -1344,10 +1374,30 @@ Swal.fire({
                     {{ $message }}
                 </span>
                 @enderror
+=======
+                <label>Fecha de Inicio *</label>
+                <input type="date" name="fecha_inicio" required>
+            </div>
+
+            <div class="form-group">
+                <label>Fecha de Finalización</label>
+                <input type="date" name="fecha_fin">
+            </div>
+
+            <div class="form-group">
+                <label>Estado *</label>
+                <select name="estado_aud" required>  {{-- Cambiado --}}
+                    <option value="planificada">Planificada</option>
+                    <option value="proceso">En Proceso</option>
+                    <option value="completada">Completada</option>
+                    <option value="revisada">Revisada</option>
+                </select>
+>>>>>>> c0e64851bf9ae583ba037482d3a3ae7e736629c6
             </div>
         </div>
 
         <div class="form-group">
+<<<<<<< HEAD
             <label for="alcance">Alcance de la Auditoría</label>
             <textarea id="alcance" name="alcance" rows="3">{{ old('alcance') }}</textarea>
             @error('alcance')
@@ -1365,6 +1415,15 @@ Swal.fire({
                 {{ $message }}
             </span>
             @enderror
+=======
+            <label>Alcance de la Auditoría</label>
+            <textarea name="alcance" rows="3"></textarea>
+        </div>
+
+        <div class="form-group">
+            <label>Hallazgos y Observaciones</label>
+            <textarea name="hallazgos" rows="4"></textarea>
+>>>>>>> c0e64851bf9ae583ba037482d3a3ae7e736629c6
         </div>
 
         <button type="submit" class="btn btn-primary">
@@ -1408,6 +1467,10 @@ Swal.fire({
                         @endif
                     </td>
                     <td>
+<<<<<<< HEAD
+=======
+                        {{-- OPCIÓN 1: Si usas Route Model Binding --}}
+>>>>>>> c0e64851bf9ae583ba037482d3a3ae7e736629c6
                         <a href="{{ route('auditorias.show', $auditoria->id) }}"
                            class="btn btn-secondary"
                            style="padding: 8px 15px;">
@@ -1429,6 +1492,7 @@ Swal.fire({
 </div>
 </div>
 
+<<<<<<< HEAD
 {{-- Script para validación en el cliente --}}
 <script>
 function validarFechas() {
@@ -1505,6 +1569,9 @@ document.getElementById('codigo_aud').addEventListener('input', function() {
     this.value = this.value.toUpperCase();
 });
 </script>
+=======
+</div>
+>>>>>>> c0e64851bf9ae583ba037482d3a3ae7e736629c6
 
 <!-- ================= REPORTES ================= -->
 <div id="reportes" class="content-section">
