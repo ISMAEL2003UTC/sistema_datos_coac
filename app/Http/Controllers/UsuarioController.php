@@ -126,4 +126,19 @@ class UsuarioController extends Controller
 
         return redirect('/')->with('success', 'Usuario eliminado correctamente');
     }
+    public function verificarEmail(Request $request)
+    {
+        $email = $request->email;
+        $id = $request->id;
+
+        $existe = Usuario::where('email', $email)
+            ->when($id, function ($query) use ($id) {
+                $query->where('id', '!=', $id); // 👈 excluye el mismo usuario
+            })
+            ->exists();
+
+        return response()->json(!$existe);
+    }
+
+
 }

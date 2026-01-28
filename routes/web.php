@@ -86,3 +86,8 @@ Route::middleware('auth')->group(function () {
 // Registro
 Route::get('/register', [RegisterController::class, 'showRegister'])->name('register');
 Route::post('/register', [RegisterController::class, 'register'])->name('register.post');
+
+
+// validacion para correo unico en usuarios
+Route::get('/verificar-email', [UsuarioController::class, 'verificarEmail']);
+

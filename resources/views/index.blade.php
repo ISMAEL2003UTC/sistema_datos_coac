@@ -98,8 +98,10 @@
         <!-- USUARIOS ----------------------------------------------------------------------------------------->
         <div id="usuarios" class="content-section active">
             <h2 class="section-title">Gestión de Usuarios del Sistema</h2>
-
+  
             <form id="formUsuarios"  method="POST" action="{{ url('/usuarios') }}">
+            <input type="hidden" id="id_usuario" name="id_usuario">
+
                 @csrf
                 <input type="hidden" name="_method" id="form_method" value="POST">
                 <input type="hidden" name="id" id="usuario_id">

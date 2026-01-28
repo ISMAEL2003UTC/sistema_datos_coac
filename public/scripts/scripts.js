@@ -334,25 +334,62 @@ $(document).ready(function () {
 
     // VALIDACIÓN USUARIOS
     $("#formUsuarios").validate({
-        rules: {
-            nombre_completo: { required: true, minlength: 3, soloLetras: true },
-            email: { required: true, email: true },
-            rol: { required: true }
+    rules: {
+        nombre_completo: { 
+            required: true, 
+            minlength: 3, 
+            soloLetras: true 
         },
-        messages: {
-            nombre_completo: {
-                required: "El nombre es obligatorio",
-                minlength: "Debe tener al menos 3 caracteres",
-                soloLetras: "Solo se permiten letras"
-            },
-            email: { required: "El correo es obligatorio", email: "Correo no válido" },
-            rol: { required: "El rol es obligatorio" }
+        email: { 
+            required: true, 
+            email: true,
+            remote: {
+                url: "/verificar-email",
+                type: "get",
+                data: {
+                    email: function () {
+                        return $("input[name='email']").val();
+                    },
+                    id: function () {
+                        return $("#id_usuario").val(); // 👈 input hidden
+                    }
+                }
+            }
         },
-        errorElement: "div",
-        errorClass: "invalid-feedback",
-        highlight: function (element) { $(element).addClass("is-invalid"); },
-        unhighlight: function (element) { $(element).removeClass("is-invalid"); }
-    });
+        rol: { required: true }
+    },
+    messages: {
+        nombre_completo: {
+            required: "El nombre es obligatorio",
+            minlength: "Debe tener al menos 3 caracteres",
+            soloLetras: "Solo se permiten letras"
+        },
+        email: {
+            required: "El correo es obligatorio",
+            email: "Correo no válido",
+            remote: "Este correo ya está registrado"
+        },
+        rol: { required: "El rol es obligatorio" }
+    },
+    errorElement: "div",
+    errorClass: "invalid-feedback",
+    highlight: function (element) {
+        $(element).addClass("is-invalid");
+    },
+    unhighlight: function (element) {
+        $(element).removeClass("is-invalid");
+    }
+
+    
+});
+
+function editarUsuario(id, nombre, email, rol) {
+    $("#id_usuario").val(id);  
+    $("input[name='nombre_completo']").val(nombre);
+    $("input[name='email']").val(email);
+    $("select[name='rol']").val(rol);
+}
+
 
     // VALIDACIÓN SUJETOS
     $("#formSujetos").validate({
