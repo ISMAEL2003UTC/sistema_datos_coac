@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <title>Login</title>
-    <link rel="stylesheet" href="{{ secure_asset('styles/styles.css') }}">
-    <link rel="stylesheet" href="{{ secure_asset('styles/estilos_login.css') }}">
+    <link rel="stylesheet" href="{{ asset('styles/styles.css') }}">
+    <link rel="stylesheet" href="{{ asset('styles/estilos_login.css') }}">
 
 </head>
 <body>
@@ -30,7 +30,10 @@
         <button type="submit" class="btn btn-primary">
             Ingresar
         </button>
-        
+        <p style="margin-top:15px; text-align:center;">
+            ¿No tienes cuenta?
+            <a href="{{ route('register') }}">Crear una cuenta</a>
+        </p>
 
     </form>
 </div>
