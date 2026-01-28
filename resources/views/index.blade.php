@@ -92,6 +92,8 @@
 
         
         <!-- USUARIOS ----------------------------------------------------------------------------------------->
+         @if(auth()->user()->rol === 'admin')
+
         <div id="usuarios" class="content-section active">
             <h2 class="section-title">Gestión de Usuarios del Sistema</h2>
 
@@ -187,6 +189,8 @@
                 </table>
             </div>
         </div>
+        @endif
+
         
         <!-- SUJETOS DE DATOS -------------------------------------------------------------------------------->
         <div id="sujetos"  class="content-section">
