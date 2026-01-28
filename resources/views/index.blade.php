@@ -195,10 +195,12 @@
             <h2 class="section-title">Registro de Sujetos de Datos</h2>
             
             <form id="formSujetos" method="POST" action="{{ route('sujetos.store') }}">
+                
             @csrf
-            <<input type="hidden" name="_method" id="form_sujeto_method" value="POST">
+            <input type="hidden" name="_method" id="form_sujeto_method" value="POST">
 
-            <input type="hidden" id="sujeto_id">
+            <input type="hidden" id="sujeto_id" name="sujeto_id">
+
 
                 <div class="form-row">
                     <div class="form-group">
