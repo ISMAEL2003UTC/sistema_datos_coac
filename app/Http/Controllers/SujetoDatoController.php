@@ -93,4 +93,37 @@ class SujetoDatoController extends Controller
         return redirect('/');
     }
 
+    public function verificarCedula(Request $request)
+{
+    $cedula = $request->cedula;
+    $id = $request->sujeto_id;
+
+    $existe = SujetoDato::where('cedula', $cedula)
+        ->when($id, function ($query) use ($id) {
+            $query->where('id', '!=', $id); // excluir el mismo registro al editar
+        })
+        ->exists();
+
+    return response()->json(!$existe);
+}
+
+public function verificarEmail(Request $request)
+{
+    $email = $request->email;
+    $id = $request->sujeto_id;
+
+    if (!$email) {
+        return response()->json(true);
+    }
+
+    $existe = SujetoDato::where('email', $email)
+        ->when($id, function ($query) use ($id) {
+            $query->where('id', '!=', $id);
+        })
+        ->exists();
+
+    return response()->json(!$existe);
+}
+
+
 }

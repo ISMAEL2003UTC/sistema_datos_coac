@@ -90,3 +90,7 @@ Route::post('/register', [RegisterController::class, 'register'])->name('registe
 
 // validacion para correo unico en usuarios
 Route::get('/verificar-email', [UsuarioController::class, 'verificarEmail']);
+
+//- validaciones sujetos
+Route::get('/verificar-cedula-sujeto', [SujetoDatoController::class, 'verificarCedula']);
+Route::get('/verificar-email-sujeto', [SujetoDatoController::class, 'verificarEmail']);

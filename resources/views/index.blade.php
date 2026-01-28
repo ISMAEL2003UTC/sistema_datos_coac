@@ -53,49 +53,45 @@
         </div>
         
         <div class="nav-tabs">
-            <button class="active" onclick="showSection('usuarios'); resetFormularioUsuarios();">
-                <i class="fa-solid fa-users"></i> Usuarios
-            </button>
+            {{-- ADMIN --}}
+    @if(auth()->user()->rol === 'admin')
+        <button class="active" onclick="showSection('usuarios')">Usuarios</button>
+        <button onclick="showSection('sujetos')">Sujetos</button>
+        <button onclick="showSection('miembros')">Miembros</button>
+        <button onclick="showSection('productos')">Productos</button>
+        <button onclick="showSection('consentimientos')">Consentimientos</button>
+        <button onclick="showSection('dsar')">DSAR</button>
+        <button onclick="showSection('incidentes')">Incidentes</button>
+        <button onclick="showSection('procesamiento')">Procesamiento</button>
+        <button onclick="showSection('auditorias')">Auditorías</button>
+        <button onclick="showSection('reportes')">Reportes</button>
 
-            <button onclick="showSection('sujetos')">
-                <i class="fa-solid fa-id-card"></i> Sujetos de Datos
-            </button>
+    {{-- DPO --}}
+    @elseif(auth()->user()->rol === 'dpo')
+        <button class="active" onclick="showSection('sujetos')">Sujetos</button>
+        <button onclick="showSection('consentimientos')">Consentimientos</button>
+        <button onclick="showSection('dsar')">DSAR</button>
+        <button onclick="showSection('incidentes')">Incidentes</button>
+        <button onclick="showSection('procesamiento')">Procesamiento</button>
+        <button onclick="showSection('reportes')">Reportes</button>
 
-            <button onclick="showSection('miembros')">
-                <i class="fa-solid fa-building-columns"></i> Miembros COAC
-            </button>
+    {{-- AUDITOR --}}
+    @elseif(auth()->user()->rol === 'auditor')
+        <button class="active" onclick="showSection('auditorias')">Auditorías</button>
+        <button onclick="showSection('reportes')">Reportes</button>
 
-            <button onclick="showSection('productos'); resetFormularioProductos();">
-                <i class="fa-solid fa-credit-card"></i> Productos Financieros
-            </button>
-
-            <button onclick="showSection('consentimientos'); resetFormularioConsentimientos();">
-                <i class="fa-solid fa-check-circle"></i> Consentimientos
-            </button>
-
-            <button onclick="showSection('dsar')">
-                <i class="fa-solid fa-envelope-open-text"></i> Solicitudes DSAR
-            </button>
-
-            <button onclick="showSection('incidentes')">
-                <i class="fa-solid fa-triangle-exclamation"></i> Incidentes
-            </button>
-
-            <button onclick="showSection('procesamiento')">
-                <i class="fa-solid fa-gears"></i> Act. Procesamiento
-            </button>
-
-            <button onclick="showSection('auditorias')">
-                <i class="fa-solid fa-magnifying-glass"></i> Auditorías
-            </button>
-
-            <button onclick="showSection('reportes')">
-                <i class="fa-solid fa-chart-column"></i> Reportes
-            </button>
+    {{-- OPERADOR --}}
+    @elseif(auth()->user()->rol === 'operador')
+        <button class="active" onclick="showSection('sujetos')">Sujetos</button>
+        <button onclick="showSection('miembros')">Miembros</button>
+        <button onclick="showSection('productos')">Productos</button>
+        <button onclick="showSection('consentimientos')">Consentimientos</button>
+    @endif
         </div>
 
         
         <!-- USUARIOS ----------------------------------------------------------------------------------------->
+        @if(auth()->user()->rol === 'admin')
         <div id="usuarios" class="content-section active">
             <h2 class="section-title">Gestión de Usuarios del Sistema</h2>
   
@@ -189,6 +185,8 @@
                 </table>
             </div>
         </div>
+        @endif
+
         
         <!-- SUJETOS DE DATOS -------------------------------------------------------------------------------->
         <div id="sujetos"  class="content-section">
