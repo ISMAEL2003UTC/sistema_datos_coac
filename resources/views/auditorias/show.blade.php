@@ -42,6 +42,36 @@
             position: relative;
         }
         
+        /* Botón flotante - AÑADIDO */
+        .back-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: var(--primary-color);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 500;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            transition: all 0.3s ease;
+            z-index: 1000;
+            border: 2px solid white;
+        }
+        
+        .back-button:hover {
+            background: #1a252f;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+        }
+        
+        .back-button:active {
+            transform: translateY(0);
+        }
+        
         .document-header {
             background: linear-gradient(135deg, var(--primary-color) 0%, #1a252f 100%);
             color: white;
@@ -261,6 +291,14 @@
                 padding: 20px 10px;
             }
             
+            /* Ajustes para el botón flotante en móvil - AÑADIDO */
+            .back-button {
+                padding: 10px 16px;
+                font-size: 14px;
+                top: 10px;
+                left: 10px;
+            }
+            
             .document-header,
             .document-body {
                 padding: 24px;
@@ -317,6 +355,15 @@
     </style>
 </head>
 <body>
+    <!-- Botón de retorno flotante - AÑADIDO -->
+    <a href="/auditorias" class="back-button">
+        <span>←</span>
+        Volver al Listado
+    </a>
+    
+    <!-- Si usas Laravel, puedes usar esta versión en su lugar: -->
+    <!-- <a href="{{ route('auditorias.index') }}" class="back-button"> -->
+    
     <div class="document-container">
         <header class="document-header">
             <div class="header-content">
