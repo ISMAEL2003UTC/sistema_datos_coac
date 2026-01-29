@@ -1074,7 +1074,8 @@
                 <label>Código de Incidente *</label>
                 <input type="text"
                     id="codigo"
-                    value="Se generará automáticamente"
+                    name="codigo"
+                    value="{{ old('codigo', $siguienteCodigo ?? ($incidenteEditar->codigo ?? '')) }}"
                     readonly
                     style="background:#f3f3f3; cursor:not-allowed;">
                 @error('codigo')
@@ -1240,6 +1241,7 @@
     </div>
 </div>
 
+// ...existing code...
 <script>
 function editarIncidente(id, codigo, fecha, severidad, descripcion, tipo, afectados, estado){
     Swal.fire({
@@ -1259,6 +1261,63 @@ function editarIncidente(id, codigo, fecha, severidad, descripcion, tipo, afecta
     document.getElementById('form_incidente_method').value = 'PUT';
     document.getElementById('formIncidentes').action = '/incidentes/' + id;
 }
+
+// Genera y muestra el siguiente código de incidente si el formulario está en modo creación
+function generarSiguienteCodigoIncidente() {
+    const input = document.getElementById('codigo');
+    const enEdicion = document.getElementById('incidente_id').value;
+    if (enEdicion) return; // no sobrescribir en edición
+    if (input.value && input.value.trim()) return; // ya tiene valor (viene del servidor)
+
+    // Obtener códigos desde la tabla
+    const codigos = [];
+    document.querySelectorAll('#incidentes table tbody tr td:first-child').forEach(td => {
+        const t = td.textContent.trim();
+        if (t) codigos.push(t);
+    });
+
+    if (codigos.length === 0) {
+        input.value = 'INC-001';
+        return;
+    }
+
+    // Priorizar códigos con prefijo INC- si existen
+    const incCodes = codigos.filter(c => /^inc[-_]/i.test(c) || /^inc/i.test(c));
+    const candidatos = incCodes.length ? incCodes : codigos;
+
+    let maxNum = 0;
+    let prefijo = 'INC-';
+    candidatos.forEach(c => {
+        const m = c.match(/^([A-Za-z\-]+)(\d+)$/);
+        if (m) {
+            const p = m[1].toUpperCase();
+            const n = parseInt(m[2], 10);
+            // si es el primer match, usar su prefijo para formar el siguiente
+            if (n > maxNum) {
+                maxNum = n;
+                prefijo = p;
+            }
+        }
+    });
+
+    const next = (maxNum + 1).toString().padStart(3, '0'); // padding a 3 dígitos
+    input.value = `${prefijo}${next}`;
+}
+
+// Observador para asignar código cuando se muestre la sección incidentes
+const observerIncidentes = new MutationObserver(() => {
+    const cont = document.getElementById('incidentes');
+    if (cont && cont.classList.contains('active')) {
+        setTimeout(generarSiguienteCodigoIncidente, 100);
+    }
+});
+
+observerIncidentes.observe(document.getElementById('incidentes'), { attributes: true, attributeFilter: ['class'] });
+
+// Asegurar ejecución al cargar la página
+document.addEventListener('DOMContentLoaded', function () {
+    generarSiguienteCodigoIncidente();
+});
 
 // SweetAlert para confirmar eliminación
 function confirmarEliminacion(btn){
