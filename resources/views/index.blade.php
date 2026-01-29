@@ -1498,7 +1498,7 @@ Swal.fire({
 </div> 
 
 <!-- AUDITORÍAS -->
-        <div id="auditorias" class="content-section">
+<div id="auditorias" class="content-section">
     <h2 class="section-title">Gestión de Auditorías</h2>
 
     {{-- FORMULARIO --}}
@@ -1507,56 +1507,66 @@ Swal.fire({
 
         <div class="form-row">
             <div class="form-group">
-                <label>Código de Auditoría *</label>
-                <input type="text" name="codigo_aud" required>  {{-- Cambiado --}}
-            </div>
-
-            <div class="form-group">
                 <label>Tipo de Auditoría *</label>
-                <select name="tipo_aud" required>  {{-- Cambiado --}}
+                <select name="tipo_aud" required>
                     <option value="">Seleccionar...</option>
                     <option value="interna">Interna</option>
                     <option value="externa">Externa</option>
                     <option value="cumplimiento">Cumplimiento</option>
+                    <option value="certificacion">Certificación</option>
+                    <option value="seguimiento">Seguimiento</option>
                 </select>
             </div>
 
             <div class="form-group">
                 <label>Auditor Responsable *</label>
-                <input type="text" name="auditor" required>
+                <input type="text" name="auditor" required placeholder="Nombre del auditor">
             </div>
         </div>
 
-        <div class="form-row">
-            <div class="form-group">
-                <label>Fecha de Inicio *</label>
-                <input type="date" name="fecha_inicio" required>
-            </div>
+<div class="form-row">
+    <div class="form-group">
+        <label>Fecha de Inicio *</label>
+        <div class="date-display" style="background-color: #f8f9fa; padding: 12px; border-radius: 4px; border: 1px solid #ced4da;">
+            <strong>{{ \Carbon\Carbon::now()->format('d/m/Y') }}</strong>
+            <input type="hidden" name="fecha_inicio" value="{{ date('Y-m-d') }}">
+        </div>
+        <small class="form-text text-muted">La fecha de inicio es automáticamente la fecha actual</small>
+    </div>
 
-            <div class="form-group">
-                <label>Fecha de Finalización</label>
-                <input type="date" name="fecha_fin">
-            </div>
+<div class="form-group">
+    <label>Fecha de Finalización *</label>
+    <input type="date" 
+           name="fecha_fin" 
+           id="fecha_fin"
+           required
+           min="{{ date('Y-m-d', strtotime('+1 day')) }}"
+           onfocus="this.showPicker()"
+           onchange="validarFechaFin()">
+    <small class="form-text text-muted">Debe ser posterior a la fecha actual (mañana o después)</small>
+    <div id="error-fecha" class="text-danger small mt-1" style="display: none;"></div>
+</div>
 
             <div class="form-group">
                 <label>Estado *</label>
-                <select name="estado_aud" required>  {{-- Cambiado --}}
+                <select name="estado_aud" required>
                     <option value="planificada">Planificada</option>
                     <option value="proceso">En Proceso</option>
                     <option value="completada">Completada</option>
                     <option value="revisada">Revisada</option>
+                    <option value="cancelada">Cancelada</option>
                 </select>
             </div>
         </div>
 
         <div class="form-group">
             <label>Alcance de la Auditoría</label>
-            <textarea name="alcance" rows="3"></textarea>
+            <textarea name="alcance" rows="3" placeholder="Describa el alcance de la auditoría..."></textarea>
         </div>
 
         <div class="form-group">
             <label>Hallazgos y Observaciones</label>
-            <textarea name="hallazgos" rows="4"></textarea>
+            <textarea name="hallazgos" rows="4" placeholder="Registre los hallazgos encontrados..."></textarea>
         </div>
 
         <button type="submit" class="btn btn-primary">
@@ -1566,10 +1576,18 @@ Swal.fire({
 
     {{-- TABLA --}}
     <div class="table-container">
+        <div class="table-header">
+            <h3>Auditorías Registradas</h3>
+            <div class="table-actions">
+                <span class="badge badge-light">{{ $auditorias->count() }} registros</span>
+            </div>
+        </div>
+        
+        @if($auditorias->isNotEmpty())
         <table>
             <thead>
                 <tr>
-                    <th>Código</th>
+                    <th>Código (Auto)</th>
                     <th>Tipo</th>
                     <th>Auditor</th>
                     <th>Fecha Inicio</th>
@@ -1581,11 +1599,30 @@ Swal.fire({
             <tbody>
                 @foreach($auditorias as $auditoria)
                 <tr>
-                    <td>{{ $auditoria->codigo }}</td>
+                    <td>
+                        <strong>{{ $auditoria->codigo }}</strong>
+                        <br><small class="text-muted">Generado automáticamente</small>
+                    </td>
                     <td>{{ ucfirst($auditoria->tipo) }}</td>
                     <td>{{ $auditoria->auditor }}</td>
-                    <td>{{ \Carbon\Carbon::parse($auditoria->fecha_inicio)->format('d/m/Y') }}</td>
-                    <td>{{ $auditoria->fecha_fin ? \Carbon\Carbon::parse($auditoria->fecha_fin)->format('d/m/Y') : '-' }}</td>
+                    <td>
+                        {{ \Carbon\Carbon::parse($auditoria->fecha_inicio)->format('d/m/Y') }}
+                        @if(\Carbon\Carbon::parse($auditoria->fecha_inicio)->isToday())
+                            <br><small class="text-success">Hoy</small>
+                        @endif
+                    </td>
+                    <td>
+                        @if($auditoria->fecha_fin)
+                            {{ \Carbon\Carbon::parse($auditoria->fecha_fin)->format('d/m/Y') }}
+                            @if(\Carbon\Carbon::parse($auditoria->fecha_fin)->isPast())
+                                <br><small class="text-danger">Vencida</small>
+                            @elseif(\Carbon\Carbon::parse($auditoria->fecha_fin)->isToday())
+                                <br><small class="text-warning">Vence hoy</small>
+                            @endif
+                        @else
+                            <span class="text-muted">-</span>
+                        @endif
+                    </td>
                     <td>
                         @if($auditoria->estado == 'completada')
                             <span class="badge badge-success">Completada</span>
@@ -1595,12 +1632,13 @@ Swal.fire({
                             <span class="badge badge-info">Planificada</span>
                         @elseif($auditoria->estado == 'revisada')
                             <span class="badge badge-primary">Revisada</span>
+                        @elseif($auditoria->estado == 'cancelada')
+                            <span class="badge badge-danger">Cancelada</span>
                         @else
                             <span class="badge badge-secondary">{{ $auditoria->estado }}</span>
                         @endif
                     </td>
                     <td>
-                        {{-- OPCIÓN 1: Si usas Route Model Binding --}}
                         <a href="{{ route('auditorias.show', $auditoria->id) }}"
                            class="btn btn-secondary"
                            style="padding: 8px 15px;">
@@ -1609,21 +1647,48 @@ Swal.fire({
                     </td>
                 </tr>
                 @endforeach
+            </tbody>
+        </table>
 
-                @if($auditorias->isEmpty())
-            <tr>
-                <td colspan="7" style="text-align:center;">
-                    No hay auditorías registradas
-                </td>
-            </tr>
+        @if($auditorias->hasPages())
+        <div class="pagination-container">
+            {{ $auditorias->links() }}
+        </div>
         @endif
-    </tbody>
-</table>
-</div>
+
+        @else
+        <div class="empty-state">
+            <h4>No hay auditorías registradas</h4>
+            <p>Comience registrando una nueva auditoría utilizando el formulario superior.</p>
+        </div>
+        @endif
+    </div>
 </div>
 
-</div>
-
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Establecer la fecha mínima para fecha_fin como hoy
+    const fechaFinInput = document.querySelector('input[name="fecha_fin"]');
+    const today = new Date().toISOString().split('T')[0];
+    
+    if (fechaFinInput) {
+        fechaFinInput.min = today;
+        
+        // Si el usuario intenta seleccionar una fecha pasada, resetear a hoy
+        fechaFinInput.addEventListener('change', function() {
+            const selectedDate = new Date(this.value);
+            const todayDate = new Date();
+            
+            if (selectedDate < todayDate) {
+                alert('La fecha de finalización no puede ser anterior a hoy');
+                this.value = today;
+            }
+        });
+    }
+});
+</script>
+@endpush
 <!-- ================= REPORTES ================= -->
 <div id="reportes" class="content-section">
     <h2 class="section-title">Dashboard de Reportes y Estadísticas</h2>
