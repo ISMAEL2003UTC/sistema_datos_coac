@@ -894,10 +894,10 @@
             <div class="form-group">
                 <label>Código de Incidente *</label>
                 <input type="text"
-                       name="codigo"
-                       id="codigo"
-                       value="{{ old('codigo') }}"
-                       class="{{ $errors->has('codigo') ? 'input-error' : '' }}">
+                    id="codigo"
+                    value="Se generará automáticamente"
+                    readonly
+                    style="background:#f3f3f3; cursor:not-allowed;">
                 @error('codigo')
                     <small class="text-error">El código es obligatorio</small>
                 @enderror
@@ -906,10 +906,14 @@
             <div class="form-group">
                 <label>Fecha del Incidente *</label>
                 <input type="datetime-local"
-                       name="fecha"
-                       id="fecha"
-                       value="{{ old('fecha') }}"
-                       class="{{ $errors->has('fecha') ? 'input-error' : '' }}">
+                    name="fecha"
+                    id="fecha"
+                    value="{{ old('fecha') }}"
+                    required
+                    min="{{ now()->startOfMonth()->format('Y-m-d\T00:00') }}"
+                    max="{{ now()->subDay()->format('Y-m-d\T23:59') }}"
+                    class="{{ $errors->has('fecha') ? 'input-error' : '' }}">
+
                 @error('fecha')
                     <small class="text-error">La fecha es obligatoria</small>
                 @enderror
@@ -1045,14 +1049,6 @@
                             )">
                             Editar
                         </button>
-
-                        <form action="{{ route('incidentes.destroy', $incidente->id) }}" method="POST" style="display:inline;">
-                            @csrf
-                            @method('DELETE')
-                            <button type="button" class="btn btn-danger" onclick="confirmarEliminacion(this)">
-                                Eliminar
-                            </button>
-                        </form>
                     </td>
                 </tr>
                 @empty
