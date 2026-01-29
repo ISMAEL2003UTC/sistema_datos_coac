@@ -42,6 +42,7 @@ Route::delete('/productos/{id}', [ProductoFinancieroController::class, 'destroy'
 // Rutas de consentimientos ---------------------------------
 Route::post('/consentimientos', [ConsentimientoController::class, 'store'])->name('consentimientos.store');
 Route::put('/consentimientos/{id}', [ConsentimientoController::class, 'update'])->name('consentimientos.update');
+Route::post('/consentimientos/{id}/toggle-activo', [ConsentimientoController::class, 'toggleActivo'])->name('consentimientos.toggleActivo');
 Route::delete('/consentimientos/{id}', [ConsentimientoController::class, 'destroy'])->name('consentimientos.destroy');
 
 // rutas de Incidentes ---------------------------------

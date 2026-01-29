@@ -14,7 +14,8 @@ class Consentimiento extends Model
         'estado',
         'fecha_otorgamiento',
         'metodo',
-        'fecha_expiracion'
+        'fecha_expiracion',
+        'activo'
     ];
 
     public function sujeto()
