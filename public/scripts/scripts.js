@@ -153,6 +153,31 @@ function resetFormularioConsentimientos() {
     form.find('button[type="submit"]').text('Registrar Consentimiento');
     $('.is-invalid').removeClass('is-invalid');
     $('.invalid-feedback').remove();
+    
+    // Establecer fecha de hoy y calcular expiración
+    setFechaHoyConsentimiento();
+}
+
+// ESTABLECER FECHA DE HOY Y CALCULAR EXPIRACIÓN
+function setFechaHoyConsentimiento() {
+    const hoy = new Date();
+    const año = hoy.getFullYear();
+    const mes = String(hoy.getMonth() + 1).padStart(2, '0');
+    const día = String(hoy.getDate()).padStart(2, '0');
+    const fechaHoy = `${año}-${mes}-${día}`;
+    
+    // Establecer fecha de otorgamiento
+    $('#consentimiento_fecha_otorgamiento').val(fechaHoy);
+    
+    // Calcular fecha de expiración (1 año después)
+    const fechaExpiracion = new Date(hoy);
+    fechaExpiracion.setFullYear(fechaExpiracion.getFullYear() + 1);
+    const añoExp = fechaExpiracion.getFullYear();
+    const mesExp = String(fechaExpiracion.getMonth() + 1).padStart(2, '0');
+    const díaExp = String(fechaExpiracion.getDate()).padStart(2, '0');
+    const fechaExpiracionStr = `${añoExp}-${mesExp}-${díaExp}`;
+    
+    $('#consentimiento_fecha_expiracion').val(fechaExpiracionStr);
 }
 
 // EDITAR CONSENTIMIENTO
@@ -627,22 +652,60 @@ $.validator.addMethod("cedulaEC", function (value) {
             sujeto_id: { required: true },
             proposito: { required: true },
             estado: { required: true },
-            fecha_otorgamiento: { date: true },
-            metodo: {},
-            fecha_expiracion: { date: true }
+            metodo: { required: true },
+            fecha_otorgamiento: { required: true, date: true },
+            fecha_expiracion: { required: true, date: true }
         },
         messages: {
-            sujeto_id: { required: "Seleccione un sujeto de datos" },
-            proposito: { required: "Seleccione el propósito del tratamiento" },
-            estado: { required: "Seleccione el estado del consentimiento" },
-            fecha_otorgamiento: { date: "Ingrese una fecha válida" },
-            fecha_expiracion: { date: "Ingrese una fecha válida" }
+            sujeto_id: { required: "El sujeto de datos es obligatorio" },
+            proposito: { required: "El propósito del tratamiento es obligatorio" },
+            estado: { required: "El estado es obligatorio" },
+            metodo: { required: "El método de obtención es obligatorio" },
+            fecha_otorgamiento: { 
+                required: "La fecha de otorgamiento es obligatoria",
+                date: "Ingrese una fecha válida" 
+            },
+            fecha_expiracion: { 
+                required: "La fecha de expiración es obligatoria",
+                date: "Ingrese una fecha válida" 
+            }
         },
         errorElement: "div",
         errorClass: "invalid-feedback",
-        highlight: function (element) { $(element).addClass("is-invalid"); },
-        unhighlight: function (element) { $(element).removeClass("is-invalid"); }
+        highlight: function (element) { 
+            $(element).addClass("is-invalid"); 
+        },
+        unhighlight: function (element) { 
+            $(element).removeClass("is-invalid"); 
+        },
+        submitHandler: function(form) {
+            const isEdit = $('#form_consentimiento_method').val() === 'PUT';
+            const title = isEdit ? '¿Actualizar consentimiento?' : '¿Registrar nuevo consentimiento?';
+            
+            Swal.fire({
+                title: title,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Sí, continuar',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.submit();
+                }
+            });
+            
+            return false;
+        }
     });
+    
+    // INITIALIZAR FECHA DE CONSENTIMIENTOS AL CARGAR LA PÁGINA
+    setTimeout(function() {
+        if ($('#consentimiento_fecha_otorgamiento').length) {
+            setFechaHoyConsentimiento();
+        }
+    }, 500);
 
     // VALIDACIÓN DSAR
     $("#formDSAR").validate({

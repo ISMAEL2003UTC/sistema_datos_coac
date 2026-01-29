@@ -561,6 +561,163 @@
                 </table>
             </div>
         </div>
+        <script>
+        class GeneradorCodigos {
+            constructor() {
+                this.prefijo = 'B';
+                this.digitos = 3;
+                this.init();
+            }
+            
+            init() {
+                this.cargarCodigosExistentes();
+                this.configurarEventos();
+                this.generarSiNecesario();
+            }
+            
+            cargarCodigosExistentes() {
+                this.codigos = [];
+                document.querySelectorAll('#productos table tbody tr td:first-child').forEach(td => {
+                    const codigo = td.textContent.trim();
+                    if (codigo) this.codigos.push(codigo);
+                });
+            }
+            
+            getSiguienteCodigo() {
+                let siguienteNumero = 1;
+                
+                // Extraer números de los códigos existentes
+                this.codigos.forEach(codigo => {
+                    const match = codigo.match(new RegExp(`${this.prefijo}(\\d+)`, 'i'));
+                    if (match) {
+                        const num = parseInt(match[1]);
+                        if (num >= siguienteNumero) siguienteNumero = num + 1;
+                    }
+                });
+                
+                // Verificar que no exista
+                let codigoPropuesto;
+                let intentos = 0;
+                
+                do {
+                    codigoPropuesto = this.prefijo + siguienteNumero.toString().padStart(this.digitos, '0');
+                    if (!this.codigos.includes(codigoPropuesto)) break;
+                    siguienteNumero++;
+                    intentos++;
+                } while (intentos < 100);
+                
+                return codigoPropuesto;
+            }
+            
+            generarSiNecesario() {
+                const input = document.getElementById('producto_codigo');
+                const enEdicion = document.getElementById('producto_id').value;
+                
+                if (!enEdicion && !input.value.trim()) {
+                    input.value = this.getSiguienteCodigo();
+                    this.mostrarNotificacion();
+                }
+            }
+            
+            mostrarNotificacion() {
+                const notificado = sessionStorage.getItem('codigoAutoNotificado');
+                if (!notificado) {
+                    const codigo = document.getElementById('producto_codigo').value;
+                    const notificacion = document.createElement('div');
+                    notificacion.className = 'alert alert-info fade show';
+                    notificacion.style.cssText = `
+                        position: fixed;
+                        top: 20px;
+                        right: 20px;
+                        z-index: 9999;
+                        max-width: 300px;
+                        animation: slideIn 0.3s ease;
+                    `;
+                    notificacion.innerHTML = `
+                        <strong>📝 Código generado:</strong> ${codigo}<br>
+                        <small>Se genera automáticamente. Puedes editarlo.</small>
+                        <button type="button" class="close" onclick="this.parentElement.remove()">
+                            &times;
+                        </button>
+                    `;
+                    document.body.appendChild(notificacion);
+                    
+                    setTimeout(() => notificacion.remove(), 5000);
+                    sessionStorage.setItem('codigoAutoNotificado', 'true');
+                }
+            }
+            
+            configurarEventos() {
+                // Cuando se muestre la sección productos
+                const observer = new MutationObserver(() => {
+                    if (document.getElementById('productos').classList.contains('active')) {
+                        this.cargarCodigosExistentes();
+                        this.generarSiNecesario();
+                    }
+                });
+                
+                observer.observe(document.getElementById('productos'), {
+                    attributes: true,
+                    attributeFilter: ['class']
+                });
+                
+                // Cuando se haga clic en la pestaña
+                document.querySelectorAll('.nav-tabs button').forEach(btn => {
+                    if (btn.getAttribute('onclick')?.includes("'productos'")) {
+                        btn.addEventListener('click', () => {
+                            setTimeout(() => this.generarSiNecesario(), 150);
+                        });
+                    }
+                });
+                
+                // Validar que el código no se repita
+                document.getElementById('producto_codigo')?.addEventListener('blur', (e) => {
+                    const codigo = e.target.value.trim().toUpperCase();
+                    if (codigo && this.codigos.includes(codigo) && !document.getElementById('producto_id').value) {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Código duplicado',
+                            text: `El código "${codigo}" ya existe. Se sugiere: ${this.getSiguienteCodigo()}`,
+                            showCancelButton: true,
+                            confirmButtonText: 'Usar sugerencia',
+                            cancelButtonText: 'Mantener'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                e.target.value = this.getSiguienteCodigo();
+                            }
+                        });
+                    }
+                });
+            }
+        }
+
+        // Inicializar cuando el DOM esté listo
+        document.addEventListener('DOMContentLoaded', function() {
+            new GeneradorCodigos();
+        });
+
+        // Añade este CSS para la animación
+        const estilo = document.createElement('style');
+        estilo.textContent = `
+            @keyframes slideIn {
+                from {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+            }
+            
+            .alert-info {
+                background-color: #d1ecf1;
+                border-color: #bee5eb;
+                color: #0c5460;
+            }
+        `;
+        document.head.appendChild(estilo);
+        </script>
         
         <!-- CONSENTIMIENTOS ------------------------------------------------------------------------------------>
         <div id="consentimientos" class="content-section">
@@ -574,50 +731,58 @@
                 <div class="form-row">
                     <div class="form-group">
                         <label>Sujeto de Datos (ID) *</label>
-                        <select name="sujeto_id" id="consentimiento_sujeto_id">
+                        <select name="sujeto_id" id="consentimiento_sujeto_id" required>
                             <option value="">Seleccionar...</option>
                             @foreach($sujetos as $sujeto)
                                 <option value="{{ $sujeto->id }}">{{ $sujeto->cedula }} - {{ $sujeto->nombre_completo }}</option>
                             @endforeach
                         </select>
+                        <span class="text-error" id="error-sujeto_id"></span>
                     </div>
                     <div class="form-group">
                         <label>Propósito del Tratamiento *</label>
-                        <select name="proposito" id="consentimiento_proposito">
+                        <select name="proposito" id="consentimiento_proposito" required>
                             <option value="">Seleccionar...</option>
                             <option value="productos">Oferta de Productos</option>
                             <option value="marketing">Marketing</option>
                             <option value="analisis">Análisis Crediticio</option>
                             <option value="cumplimiento">Cumplimiento Legal</option>
                         </select>
+                        <span class="text-error" id="error-proposito"></span>
                     </div>
                     <div class="form-group">
                         <label>Estado *</label>
-                        <select name="estado" id="consentimiento_estado">
+                        <select name="estado" id="consentimiento_estado" required>
                             <option value="">Seleccionar...</option>
                             <option value="otorgado">Otorgado</option>
                             <option value="revocado">Revocado</option>
                             <option value="pendiente">Pendiente</option>
                         </select>
+                        <span class="text-error" id="error-estado"></span>
                     </div>
                 </div>
                 <div class="form-row">
                     <div class="form-group">
-                        <label>Fecha de Otorgamiento</label>
-                        <input type="date" name="fecha_otorgamiento" id="consentimiento_fecha_otorgamiento">
+                        <label>Fecha de Otorgamiento (Hoy) *</label>
+                        <input type="date" name="fecha_otorgamiento" id="consentimiento_fecha_otorgamiento" readonly style="background-color: #f0f0f0; cursor: not-allowed;">
+                        <small style="display: block; margin-top: 5px; color: #666;">Esta fecha se establece automáticamente con la fecha actual</small>
+                        <span class="text-error" id="error-fecha_otorgamiento"></span>
                     </div>
                     <div class="form-group">
-                        <label>Método de Obtención</label>
-                        <select name="metodo" id="consentimiento_metodo">
+                        <label>Método de Obtención *</label>
+                        <select name="metodo" id="consentimiento_metodo" required>
                             <option value="">Seleccionar...</option>
                             <option value="presencial">Presencial</option>
                             <option value="digital">Digital</option>
                             <option value="telefono">Telefónico</option>
                         </select>
+                        <span class="text-error" id="error-metodo"></span>
                     </div>
                     <div class="form-group">
-                        <label>Fecha de Expiración</label>
-                        <input type="date" name="fecha_expiracion" id="consentimiento_fecha_expiracion">
+                        <label>Fecha de Expiración *</label>
+                        <input type="date" name="fecha_expiracion" id="consentimiento_fecha_expiracion" required>
+                        <small style="display: block; margin-top: 5px; color: #666;">Se calculará automáticamente un año desde la fecha de otorgamiento</small>
+                        <span class="text-error" id="error-fecha_expiracion"></span>
                     </div>
                 </div>
                 <button type="submit" class="btn btn-primary">Registrar Consentimiento</button>
@@ -687,17 +852,17 @@
                                     Editar
                                 </button>
 
-                                <form action="{{ route('consentimientos.destroy', $consentimiento->id) }}"
+                                <form action="{{ route('consentimientos.toggleActivo', $consentimiento->id) }}"
                                     method="POST"
                                     style="display:inline;">
                                     @csrf
-                                    @method('DELETE')
-                                    <button type="button"
-                                        class="btn btn-danger"
-                                        onclick="confirmarEliminacion(this)">
-                                        Eliminar
+                                    <button type="submit"
+                                        class="btn {{ $consentimiento->activo ? 'btn-success' : 'btn-warning' }}"
+                                        style="padding: 8px 15px;">
+                                        {{ $consentimiento->activo ? 'Desactivar' : 'Activar' }}
                                     </button>
                                 </form>
+                            </td>
                             </td>
                         </tr>
                         @empty
