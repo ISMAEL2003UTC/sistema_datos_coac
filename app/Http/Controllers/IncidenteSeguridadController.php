@@ -20,8 +20,21 @@ class IncidenteSeguridadController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'codigo' => 'required|string|max:50|unique:incidentes_seguridad,codigo',
-            'fecha' => 'required',
+            'fecha' => [
+                'required',
+                function ($attribute, $value, $fail) {
+                    $fecha = \Carbon\Carbon::parse($value);
+
+                    $inicio = now()->startOfMonth();      // 1 del mes actual
+                    $hoy = now()->startOfDay();           // hoy a las 00:00
+
+                    if ($fecha->lt($inicio) || $fecha->gte($hoy)) {
+                        $fail('La fecha del incidente debe estar entre el 1 del mes actual y el día anterior.');
+                    }
+
+                }
+            ],
+
             'severidad' => 'required|string|max:30',
             'descripcion' => 'required|string',
             'tipo' => 'required|string|max:50',
@@ -31,6 +44,17 @@ class IncidenteSeguridadController extends Controller
 
         $validated['sujetos_afectados'] = $validated['sujetos_afectados'] ?? 0;
 
+        $ultimo = IncidenteSeguridad::orderBy('id', 'desc')->first();
+
+        $numero = 1;
+
+        if ($ultimo) {
+            $numero = intval(substr($ultimo->codigo, 4)) + 1;
+        }
+
+        $validated['codigo'] = 'INC-' . str_pad($numero, 3, '0', STR_PAD_LEFT);
+
+        // Guardar
         IncidenteSeguridad::create($validated);
 
         return redirect('/#incidentes')->with('success', 'Incidente registrado correctamente');
@@ -54,8 +78,18 @@ class IncidenteSeguridadController extends Controller
         $incidente = IncidenteSeguridad::findOrFail($id);
 
         $validated = $request->validate([
-            'codigo' => 'required|string|max:50|unique:incidentes_seguridad,codigo,' . $incidente->id,
-            'fecha' => 'required',
+            'fecha' => [
+                'required',
+                function ($attribute, $value, $fail) {
+                    $fecha = \Carbon\Carbon::parse($value);
+                    $inicio = now()->startOfMonth();      // 1 del mes actual
+                    $hoy = now()->startOfDay();           // hoy a las 00:00
+
+                    if ($fecha->lt($inicio) || $fecha->gte($hoy)) {
+                        $fail('La fecha del incidente debe estar entre el 1 del mes actual y el día anterior.');
+                    }
+                }
+            ],
             'severidad' => 'required|string|max:30',
             'descripcion' => 'required|string',
             'tipo' => 'required|string|max:50',
@@ -72,8 +106,6 @@ class IncidenteSeguridadController extends Controller
 
     public function destroy(string $id)
     {
-        IncidenteSeguridad::findOrFail($id)->delete();
-
-        return redirect('/#incidentes')->with('success', 'Incidente registrado correctamente');
+        abort(403, 'No está permitido eliminar incidentes de seguridad.');
     }
 }
