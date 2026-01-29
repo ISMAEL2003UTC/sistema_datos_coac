@@ -422,7 +422,7 @@
             </div>
         </div>
        <!-- PRODUCTOS FINANCIEROS ------------------------------------------------------>
-       <!-- PRODUCTOS FINANCIEROS ------------------------------------------------------>
+        <!-- PRODUCTOS FINANCIEROS ------------------------------------------------------>
         <div id="productos" class="content-section">
             <h2 class="section-title">Productos Financieros</h2>
             
@@ -434,8 +434,16 @@
                 <div class="form-row">
                     <div class="form-group">
                         <label>Código Producto *</label>
-                        <input type="text" name="codigo" id="producto_codigo" placeholder="Ej: CA-001, CR-2024">
-                    
+                        <div style="position: relative;">
+                            <input type="text" name="codigo" id="producto_codigo" placeholder="Generando código..." readonly 
+                                style="background-color: #f5f5f5; padding-right: 40px;">
+                            <span style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); color: #28a745;">
+                                <i class="fas fa-bolt"></i> Auto
+                            </span>
+                        </div>
+                        <small style="display:block; font-size:12px; color:#666; margin-top:5px;">
+                            <i class="fas fa-info-circle"></i> Se genera automáticamente. No puede ser editado.
+                        </small>
                     </div>
                     <div class="form-group">
                         <label>Nombre del Producto *</label>
@@ -463,18 +471,23 @@
                 <div class="form-group">
                     <label>Datos Personales Procesados *</label>
                     <textarea name="datos_procesados" id="producto_datos" rows="4" placeholder="Ejemplo:
-        - Nombre completo
-        - Cédula de identidad
-        - Fecha de nacimiento
-        - Dirección
-        - Teléfono
-        - Correo electrónico
+            - Nombre completo
+            - Cédula de identidad
+            - Fecha de nacimiento
+            - Dirección
+            - Teléfono
+            - Correo electrónico
 
-        Incluya todos los datos personales."></textarea>
+            Incluya todos los datos personales."></textarea>
                     <small class="form-text text-muted">Liste los datos personales que se recopilan</small>
                 </div>
 
-                <button type="submit" class="btn btn-primary">Guardar Producto</button>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save"></i> Guardar Producto
+                </button>
+                <button type="button" class="btn btn-outline-secondary" onclick="resetFormProductos()" style="margin-left: 10px;">
+                    <i class="fas fa-redo"></i> Limpiar
+                </button>
             </form>
             
             <div class="table-container">
@@ -493,11 +506,11 @@
                     <tbody>
                         @forelse($productos as $producto)
                         <tr>
-                            <td>{{ $producto->codigo }}</td>
+                            <td><strong>{{ $producto->codigo }}</strong></td>
                             <td>{{ $producto->nombre }}</td>
                             <td>
                                 @if($producto->tipo === 'ahorro')
-                                    <span class="badge badge-info">Cuenta de Ahorro</span>
+                                    <span class="badge badge-info">Ahorro</span>
                                 @elseif($producto->tipo === 'credito')
                                     <span class="badge badge-success">Crédito</span>
                                 @elseif($producto->tipo === 'inversion')
@@ -537,7 +550,7 @@
                                         `{{ str_replace('"', '&quot;', $producto->descripcion ?? '') }}`,
                                         `{{ str_replace('"', '&quot;', $producto->datos_procesados ?? '') }}`
                                     )">
-                                    Editar
+                                    <i class="fas fa-edit"></i> Editar
                                 </button>
 
                                 <form action="{{ route('productos.estado', $producto->id) }}"
@@ -546,7 +559,7 @@
                                     @csrf
                                     @method('PUT')
                                     <button type="submit" class="btn btn-warning">
-                                        Cambiar estado
+                                        <i class="fas fa-exchange-alt"></i> Estado
                                     </button>
                                 </form>
 
@@ -554,13 +567,17 @@
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="7" style="text-align: center;">No hay productos registrados</td>
+                            <td colspan="7" style="text-align: center;">
+                                <i class="fas fa-box-open" style="font-size: 24px; margin-bottom: 10px; display: block; color: #999;"></i>
+                                No hay productos registrados
+                            </td>
                         </tr>
                         @endforelse
                     </tbody>
                 </table>
             </div>
         </div>
+
         <script>
         class GeneradorCodigos {
             constructor() {
@@ -595,7 +612,7 @@
                     }
                 });
                 
-                // Verificar que no exista
+                // Verificar que no exista (por si hay saltos)
                 let codigoPropuesto;
                 let intentos = 0;
                 
@@ -613,37 +630,50 @@
                 const input = document.getElementById('producto_codigo');
                 const enEdicion = document.getElementById('producto_id').value;
                 
-                if (!enEdicion && !input.value.trim()) {
-                    input.value = this.getSiguienteCodigo();
-                    this.mostrarNotificacion();
+                if (!enEdicion) {
+                    // Generar nuevo código solo si no estamos editando
+                    this.cargarCodigosExistentes();
+                    const nuevoCodigo = this.getSiguienteCodigo();
+                    input.value = nuevoCodigo;
+                    
+                    // Aplicar estilo de solo lectura
+                    input.setAttribute('readonly', true);
+                    input.style.backgroundColor = '#f5f5f5';
+                    
+                    this.mostrarNotificacion(nuevoCodigo);
+                } else {
+                    // En modo edición, mantener el código existente pero también bloquear
+                    input.setAttribute('readonly', true);
+                    input.style.backgroundColor = '#f5f5f5';
                 }
             }
             
-            mostrarNotificacion() {
+            mostrarNotificacion(codigo) {
                 const notificado = sessionStorage.getItem('codigoAutoNotificado');
                 if (!notificado) {
-                    const codigo = document.getElementById('producto_codigo').value;
-                    const notificacion = document.createElement('div');
-                    notificacion.className = 'alert alert-info fade show';
-                    notificacion.style.cssText = `
-                        position: fixed;
-                        top: 20px;
-                        right: 20px;
-                        z-index: 9999;
-                        max-width: 300px;
-                        animation: slideIn 0.3s ease;
-                    `;
-                    notificacion.innerHTML = `
-                        <strong>📝 Código generado:</strong> ${codigo}<br>
-                        <small>Se genera automáticamente. Puedes editarlo.</small>
-                        <button type="button" class="close" onclick="this.parentElement.remove()">
-                            &times;
-                        </button>
-                    `;
-                    document.body.appendChild(notificacion);
-                    
-                    setTimeout(() => notificacion.remove(), 5000);
-                    sessionStorage.setItem('codigoAutoNotificado', 'true');
+                    setTimeout(() => {
+                        const notificacion = document.createElement('div');
+                        notificacion.className = 'alert alert-info fade show';
+                        notificacion.style.cssText = `
+                            position: fixed;
+                            top: 20px;
+                            right: 20px;
+                            z-index: 9999;
+                            max-width: 300px;
+                            animation: slideIn 0.3s ease;
+                        `;
+                        notificacion.innerHTML = `
+                            <strong>📝 Código generado:</strong> ${codigo}<br>
+                            <small>Se genera automáticamente. No es editable.</small>
+                            <button type="button" class="close" onclick="this.parentElement.remove()">
+                                &times;
+                            </button>
+                        `;
+                        document.body.appendChild(notificacion);
+                        
+                        setTimeout(() => notificacion.remove(), 4000);
+                        sessionStorage.setItem('codigoAutoNotificado', 'true');
+                    }, 500);
                 }
             }
             
@@ -651,8 +681,7 @@
                 // Cuando se muestre la sección productos
                 const observer = new MutationObserver(() => {
                     if (document.getElementById('productos').classList.contains('active')) {
-                        this.cargarCodigosExistentes();
-                        this.generarSiNecesario();
+                        setTimeout(() => this.generarSiNecesario(), 100);
                     }
                 });
                 
@@ -665,26 +694,7 @@
                 document.querySelectorAll('.nav-tabs button').forEach(btn => {
                     if (btn.getAttribute('onclick')?.includes("'productos'")) {
                         btn.addEventListener('click', () => {
-                            setTimeout(() => this.generarSiNecesario(), 150);
-                        });
-                    }
-                });
-                
-                // Validar que el código no se repita
-                document.getElementById('producto_codigo')?.addEventListener('blur', (e) => {
-                    const codigo = e.target.value.trim().toUpperCase();
-                    if (codigo && this.codigos.includes(codigo) && !document.getElementById('producto_id').value) {
-                        Swal.fire({
-                            icon: 'warning',
-                            title: 'Código duplicado',
-                            text: `El código "${codigo}" ya existe. Se sugiere: ${this.getSiguienteCodigo()}`,
-                            showCancelButton: true,
-                            confirmButtonText: 'Usar sugerencia',
-                            cancelButtonText: 'Mantener'
-                        }).then((result) => {
-                            if (result.isConfirmed) {
-                                e.target.value = this.getSiguienteCodigo();
-                            }
+                            setTimeout(() => this.generarSiNecesario(), 200);
                         });
                     }
                 });
@@ -693,10 +703,70 @@
 
         // Inicializar cuando el DOM esté listo
         document.addEventListener('DOMContentLoaded', function() {
-            new GeneradorCodigos();
+            window.generadorCodigos = new GeneradorCodigos();
         });
 
-        // Añade este CSS para la animación
+        // Función para resetear el formulario
+        function resetFormProductos() {
+            if (confirm('¿Limpiar formulario? Se generará un nuevo código automático.')) {
+                document.getElementById('producto_id').value = '';
+                document.getElementById('form_producto_method').value = 'POST';
+                document.getElementById('formProductos').action = "{{ route('productos.store') }}";
+                document.getElementById('producto_nombre').value = '';
+                document.getElementById('producto_tipo').value = '';
+                document.getElementById('producto_descripcion').value = '';
+                document.getElementById('producto_datos').value = '';
+                
+                // Cambiar texto del botón
+                document.querySelector('#formProductos button[type="submit"]').innerHTML = '<i class="fas fa-save"></i> Guardar Producto';
+                
+                // Generar nuevo código
+                window.generadorCodigos.generarSiNecesario();
+                
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Formulario limpio',
+                    text: 'Se ha generado un nuevo código automático',
+                    timer: 1500,
+                    showConfirmButton: false
+                });
+            }
+        }
+
+        // Modificar función editarProducto
+        function editarProducto(id, codigo, nombre, tipo, descripcion, datos) {
+            // Rellenar formulario
+            document.getElementById('producto_id').value = id;
+            document.getElementById('producto_codigo').value = codigo;
+            document.getElementById('producto_nombre').value = nombre;
+            document.getElementById('producto_tipo').value = tipo;
+            document.getElementById('producto_descripcion').value = descripcion;
+            document.getElementById('producto_datos').value = datos;
+            
+            // Mantener bloqueado en modo edición
+            document.getElementById('producto_codigo').setAttribute('readonly', true);
+            document.getElementById('producto_codigo').style.backgroundColor = '#f5f5f5';
+            
+            // Cambiar método
+            document.getElementById('form_producto_method').value = 'PUT';
+            document.getElementById('formProductos').action = '/productos/' + id;
+            
+            // Cambiar texto del botón
+            const btnSubmit = document.querySelector('#formProductos button[type="submit"]');
+            btnSubmit.innerHTML = '<i class="fas fa-sync-alt"></i> Actualizar Producto';
+            btnSubmit.style.backgroundColor = '#28a745';
+            
+            // Mostrar notificación
+            Swal.fire({
+                icon: 'info',
+                title: 'Modo edición',
+                text: 'Editando producto: ' + codigo,
+                timer: 2000,
+                showConfirmButton: false
+            });
+        }
+
+        // Añadir CSS para la animación y estilos
         const estilo = document.createElement('style');
         estilo.textContent = `
             @keyframes slideIn {
@@ -710,10 +780,29 @@
                 }
             }
             
+            #producto_codigo[readonly] {
+                background-color: #f5f5f5 !important;
+                cursor: not-allowed;
+            }
+            
             .alert-info {
                 background-color: #d1ecf1;
                 border-color: #bee5eb;
                 color: #0c5460;
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            }
+            
+            .alert-info .close {
+                color: #0c5460;
+                opacity: 0.8;
+                position: absolute;
+                top: 8px;
+                right: 10px;
+                font-size: 20px;
+                background: none;
+                border: none;
+                cursor: pointer;
             }
         `;
         document.head.appendChild(estilo);
@@ -1472,137 +1561,92 @@ Swal.fire({
     <h2 class="section-title">Gestión de Auditorías</h2>
 
     {{-- FORMULARIO --}}
-    <form method="POST" action="{{ route('auditorias.store') }}" id="formAuditoria">
+    <form method="POST" action="{{ route('auditorias.store') }}">
         @csrf
 
-        {{-- Mostrar errores generales --}}
-        @if($errors->any())
-        <div class="alert alert-error" style="background: #fee; color: #c33; padding: 10px; border-radius: 4px; margin-bottom: 20px;">
-            <strong>¡Errores encontrados!</strong>
-            <ul style="margin: 5px 0 0 20px;">
-                @foreach($errors->all() as $error)
-                <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
-        @endif
-
         <div class="form-row">
             <div class="form-group">
-                <label for="codigo_aud">Código de Auditoría *</label>
-                <input type="text" id="codigo_aud" name="codigo_aud" 
-                       value="{{ old('codigo_aud') }}"
-                       maxlength="50"
-                       required 
-                       placeholder="Ej: AUD-001"
-                       oninput="this.value = this.value.toUpperCase(); validarCampo(this, 'codigo')">
-                <span id="error-codigo" class="error-message"></span>
-                <small style="display: block; margin-top: 5px; color: #666;">
-                    Formato: AUD-001, AUD-002, etc.
-                </small>
-            </div>
-
-            <div class="form-group">
-                <label for="tipo_aud">Tipo de Auditoría *</label>
-                <select id="tipo_aud" name="tipo_aud" required onchange="validarCampo(this, 'tipo')">
-                    <option value="">Seleccionar tipo...</option>
-                    <option value="interna" {{ old('tipo_aud') == 'interna' ? 'selected' : '' }}>Interna</option>
-                    <option value="externa" {{ old('tipo_aud') == 'externa' ? 'selected' : '' }}>Externa</option>
-                    <option value="cumplimiento" {{ old('tipo_aud') == 'cumplimiento' ? 'selected' : '' }}>Cumplimiento</option>
+                <label>Tipo de Auditoría *</label>
+                <select name="tipo_aud" required>
+                    <option value="">Seleccionar...</option>
+                    <option value="interna">Interna</option>
+                    <option value="externa">Externa</option>
+                    <option value="cumplimiento">Cumplimiento</option>
+                    <option value="certificacion">Certificación</option>
+                    <option value="seguimiento">Seguimiento</option>
                 </select>
-                <span id="error-tipo" class="error-message"></span>
             </div>
 
             <div class="form-group">
-                <label for="auditor">Auditor Responsable *</label>
-                <input type="text" id="auditor" name="auditor" 
-                       value="{{ old('auditor') }}"
-                       maxlength="150"
-                       required
-                       placeholder="Nombre completo del auditor"
-                       oninput="validarCampo(this, 'auditor')">
-                <span id="error-auditor" class="error-message"></span>
+                <label>Auditor Responsable *</label>
+                <input type="text" name="auditor" required placeholder="Nombre del auditor">
             </div>
         </div>
 
-        <div class="form-row">
-            <div class="form-group">
-                <label for="fecha_inicio">Fecha de Inicio *</label>
-                <input type="date" id="fecha_inicio" name="fecha_inicio" 
-                       value="{{ old('fecha_inicio', date('Y-m-d')) }}"
-                       required
-                       onchange="validarFechas()">
-                <span id="error-fecha-inicio" class="error-message"></span>
-                <small style="display: block; margin-top: 5px; color: #666;">
-                    No se permiten fechas anteriores a hoy
-                </small>
-            </div>
+<div class="form-row">
+    <div class="form-group">
+        <label>Fecha de Inicio *</label>
+        <div class="date-display" style="background-color: #f8f9fa; padding: 12px; border-radius: 4px; border: 1px solid #ced4da;">
+            <strong>{{ \Carbon\Carbon::now()->format('d/m/Y') }}</strong>
+            <input type="hidden" name="fecha_inicio" value="{{ date('Y-m-d') }}">
+        </div>
+        <small class="form-text text-muted">La fecha de inicio es automáticamente la fecha actual</small>
+    </div>
+
+<div class="form-group">
+    <label>Fecha de Finalización *</label>
+    <input type="date" 
+           name="fecha_fin" 
+           id="fecha_fin"
+           required
+           min="{{ date('Y-m-d', strtotime('+1 day')) }}"
+           onfocus="this.showPicker()"
+           onchange="validarFechaFin()">
+    <small class="form-text text-muted">Debe ser posterior a la fecha actual (mañana o después)</small>
+    <div id="error-fecha" class="text-danger small mt-1" style="display: none;"></div>
+</div>
 
             <div class="form-group">
-                <label for="fecha_fin">Fecha de Finalización *</label>
-                <input type="date" id="fecha_fin" name="fecha_fin" 
-                       value="{{ old('fecha_fin') }}"
-                       required
-                       onchange="validarFechas()">
-                <span id="error-fecha-fin" class="error-message"></span>
-            </div>
-
-            <div class="form-group">
-                <label for="estado_aud">Estado *</label>
-                <select id="estado_aud" name="estado_aud" required onchange="validarCampo(this, 'estado')">
-                    <option value="">Seleccionar estado...</option>
-                    <option value="planificada" {{ old('estado_aud') == 'planificada' ? 'selected' : '' }}>Planificada</option>
-                    <option value="proceso" {{ old('estado_aud') == 'proceso' ? 'selected' : '' }}>En Proceso</option>
-                    <option value="completada" {{ old('estado_aud') == 'completada' ? 'selected' : '' }}>Completada</option>
-                    <option value="revisada" {{ old('estado_aud') == 'revisada' ? 'selected' : '' }}>Revisada</option>
+                <label>Estado *</label>
+                <select name="estado_aud" required>
+                    <option value="planificada">Planificada</option>
+                    <option value="proceso">En Proceso</option>
+                    <option value="completada">Completada</option>
+                    <option value="revisada">Revisada</option>
+                    <option value="cancelada">Cancelada</option>
                 </select>
-                <span id="error-estado" class="error-message"></span>
             </div>
         </div>
 
         <div class="form-group">
-            <label for="alcance">Alcance de la Auditoría *</label>
-            <textarea id="alcance" name="alcance" 
-                     rows="3" 
-                     maxlength="500"
-                     required
-                     placeholder="Describa el alcance de la auditoría..."
-                     oninput="validarTextarea(this, 'alcance')">{{ old('alcance') }}</textarea>
-            <div class="char-counter">
-                <span id="contador-alcance">0</span>/500 caracteres
-            </div>
-            <span id="error-alcance" class="error-message"></span>
+            <label>Alcance de la Auditoría</label>
+            <textarea name="alcance" rows="3" placeholder="Describa el alcance de la auditoría..."></textarea>
         </div>
 
         <div class="form-group">
-            <label for="hallazgos">Hallazgos y Observaciones *</label>
-            <textarea id="hallazgos" name="hallazgos" 
-                     rows="4" 
-                     maxlength="1000"
-                     required
-                     placeholder="Describa los hallazgos y observaciones..."
-                     oninput="validarTextarea(this, 'hallazgos')">{{ old('hallazgos') }}</textarea>
-            <div class="char-counter">
-                <span id="contador-hallazgos">0</span>/1000 caracteres
-            </div>
-            <span id="error-hallazgos" class="error-message"></span>
+            <label>Hallazgos y Observaciones</label>
+            <textarea name="hallazgos" rows="4" placeholder="Registre los hallazgos encontrados..."></textarea>
         </div>
 
         <button type="submit" class="btn btn-primary">
-            ✅ Registrar Auditoría
-        </button>
-        
-        <button type="button" class="btn btn-secondary" onclick="limpiarFormulario()">
-            🗑️ Limpiar Formulario
+            Registrar Auditoría
         </button>
     </form>
 
     {{-- TABLA --}}
     <div class="table-container">
+        <div class="table-header">
+            <h3>Auditorías Registradas</h3>
+            <div class="table-actions">
+                <span class="badge badge-light">{{ $auditorias->count() }} registros</span>
+            </div>
+        </div>
+        
+        @if($auditorias->isNotEmpty())
         <table>
             <thead>
                 <tr>
-                    <th>Código</th>
+                    <th>Código (Auto)</th>
                     <th>Tipo</th>
                     <th>Auditor</th>
                     <th>Fecha Inicio</th>
@@ -1614,11 +1658,30 @@ Swal.fire({
             <tbody>
                 @foreach($auditorias as $auditoria)
                 <tr>
-                    <td>{{ $auditoria->codigo }}</td>
+                    <td>
+                        <strong>{{ $auditoria->codigo }}</strong>
+                        <br><small class="text-muted">Generado automáticamente</small>
+                    </td>
                     <td>{{ ucfirst($auditoria->tipo) }}</td>
                     <td>{{ $auditoria->auditor }}</td>
-                    <td>{{ \Carbon\Carbon::parse($auditoria->fecha_inicio)->format('d/m/Y') }}</td>
-                    <td>{{ $auditoria->fecha_fin ? \Carbon\Carbon::parse($auditoria->fecha_fin)->format('d/m/Y') : '-' }}</td>
+                    <td>
+                        {{ \Carbon\Carbon::parse($auditoria->fecha_inicio)->format('d/m/Y') }}
+                        @if(\Carbon\Carbon::parse($auditoria->fecha_inicio)->isToday())
+                            <br><small class="text-success">Hoy</small>
+                        @endif
+                    </td>
+                    <td>
+                        @if($auditoria->fecha_fin)
+                            {{ \Carbon\Carbon::parse($auditoria->fecha_fin)->format('d/m/Y') }}
+                            @if(\Carbon\Carbon::parse($auditoria->fecha_fin)->isPast())
+                                <br><small class="text-danger">Vencida</small>
+                            @elseif(\Carbon\Carbon::parse($auditoria->fecha_fin)->isToday())
+                                <br><small class="text-warning">Vence hoy</small>
+                            @endif
+                        @else
+                            <span class="text-muted">-</span>
+                        @endif
+                    </td>
                     <td>
                         @if($auditoria->estado == 'completada')
                             <span class="badge badge-success">Completada</span>
@@ -1628,6 +1691,8 @@ Swal.fire({
                             <span class="badge badge-info">Planificada</span>
                         @elseif($auditoria->estado == 'revisada')
                             <span class="badge badge-primary">Revisada</span>
+                        @elseif($auditoria->estado == 'cancelada')
+                            <span class="badge badge-danger">Cancelada</span>
                         @else
                             <span class="badge badge-secondary">{{ $auditoria->estado }}</span>
                         @endif
@@ -1636,388 +1701,53 @@ Swal.fire({
                         <a href="{{ route('auditorias.show', $auditoria->id) }}"
                            class="btn btn-secondary"
                            style="padding: 8px 15px;">
-                            👁️ Ver
+                            Ver
                         </a>
                     </td>
                 </tr>
                 @endforeach
-
-                @if($auditorias->isEmpty())
-                <tr>
-                    <td colspan="7" style="text-align:center;">
-                        No hay auditorías registradas
-                    </td>
-                </tr>
-                @endif
             </tbody>
         </table>
+
+        @if($auditorias->hasPages())
+        <div class="pagination-container">
+            {{ $auditorias->links() }}
+        </div>
+        @endif
+
+        @else
+        <div class="empty-state">
+            <h4>No hay auditorías registradas</h4>
+            <p>Comience registrando una nueva auditoría utilizando el formulario superior.</p>
+        </div>
+        @endif
     </div>
 </div>
 
-{{-- Script para validación en el cliente --}}
+@push('scripts')
 <script>
-// ========== CONFIGURACIÓN INICIAL ==========
 document.addEventListener('DOMContentLoaded', function() {
-    // Establecer fecha mínima como hoy para fecha_inicio
-    const fechaInicio = document.getElementById('fecha_inicio');
-    const hoy = new Date().toISOString().split('T')[0];
-    fechaInicio.min = hoy;
+    // Establecer la fecha mínima para fecha_fin como hoy
+    const fechaFinInput = document.querySelector('input[name="fecha_fin"]');
+    const today = new Date().toISOString().split('T')[0];
     
-    // Si fecha_inicio está vacía, establecer hoy
-    if (!fechaInicio.value) {
-        fechaInicio.value = hoy;
-    }
-    
-    // Inicializar contadores
-    actualizarContador('alcance');
-    actualizarContador('hallazgos');
-});
-
-// ========== FUNCIONES DE VALIDACIÓN ==========
-
-// Validar campo genérico
-function validarCampo(campo, tipo) {
-    const errorSpan = document.getElementById(`error-${tipo}`);
-    
-    if (!campo.value.trim()) {
-        mostrarError(campo, errorSpan, `El campo es obligatorio`);
-        return false;
-    }
-    
-    // Validaciones específicas por tipo
-    switch(tipo) {
-        case 'codigo':
-            const regexCodigo = /^[A-Z0-9\-]+$/;
-            if (!regexCodigo.test(campo.value)) {
-                mostrarError(campo, errorSpan, 'Solo mayúsculas, números y guiones');
-                return false;
-            }
-            break;
+    if (fechaFinInput) {
+        fechaFinInput.min = today;
+        
+        // Si el usuario intenta seleccionar una fecha pasada, resetear a hoy
+        fechaFinInput.addEventListener('change', function() {
+            const selectedDate = new Date(this.value);
+            const todayDate = new Date();
             
-        case 'auditor':
-            const regexAuditor = /^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/;
-            if (!regexAuditor.test(campo.value)) {
-                mostrarError(campo, errorSpan, 'Solo letras y espacios');
-                return false;
+            if (selectedDate < todayDate) {
+                alert('La fecha de finalización no puede ser anterior a hoy');
+                this.value = today;
             }
-            if (campo.value.trim().length < 5) {
-                mostrarError(campo, errorSpan, 'Mínimo 5 caracteres');
-                return false;
-            }
-            break;
-    }
-    
-    limpiarError(campo, errorSpan);
-    return true;
-}
-
-// Validar textarea
-function validarTextarea(textarea, tipo) {
-    const errorSpan = document.getElementById(`error-${tipo}`);
-    const maxLength = tipo === 'alcance' ? 500 : 1000;
-    
-    if (!textarea.value.trim()) {
-        mostrarError(textarea, errorSpan, 'Este campo es obligatorio');
-        return false;
-    }
-    
-    if (textarea.value.trim().length < 10) {
-        mostrarError(textarea, errorSpan, 'Mínimo 10 caracteres');
-        return false;
-    }
-    
-    if (textarea.value.length > maxLength) {
-        mostrarError(textarea, errorSpan, `Máximo ${maxLength} caracteres`);
-        return false;
-    }
-    
-    limpiarError(textarea, errorSpan);
-    actualizarContador(textarea.id);
-    return true;
-}
-
-// Validar fechas
-function validarFechas() {
-    const fechaInicio = document.getElementById('fecha_inicio');
-    const fechaFin = document.getElementById('fecha_fin');
-    const errorInicio = document.getElementById('error-fecha-inicio');
-    const errorFin = document.getElementById('error-fecha-fin');
-    
-    const hoy = new Date().toISOString().split('T')[0];
-    let valido = true;
-    
-    // Validar fecha inicio
-    if (!fechaInicio.value) {
-        mostrarError(fechaInicio, errorInicio, 'La fecha de inicio es obligatoria');
-        valido = false;
-    } else if (fechaInicio.value < hoy) {
-        mostrarError(fechaInicio, errorInicio, 'No puede seleccionar fechas anteriores a hoy');
-        fechaInicio.value = hoy;
-        fechaInicio.focus();
-        valido = false;
-    } else {
-        limpiarError(fechaInicio, errorInicio);
-    }
-    
-    // Validar fecha fin
-    if (!fechaFin.value) {
-        mostrarError(fechaFin, errorFin, 'La fecha de finalización es obligatoria');
-        valido = false;
-    } else if (fechaFin.value < fechaInicio.value) {
-        mostrarError(fechaFin, errorFin, 'Debe ser igual o posterior a la fecha de inicio');
-        fechaFin.value = fechaInicio.value;
-        fechaFin.focus();
-        valido = false;
-    } else {
-        limpiarError(fechaFin, errorFin);
-    }
-    
-    return valido;
-}
-
-// Validar todo el formulario
-function validarFormularioCompleto() {
-    const campos = [
-        {id: 'codigo_aud', tipo: 'codigo'},
-        {id: 'tipo_aud', tipo: 'tipo'},
-        {id: 'auditor', tipo: 'auditor'},
-        {id: 'estado_aud', tipo: 'estado'}
-    ];
-    
-    let valido = true;
-    
-    // Validar campos simples
-    campos.forEach(campo => {
-        const elemento = document.getElementById(campo.id);
-        if (!validarCampo(elemento, campo.tipo)) {
-            valido = false;
-        }
-    });
-    
-    // Validar textareas
-    if (!validarTextarea(document.getElementById('alcance'), 'alcance')) {
-        valido = false;
-    }
-    
-    if (!validarTextarea(document.getElementById('hallazgos'), 'hallazgos')) {
-        valido = false;
-    }
-    
-    // Validar fechas
-    if (!validarFechas()) {
-        valido = false;
-    }
-    
-    return valido;
-}
-
-// ========== FUNCIONES AUXILIARES ==========
-
-// Mostrar error
-function mostrarError(elemento, errorSpan, mensaje) {
-    errorSpan.textContent = mensaje;
-    errorSpan.style.color = '#e74c3c';
-    errorSpan.style.fontSize = '12px';
-    errorSpan.style.display = 'block';
-    errorSpan.style.marginTop = '5px';
-    elemento.style.borderColor = '#e74c3c';
-}
-
-// Limpiar error
-function limpiarError(elemento, errorSpan) {
-    errorSpan.textContent = '';
-    elemento.style.borderColor = '';
-}
-
-// Actualizar contador de caracteres
-function actualizarContador(textareaId) {
-    const textarea = document.getElementById(textareaId);
-    const contadorId = textareaId === 'alcance' ? 'contador-alcance' : 'contador-hallazgos';
-    const contador = document.getElementById(contadorId);
-    const maxLength = textareaId === 'alcance' ? 500 : 1000;
-    
-    if (contador) {
-        contador.textContent = textarea.value.length;
-        
-        // Cambiar color según uso
-        if (textarea.value.length > maxLength * 0.9) {
-            contador.style.color = '#e74c3c';
-        } else if (textarea.value.length > maxLength * 0.7) {
-            contador.style.color = '#f39c12';
-        } else {
-            contador.style.color = '#666';
-        }
-    }
-}
-
-// Limpiar formulario
-function limpiarFormulario() {
-    if (confirm('¿Está seguro de limpiar todos los campos? Se perderán los datos no guardados.')) {
-        document.getElementById('formAuditoria').reset();
-        
-        // Limpiar errores
-        document.querySelectorAll('.error-message').forEach(span => {
-            span.textContent = '';
         });
-        
-        // Restaurar estilos
-        document.querySelectorAll('input, select, textarea').forEach(element => {
-            element.style.borderColor = '';
-        });
-        
-        // Restablecer fecha inicio a hoy
-        const hoy = new Date().toISOString().split('T')[0];
-        document.getElementById('fecha_inicio').value = hoy;
-        
-        // Resetear contadores
-        actualizarContador('alcance');
-        actualizarContador('hallazgos');
-        
-        alert('Formulario limpiado correctamente');
     }
-}
-
-// ========== EVENTOS ==========
-
-// Validación al enviar el formulario
-document.getElementById('formAuditoria').addEventListener('submit', function(e) {
-    if (!validarFormularioCompleto()) {
-        e.preventDefault();
-        
-        // Encontrar primer error y enfocar
-        const primerError = document.querySelector('.error-message:not(:empty)');
-        if (primerError) {
-            const campoId = primerError.id.replace('error-', '');
-            const campo = document.getElementById(campoId);
-            if (campo) {
-                campo.focus();
-                campo.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            }
-        }
-        
-        alert('❌ Por favor complete todos los campos correctamente');
-        return false;
-    }
-    
-    // Confirmación final
-    if (!confirm('¿Está seguro de registrar esta auditoría?')) {
-        e.preventDefault();
-        return false;
-    }
-    
-    return true;
-});
-
-// Eventos en tiempo real
-document.getElementById('codigo_aud').addEventListener('blur', function() {
-    validarCampo(this, 'codigo');
-});
-
-document.getElementById('auditor').addEventListener('blur', function() {
-    validarCampo(this, 'auditor');
-});
-
-document.getElementById('tipo_aud').addEventListener('blur', function() {
-    validarCampo(this, 'tipo');
-});
-
-document.getElementById('estado_aud').addEventListener('blur', function() {
-    validarCampo(this, 'estado');
-});
-
-// Prevenir edición manual de fechas
-document.getElementById('fecha_inicio').addEventListener('keydown', function(e) {
-    e.preventDefault();
-});
-
-document.getElementById('fecha_fin').addEventListener('keydown', function(e) {
-    e.preventDefault();
-});
-
-// Actualizar contadores en tiempo real
-document.getElementById('alcance').addEventListener('input', function() {
-    actualizarContador('alcance');
-});
-
-document.getElementById('hallazgos').addEventListener('input', function() {
-    actualizarContador('hallazgos');
 });
 </script>
-
-<style>
-.error-message {
-    color: #e74c3c;
-    font-size: 12px;
-    display: block;
-    margin-top: 5px;
-}
-
-.char-counter {
-    text-align: right;
-    font-size: 11px;
-    margin-top: 5px;
-}
-
-.badge-success { background: #2ecc71; color: white; padding: 3px 8px; border-radius: 3px; }
-.badge-warning { background: #f39c12; color: white; padding: 3px 8px; border-radius: 3px; }
-.badge-info { background: #3498db; color: white; padding: 3px 8px; border-radius: 3px; }
-.badge-primary { background: #9b59b6; color: white; padding: 3px 8px; border-radius: 3px; }
-.badge-secondary { background: #95a5a6; color: white; padding: 3px 8px; border-radius: 3px; }
-
-.btn-primary {
-    background: #3498db;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 4px;
-    cursor: pointer;
-    margin-right: 10px;
-}
-
-.btn-primary:hover {
-    background: #2980b9;
-}
-
-.btn-secondary {
-    background: #95a5a6;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 4px;
-    cursor: pointer;
-}
-
-.btn-secondary:hover {
-    background: #7f8c8d;
-}
-
-.table-container {
-    overflow-x: auto;
-    margin-top: 30px;
-}
-
-table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-table th {
-    background: #2c3e50;
-    color: white;
-    padding: 12px;
-    text-align: left;
-}
-
-table td {
-    padding: 10px;
-    border-bottom: 1px solid #ddd;
-}
-
-table tr:hover {
-    background: #f5f5f5;
-}
-</style>
-
+@endpush
 <!-- ================= REPORTES ================= -->
 <div id="reportes" class="content-section">
     <h2 class="section-title">Dashboard de Reportes y Estadísticas</h2>
