@@ -1234,71 +1234,6 @@ Swal.fire({
 </div> 
 
 <!-- AUDITORÍAS -->
-<<<<<<< HEAD
-<div id="auditorias" class="content-section">
-    <h2 class="section-title">Gestión de Auditorías</h2>
-
-    {{-- FORMULARIO --}}
-    <form method="POST" action="{{ route('auditorias.store') }}" id="formAuditoria">
-        @csrf
-
-        {{-- Mostrar errores generales --}}
-        @if($errors->any())
-        <div class="alert alert-error" style="background: #fee; color: #c33; padding: 10px; border-radius: 4px; margin-bottom: 20px;">
-            <strong>Errores encontrados:</strong>
-            <ul style="margin: 5px 0 0 20px;">
-                @foreach($errors->all() as $error)
-                <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
-        @endif
-
-        <div class="form-row">
-            <div class="form-group">
-                <label for="codigo_aud">Código de Auditoría *</label>
-                <input type="text" id="codigo_aud" name="codigo_aud" 
-                       value="{{ old('codigo_aud') }}"
-                       maxlength="50"
-                       required 
-                       oninput="this.value = this.value.toUpperCase()">
-                @error('codigo_aud')
-                <span class="error-message" style="color: #e74c3c; font-size: 12px; display: block; margin-top: 5px;">
-                    {{ $message }}
-                </span>
-                @enderror
-                <small style="display: block; margin-top: 5px; color: #666;">
-                    Formato recomendado: AUD-001, AUD-002, etc.
-                </small>
-            </div>
-
-            <div class="form-group">
-                <label for="tipo_aud">Tipo de Auditoría *</label>
-                <select id="tipo_aud" name="tipo_aud" required>
-                    <option value="">Seleccionar...</option>
-                    <option value="interna" {{ old('tipo_aud') == 'interna' ? 'selected' : '' }}>Interna</option>
-                    <option value="externa" {{ old('tipo_aud') == 'externa' ? 'selected' : '' }}>Externa</option>
-                    <option value="cumplimiento" {{ old('tipo_aud') == 'cumplimiento' ? 'selected' : '' }}>Cumplimiento</option>
-                </select>
-                @error('tipo_aud')
-                <span class="error-message" style="color: #e74c3c; font-size: 12px; display: block; margin-top: 5px;">
-                    {{ $message }}
-                </span>
-                @enderror
-            </div>
-
-            <div class="form-group">
-                <label for="auditor">Auditor Responsable *</label>
-                <input type="text" id="auditor" name="auditor" 
-                       value="{{ old('auditor') }}"
-                       maxlength="150"
-                       required>
-                @error('auditor')
-                <span class="error-message" style="color: #e74c3c; font-size: 12px; display: block; margin-top: 5px;">
-                    {{ $message }}
-                </span>
-                @enderror
-=======
         <div id="auditorias" class="content-section">
     <h2 class="section-title">Gestión de Auditorías</h2>
 
@@ -1325,56 +1260,11 @@ Swal.fire({
             <div class="form-group">
                 <label>Auditor Responsable *</label>
                 <input type="text" name="auditor" required>
->>>>>>> c0e64851bf9ae583ba037482d3a3ae7e736629c6
             </div>
         </div>
 
         <div class="form-row">
             <div class="form-group">
-<<<<<<< HEAD
-                <label for="fecha_inicio">Fecha de Inicio *</label>
-                <input type="date" id="fecha_inicio" name="fecha_inicio" 
-                       value="{{ old('fecha_inicio') }}"
-                       min="{{ date('Y-m-d') }}"
-                       required 
-                       onchange="validarFechas()">
-                @error('fecha_inicio')
-                <span class="error-message" style="color: #e74c3c; font-size: 12px; display: block; margin-top: 5px;">
-                    {{ $message }}
-                </span>
-                @enderror
-                <small style="display: block; margin-top: 5px; color: #666;">
-                    No se permiten fechas anteriores a hoy
-                </small>
-            </div>
-
-            <div class="form-group">
-                <label for="fecha_fin">Fecha de Finalización</label>
-                <input type="date" id="fecha_fin" name="fecha_fin" 
-                       value="{{ old('fecha_fin') }}"
-                       onchange="validarFechas()">
-                @error('fecha_fin')
-                <span class="error-message" style="color: #e74c3c; font-size: 12px; display: block; margin-top: 5px;">
-                    {{ $message }}
-                </span>
-                @enderror
-            </div>
-
-            <div class="form-group">
-                <label for="estado_aud">Estado *</label>
-                <select id="estado_aud" name="estado_aud" required>
-                    <option value="">Seleccionar...</option>
-                    <option value="planificada" {{ old('estado_aud') == 'planificada' ? 'selected' : '' }}>Planificada</option>
-                    <option value="proceso" {{ old('estado_aud') == 'proceso' ? 'selected' : '' }}>En Proceso</option>
-                    <option value="completada" {{ old('estado_aud') == 'completada' ? 'selected' : '' }}>Completada</option>
-                    <option value="revisada" {{ old('estado_aud') == 'revisada' ? 'selected' : '' }}>Revisada</option>
-                </select>
-                @error('estado_aud')
-                <span class="error-message" style="color: #e74c3c; font-size: 12px; display: block; margin-top: 5px;">
-                    {{ $message }}
-                </span>
-                @enderror
-=======
                 <label>Fecha de Inicio *</label>
                 <input type="date" name="fecha_inicio" required>
             </div>
@@ -1392,30 +1282,10 @@ Swal.fire({
                     <option value="completada">Completada</option>
                     <option value="revisada">Revisada</option>
                 </select>
->>>>>>> c0e64851bf9ae583ba037482d3a3ae7e736629c6
             </div>
         </div>
 
         <div class="form-group">
-<<<<<<< HEAD
-            <label for="alcance">Alcance de la Auditoría</label>
-            <textarea id="alcance" name="alcance" rows="3">{{ old('alcance') }}</textarea>
-            @error('alcance')
-            <span class="error-message" style="color: #e74c3c; font-size: 12px; display: block; margin-top: 5px;">
-                {{ $message }}
-            </span>
-            @enderror
-        </div>
-
-        <div class="form-group">
-            <label for="hallazgos">Hallazgos y Observaciones</label>
-            <textarea id="hallazgos" name="hallazgos" rows="4">{{ old('hallazgos') }}</textarea>
-            @error('hallazgos')
-            <span class="error-message" style="color: #e74c3c; font-size: 12px; display: block; margin-top: 5px;">
-                {{ $message }}
-            </span>
-            @enderror
-=======
             <label>Alcance de la Auditoría</label>
             <textarea name="alcance" rows="3"></textarea>
         </div>
@@ -1423,7 +1293,6 @@ Swal.fire({
         <div class="form-group">
             <label>Hallazgos y Observaciones</label>
             <textarea name="hallazgos" rows="4"></textarea>
->>>>>>> c0e64851bf9ae583ba037482d3a3ae7e736629c6
         </div>
 
         <button type="submit" class="btn btn-primary">
@@ -1467,10 +1336,7 @@ Swal.fire({
                         @endif
                     </td>
                     <td>
-<<<<<<< HEAD
-=======
                         {{-- OPCIÓN 1: Si usas Route Model Binding --}}
->>>>>>> c0e64851bf9ae583ba037482d3a3ae7e736629c6
                         <a href="{{ route('auditorias.show', $auditoria->id) }}"
                            class="btn btn-secondary"
                            style="padding: 8px 15px;">
@@ -1492,86 +1358,7 @@ Swal.fire({
 </div>
 </div>
 
-<<<<<<< HEAD
-{{-- Script para validación en el cliente --}}
-<script>
-function validarFechas() {
-    const fechaInicio = document.getElementById('fecha_inicio');
-    const fechaFin = document.getElementById('fecha_fin');
-    
-    // Validar que fecha inicio sea hoy o posterior
-    const hoy = new Date().toISOString().split('T')[0];
-    if (fechaInicio.value < hoy) {
-        alert('La fecha de inicio no puede ser anterior a hoy');
-        fechaInicio.value = hoy;
-        fechaInicio.focus();
-        return false;
-    }
-    
-    // Validar que fecha fin sea posterior o igual a fecha inicio
-    if (fechaFin.value && fechaFin.value < fechaInicio.value) {
-        alert('La fecha de finalización debe ser posterior o igual a la fecha de inicio');
-        fechaFin.value = fechaInicio.value;
-        fechaFin.focus();
-        return false;
-    }
-    
-    return true;
-}
-
-// Validación al enviar el formulario
-document.getElementById('formAuditoria').addEventListener('submit', function(e) {
-    if (!validarFechas()) {
-        e.preventDefault();
-        return false;
-    }
-    
-    // Validar que los campos requeridos no estén vacíos
-    const requiredFields = this.querySelectorAll('[required]');
-    let isValid = true;
-    
-    requiredFields.forEach(field => {
-        if (!field.value.trim()) {
-            isValid = false;
-            field.style.borderColor = '#e74c3c';
-            
-            // Crear mensaje de error si no existe
-            if (!field.nextElementSibling || !field.nextElementSibling.classList.contains('error-message')) {
-                const errorSpan = document.createElement('span');
-                errorSpan.className = 'error-message';
-                errorSpan.style.color = '#e74c3c';
-                errorSpan.style.fontSize = '12px';
-                errorSpan.style.display = 'block';
-                errorSpan.style.marginTop = '5px';
-                errorSpan.textContent = 'Este campo es requerido';
-                field.parentNode.insertBefore(errorSpan, field.nextSibling);
-            }
-        } else {
-            field.style.borderColor = '';
-            // Remover mensaje de error si existe
-            if (field.nextElementSibling && field.nextElementSibling.classList.contains('error-message')) {
-                field.nextElementSibling.remove();
-            }
-        }
-    });
-    
-    if (!isValid) {
-        e.preventDefault();
-        alert('Por favor complete todos los campos requeridos');
-        return false;
-    }
-    
-    return true;
-});
-
-// Convertir código a mayúsculas automáticamente
-document.getElementById('codigo_aud').addEventListener('input', function() {
-    this.value = this.value.toUpperCase();
-});
-</script>
-=======
 </div>
->>>>>>> c0e64851bf9ae583ba037482d3a3ae7e736629c6
 
 <!-- ================= REPORTES ================= -->
 <div id="reportes" class="content-section">
