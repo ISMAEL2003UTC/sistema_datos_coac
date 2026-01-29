@@ -11,9 +11,20 @@ class IncidenteSeguridadController extends Controller
     {
         $incidentes = IncidenteSeguridad::orderBy('id')->get();
 
+        $ultimo = IncidenteSeguridad::orderBy('id', 'desc')->first();
+
+        $numero = 1;
+
+        if ($ultimo) {
+            $numero = intval(substr($ultimo->codigo, 4)) + 1;
+        }
+
+        $siguienteCodigo = 'INC-' . str_pad($numero, 3, '0', STR_PAD_LEFT);
+
         return view('index', [
             'incidentes' => $incidentes,
-            'section' => 'incidentes' // 👈 controla la vista
+            'siguienteCodigo' => $siguienteCodigo,
+            'section' => 'incidentes'
         ]);
     }
 
@@ -108,4 +119,6 @@ class IncidenteSeguridadController extends Controller
     {
         abort(403, 'No está permitido eliminar incidentes de seguridad.');
     }
+
+    
 }
