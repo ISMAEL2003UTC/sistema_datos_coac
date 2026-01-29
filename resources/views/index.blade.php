@@ -820,50 +820,58 @@
                 <div class="form-row">
                     <div class="form-group">
                         <label>Sujeto de Datos (ID) *</label>
-                        <select name="sujeto_id" id="consentimiento_sujeto_id">
+                        <select name="sujeto_id" id="consentimiento_sujeto_id" required>
                             <option value="">Seleccionar...</option>
                             @foreach($sujetos as $sujeto)
                                 <option value="{{ $sujeto->id }}">{{ $sujeto->cedula }} - {{ $sujeto->nombre_completo }}</option>
                             @endforeach
                         </select>
+                        <span class="text-error" id="error-sujeto_id"></span>
                     </div>
                     <div class="form-group">
                         <label>Propósito del Tratamiento *</label>
-                        <select name="proposito" id="consentimiento_proposito">
+                        <select name="proposito" id="consentimiento_proposito" required>
                             <option value="">Seleccionar...</option>
                             <option value="productos">Oferta de Productos</option>
                             <option value="marketing">Marketing</option>
                             <option value="analisis">Análisis Crediticio</option>
                             <option value="cumplimiento">Cumplimiento Legal</option>
                         </select>
+                        <span class="text-error" id="error-proposito"></span>
                     </div>
                     <div class="form-group">
                         <label>Estado *</label>
-                        <select name="estado" id="consentimiento_estado">
+                        <select name="estado" id="consentimiento_estado" required>
                             <option value="">Seleccionar...</option>
                             <option value="otorgado">Otorgado</option>
                             <option value="revocado">Revocado</option>
                             <option value="pendiente">Pendiente</option>
                         </select>
+                        <span class="text-error" id="error-estado"></span>
                     </div>
                 </div>
                 <div class="form-row">
                     <div class="form-group">
-                        <label>Fecha de Otorgamiento</label>
-                        <input type="date" name="fecha_otorgamiento" id="consentimiento_fecha_otorgamiento">
+                        <label>Fecha de Otorgamiento (Hoy) *</label>
+                        <input type="date" name="fecha_otorgamiento" id="consentimiento_fecha_otorgamiento" readonly style="background-color: #f0f0f0; cursor: not-allowed;">
+                        <small style="display: block; margin-top: 5px; color: #666;">Esta fecha se establece automáticamente con la fecha actual</small>
+                        <span class="text-error" id="error-fecha_otorgamiento"></span>
                     </div>
                     <div class="form-group">
-                        <label>Método de Obtención</label>
-                        <select name="metodo" id="consentimiento_metodo">
+                        <label>Método de Obtención *</label>
+                        <select name="metodo" id="consentimiento_metodo" required>
                             <option value="">Seleccionar...</option>
                             <option value="presencial">Presencial</option>
                             <option value="digital">Digital</option>
                             <option value="telefono">Telefónico</option>
                         </select>
+                        <span class="text-error" id="error-metodo"></span>
                     </div>
                     <div class="form-group">
-                        <label>Fecha de Expiración</label>
-                        <input type="date" name="fecha_expiracion" id="consentimiento_fecha_expiracion">
+                        <label>Fecha de Expiración *</label>
+                        <input type="date" name="fecha_expiracion" id="consentimiento_fecha_expiracion" required>
+                        <small style="display: block; margin-top: 5px; color: #666;">Se calculará automáticamente un año desde la fecha de otorgamiento</small>
+                        <span class="text-error" id="error-fecha_expiracion"></span>
                     </div>
                 </div>
                 <button type="submit" class="btn btn-primary">Registrar Consentimiento</button>
@@ -933,17 +941,17 @@
                                     Editar
                                 </button>
 
-                                <form action="{{ route('consentimientos.destroy', $consentimiento->id) }}"
+                                <form action="{{ route('consentimientos.toggleActivo', $consentimiento->id) }}"
                                     method="POST"
                                     style="display:inline;">
                                     @csrf
-                                    @method('DELETE')
-                                    <button type="button"
-                                        class="btn btn-danger"
-                                        onclick="confirmarEliminacion(this)">
-                                        Eliminar
+                                    <button type="submit"
+                                        class="btn {{ $consentimiento->activo ? 'btn-success' : 'btn-warning' }}"
+                                        style="padding: 8px 15px;">
+                                        {{ $consentimiento->activo ? 'Desactivar' : 'Activar' }}
                                     </button>
                                 </form>
+                            </td>
                             </td>
                         </tr>
                         @empty
@@ -1490,132 +1498,69 @@ Swal.fire({
 </div> 
 
 <!-- AUDITORÍAS -->
-<div id="auditorias" class="content-section">
+        <div id="auditorias" class="content-section">
     <h2 class="section-title">Gestión de Auditorías</h2>
 
     {{-- FORMULARIO --}}
-    <form method="POST" action="{{ route('auditorias.store') }}" id="formAuditoria">
+    <form method="POST" action="{{ route('auditorias.store') }}">
         @csrf
 
-        {{-- Mostrar errores generales --}}
-        @if($errors->any())
-        <div class="alert alert-error" style="background: #fee; color: #c33; padding: 10px; border-radius: 4px; margin-bottom: 20px;">
-            <strong>¡Errores encontrados!</strong>
-            <ul style="margin: 5px 0 0 20px;">
-                @foreach($errors->all() as $error)
-                <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
-        @endif
-
         <div class="form-row">
             <div class="form-group">
-                <label for="codigo_aud">Código de Auditoría *</label>
-                <input type="text" id="codigo_aud" name="codigo_aud" 
-                       value="{{ old('codigo_aud') }}"
-                       maxlength="50"
-                       required 
-                       placeholder="Ej: AUD-001"
-                       oninput="this.value = this.value.toUpperCase(); validarCampo(this, 'codigo')">
-                <span id="error-codigo" class="error-message"></span>
-                <small style="display: block; margin-top: 5px; color: #666;">
-                    Formato: AUD-001, AUD-002, etc.
-                </small>
+                <label>Código de Auditoría *</label>
+                <input type="text" name="codigo_aud" required>  {{-- Cambiado --}}
             </div>
 
             <div class="form-group">
-                <label for="tipo_aud">Tipo de Auditoría *</label>
-                <select id="tipo_aud" name="tipo_aud" required onchange="validarCampo(this, 'tipo')">
-                    <option value="">Seleccionar tipo...</option>
-                    <option value="interna" {{ old('tipo_aud') == 'interna' ? 'selected' : '' }}>Interna</option>
-                    <option value="externa" {{ old('tipo_aud') == 'externa' ? 'selected' : '' }}>Externa</option>
-                    <option value="cumplimiento" {{ old('tipo_aud') == 'cumplimiento' ? 'selected' : '' }}>Cumplimiento</option>
+                <label>Tipo de Auditoría *</label>
+                <select name="tipo_aud" required>  {{-- Cambiado --}}
+                    <option value="">Seleccionar...</option>
+                    <option value="interna">Interna</option>
+                    <option value="externa">Externa</option>
+                    <option value="cumplimiento">Cumplimiento</option>
                 </select>
-                <span id="error-tipo" class="error-message"></span>
             </div>
 
             <div class="form-group">
-                <label for="auditor">Auditor Responsable *</label>
-                <input type="text" id="auditor" name="auditor" 
-                       value="{{ old('auditor') }}"
-                       maxlength="150"
-                       required
-                       placeholder="Nombre completo del auditor"
-                       oninput="validarCampo(this, 'auditor')">
-                <span id="error-auditor" class="error-message"></span>
+                <label>Auditor Responsable *</label>
+                <input type="text" name="auditor" required>
             </div>
         </div>
 
         <div class="form-row">
             <div class="form-group">
-                <label for="fecha_inicio">Fecha de Inicio *</label>
-                <input type="date" id="fecha_inicio" name="fecha_inicio" 
-                       value="{{ old('fecha_inicio', date('Y-m-d')) }}"
-                       required
-                       onchange="validarFechas()">
-                <span id="error-fecha-inicio" class="error-message"></span>
-                <small style="display: block; margin-top: 5px; color: #666;">
-                    No se permiten fechas anteriores a hoy
-                </small>
+                <label>Fecha de Inicio *</label>
+                <input type="date" name="fecha_inicio" required>
             </div>
 
             <div class="form-group">
-                <label for="fecha_fin">Fecha de Finalización *</label>
-                <input type="date" id="fecha_fin" name="fecha_fin" 
-                       value="{{ old('fecha_fin') }}"
-                       required
-                       onchange="validarFechas()">
-                <span id="error-fecha-fin" class="error-message"></span>
+                <label>Fecha de Finalización</label>
+                <input type="date" name="fecha_fin">
             </div>
 
             <div class="form-group">
-                <label for="estado_aud">Estado *</label>
-                <select id="estado_aud" name="estado_aud" required onchange="validarCampo(this, 'estado')">
-                    <option value="">Seleccionar estado...</option>
-                    <option value="planificada" {{ old('estado_aud') == 'planificada' ? 'selected' : '' }}>Planificada</option>
-                    <option value="proceso" {{ old('estado_aud') == 'proceso' ? 'selected' : '' }}>En Proceso</option>
-                    <option value="completada" {{ old('estado_aud') == 'completada' ? 'selected' : '' }}>Completada</option>
-                    <option value="revisada" {{ old('estado_aud') == 'revisada' ? 'selected' : '' }}>Revisada</option>
+                <label>Estado *</label>
+                <select name="estado_aud" required>  {{-- Cambiado --}}
+                    <option value="planificada">Planificada</option>
+                    <option value="proceso">En Proceso</option>
+                    <option value="completada">Completada</option>
+                    <option value="revisada">Revisada</option>
                 </select>
-                <span id="error-estado" class="error-message"></span>
             </div>
         </div>
 
         <div class="form-group">
-            <label for="alcance">Alcance de la Auditoría *</label>
-            <textarea id="alcance" name="alcance" 
-                     rows="3" 
-                     maxlength="500"
-                     required
-                     placeholder="Describa el alcance de la auditoría..."
-                     oninput="validarTextarea(this, 'alcance')">{{ old('alcance') }}</textarea>
-            <div class="char-counter">
-                <span id="contador-alcance">0</span>/500 caracteres
-            </div>
-            <span id="error-alcance" class="error-message"></span>
+            <label>Alcance de la Auditoría</label>
+            <textarea name="alcance" rows="3"></textarea>
         </div>
 
         <div class="form-group">
-            <label for="hallazgos">Hallazgos y Observaciones *</label>
-            <textarea id="hallazgos" name="hallazgos" 
-                     rows="4" 
-                     maxlength="1000"
-                     required
-                     placeholder="Describa los hallazgos y observaciones..."
-                     oninput="validarTextarea(this, 'hallazgos')">{{ old('hallazgos') }}</textarea>
-            <div class="char-counter">
-                <span id="contador-hallazgos">0</span>/1000 caracteres
-            </div>
-            <span id="error-hallazgos" class="error-message"></span>
+            <label>Hallazgos y Observaciones</label>
+            <textarea name="hallazgos" rows="4"></textarea>
         </div>
 
         <button type="submit" class="btn btn-primary">
-            ✅ Registrar Auditoría
-        </button>
-        
-        <button type="button" class="btn btn-secondary" onclick="limpiarFormulario()">
-            🗑️ Limpiar Formulario
+            Registrar Auditoría
         </button>
     </form>
 
@@ -1655,390 +1600,29 @@ Swal.fire({
                         @endif
                     </td>
                     <td>
+                        {{-- OPCIÓN 1: Si usas Route Model Binding --}}
                         <a href="{{ route('auditorias.show', $auditoria->id) }}"
                            class="btn btn-secondary"
                            style="padding: 8px 15px;">
-                            👁️ Ver
+                            Ver
                         </a>
                     </td>
                 </tr>
                 @endforeach
 
                 @if($auditorias->isEmpty())
-                <tr>
-                    <td colspan="7" style="text-align:center;">
-                        No hay auditorías registradas
-                    </td>
-                </tr>
-                @endif
-            </tbody>
-        </table>
-    </div>
+            <tr>
+                <td colspan="7" style="text-align:center;">
+                    No hay auditorías registradas
+                </td>
+            </tr>
+        @endif
+    </tbody>
+</table>
+</div>
 </div>
 
-{{-- Script para validación en el cliente --}}
-<script>
-// ========== CONFIGURACIÓN INICIAL ==========
-document.addEventListener('DOMContentLoaded', function() {
-    // Establecer fecha mínima como hoy para fecha_inicio
-    const fechaInicio = document.getElementById('fecha_inicio');
-    const hoy = new Date().toISOString().split('T')[0];
-    fechaInicio.min = hoy;
-    
-    // Si fecha_inicio está vacía, establecer hoy
-    if (!fechaInicio.value) {
-        fechaInicio.value = hoy;
-    }
-    
-    // Inicializar contadores
-    actualizarContador('alcance');
-    actualizarContador('hallazgos');
-});
-
-// ========== FUNCIONES DE VALIDACIÓN ==========
-
-// Validar campo genérico
-function validarCampo(campo, tipo) {
-    const errorSpan = document.getElementById(`error-${tipo}`);
-    
-    if (!campo.value.trim()) {
-        mostrarError(campo, errorSpan, `El campo es obligatorio`);
-        return false;
-    }
-    
-    // Validaciones específicas por tipo
-    switch(tipo) {
-        case 'codigo':
-            const regexCodigo = /^[A-Z0-9\-]+$/;
-            if (!regexCodigo.test(campo.value)) {
-                mostrarError(campo, errorSpan, 'Solo mayúsculas, números y guiones');
-                return false;
-            }
-            break;
-            
-        case 'auditor':
-            const regexAuditor = /^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/;
-            if (!regexAuditor.test(campo.value)) {
-                mostrarError(campo, errorSpan, 'Solo letras y espacios');
-                return false;
-            }
-            if (campo.value.trim().length < 5) {
-                mostrarError(campo, errorSpan, 'Mínimo 5 caracteres');
-                return false;
-            }
-            break;
-    }
-    
-    limpiarError(campo, errorSpan);
-    return true;
-}
-
-// Validar textarea
-function validarTextarea(textarea, tipo) {
-    const errorSpan = document.getElementById(`error-${tipo}`);
-    const maxLength = tipo === 'alcance' ? 500 : 1000;
-    
-    if (!textarea.value.trim()) {
-        mostrarError(textarea, errorSpan, 'Este campo es obligatorio');
-        return false;
-    }
-    
-    if (textarea.value.trim().length < 10) {
-        mostrarError(textarea, errorSpan, 'Mínimo 10 caracteres');
-        return false;
-    }
-    
-    if (textarea.value.length > maxLength) {
-        mostrarError(textarea, errorSpan, `Máximo ${maxLength} caracteres`);
-        return false;
-    }
-    
-    limpiarError(textarea, errorSpan);
-    actualizarContador(textarea.id);
-    return true;
-}
-
-// Validar fechas
-function validarFechas() {
-    const fechaInicio = document.getElementById('fecha_inicio');
-    const fechaFin = document.getElementById('fecha_fin');
-    const errorInicio = document.getElementById('error-fecha-inicio');
-    const errorFin = document.getElementById('error-fecha-fin');
-    
-    const hoy = new Date().toISOString().split('T')[0];
-    let valido = true;
-    
-    // Validar fecha inicio
-    if (!fechaInicio.value) {
-        mostrarError(fechaInicio, errorInicio, 'La fecha de inicio es obligatoria');
-        valido = false;
-    } else if (fechaInicio.value < hoy) {
-        mostrarError(fechaInicio, errorInicio, 'No puede seleccionar fechas anteriores a hoy');
-        fechaInicio.value = hoy;
-        fechaInicio.focus();
-        valido = false;
-    } else {
-        limpiarError(fechaInicio, errorInicio);
-    }
-    
-    // Validar fecha fin
-    if (!fechaFin.value) {
-        mostrarError(fechaFin, errorFin, 'La fecha de finalización es obligatoria');
-        valido = false;
-    } else if (fechaFin.value < fechaInicio.value) {
-        mostrarError(fechaFin, errorFin, 'Debe ser igual o posterior a la fecha de inicio');
-        fechaFin.value = fechaInicio.value;
-        fechaFin.focus();
-        valido = false;
-    } else {
-        limpiarError(fechaFin, errorFin);
-    }
-    
-    return valido;
-}
-
-// Validar todo el formulario
-function validarFormularioCompleto() {
-    const campos = [
-        {id: 'codigo_aud', tipo: 'codigo'},
-        {id: 'tipo_aud', tipo: 'tipo'},
-        {id: 'auditor', tipo: 'auditor'},
-        {id: 'estado_aud', tipo: 'estado'}
-    ];
-    
-    let valido = true;
-    
-    // Validar campos simples
-    campos.forEach(campo => {
-        const elemento = document.getElementById(campo.id);
-        if (!validarCampo(elemento, campo.tipo)) {
-            valido = false;
-        }
-    });
-    
-    // Validar textareas
-    if (!validarTextarea(document.getElementById('alcance'), 'alcance')) {
-        valido = false;
-    }
-    
-    if (!validarTextarea(document.getElementById('hallazgos'), 'hallazgos')) {
-        valido = false;
-    }
-    
-    // Validar fechas
-    if (!validarFechas()) {
-        valido = false;
-    }
-    
-    return valido;
-}
-
-// ========== FUNCIONES AUXILIARES ==========
-
-// Mostrar error
-function mostrarError(elemento, errorSpan, mensaje) {
-    errorSpan.textContent = mensaje;
-    errorSpan.style.color = '#e74c3c';
-    errorSpan.style.fontSize = '12px';
-    errorSpan.style.display = 'block';
-    errorSpan.style.marginTop = '5px';
-    elemento.style.borderColor = '#e74c3c';
-}
-
-// Limpiar error
-function limpiarError(elemento, errorSpan) {
-    errorSpan.textContent = '';
-    elemento.style.borderColor = '';
-}
-
-// Actualizar contador de caracteres
-function actualizarContador(textareaId) {
-    const textarea = document.getElementById(textareaId);
-    const contadorId = textareaId === 'alcance' ? 'contador-alcance' : 'contador-hallazgos';
-    const contador = document.getElementById(contadorId);
-    const maxLength = textareaId === 'alcance' ? 500 : 1000;
-    
-    if (contador) {
-        contador.textContent = textarea.value.length;
-        
-        // Cambiar color según uso
-        if (textarea.value.length > maxLength * 0.9) {
-            contador.style.color = '#e74c3c';
-        } else if (textarea.value.length > maxLength * 0.7) {
-            contador.style.color = '#f39c12';
-        } else {
-            contador.style.color = '#666';
-        }
-    }
-}
-
-// Limpiar formulario
-function limpiarFormulario() {
-    if (confirm('¿Está seguro de limpiar todos los campos? Se perderán los datos no guardados.')) {
-        document.getElementById('formAuditoria').reset();
-        
-        // Limpiar errores
-        document.querySelectorAll('.error-message').forEach(span => {
-            span.textContent = '';
-        });
-        
-        // Restaurar estilos
-        document.querySelectorAll('input, select, textarea').forEach(element => {
-            element.style.borderColor = '';
-        });
-        
-        // Restablecer fecha inicio a hoy
-        const hoy = new Date().toISOString().split('T')[0];
-        document.getElementById('fecha_inicio').value = hoy;
-        
-        // Resetear contadores
-        actualizarContador('alcance');
-        actualizarContador('hallazgos');
-        
-        alert('Formulario limpiado correctamente');
-    }
-}
-
-// ========== EVENTOS ==========
-
-// Validación al enviar el formulario
-document.getElementById('formAuditoria').addEventListener('submit', function(e) {
-    if (!validarFormularioCompleto()) {
-        e.preventDefault();
-        
-        // Encontrar primer error y enfocar
-        const primerError = document.querySelector('.error-message:not(:empty)');
-        if (primerError) {
-            const campoId = primerError.id.replace('error-', '');
-            const campo = document.getElementById(campoId);
-            if (campo) {
-                campo.focus();
-                campo.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            }
-        }
-        
-        alert('❌ Por favor complete todos los campos correctamente');
-        return false;
-    }
-    
-    // Confirmación final
-    if (!confirm('¿Está seguro de registrar esta auditoría?')) {
-        e.preventDefault();
-        return false;
-    }
-    
-    return true;
-});
-
-// Eventos en tiempo real
-document.getElementById('codigo_aud').addEventListener('blur', function() {
-    validarCampo(this, 'codigo');
-});
-
-document.getElementById('auditor').addEventListener('blur', function() {
-    validarCampo(this, 'auditor');
-});
-
-document.getElementById('tipo_aud').addEventListener('blur', function() {
-    validarCampo(this, 'tipo');
-});
-
-document.getElementById('estado_aud').addEventListener('blur', function() {
-    validarCampo(this, 'estado');
-});
-
-// Prevenir edición manual de fechas
-document.getElementById('fecha_inicio').addEventListener('keydown', function(e) {
-    e.preventDefault();
-});
-
-document.getElementById('fecha_fin').addEventListener('keydown', function(e) {
-    e.preventDefault();
-});
-
-// Actualizar contadores en tiempo real
-document.getElementById('alcance').addEventListener('input', function() {
-    actualizarContador('alcance');
-});
-
-document.getElementById('hallazgos').addEventListener('input', function() {
-    actualizarContador('hallazgos');
-});
-</script>
-
-<style>
-.error-message {
-    color: #e74c3c;
-    font-size: 12px;
-    display: block;
-    margin-top: 5px;
-}
-
-.char-counter {
-    text-align: right;
-    font-size: 11px;
-    margin-top: 5px;
-}
-
-.badge-success { background: #2ecc71; color: white; padding: 3px 8px; border-radius: 3px; }
-.badge-warning { background: #f39c12; color: white; padding: 3px 8px; border-radius: 3px; }
-.badge-info { background: #3498db; color: white; padding: 3px 8px; border-radius: 3px; }
-.badge-primary { background: #9b59b6; color: white; padding: 3px 8px; border-radius: 3px; }
-.badge-secondary { background: #95a5a6; color: white; padding: 3px 8px; border-radius: 3px; }
-
-.btn-primary {
-    background: #3498db;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 4px;
-    cursor: pointer;
-    margin-right: 10px;
-}
-
-.btn-primary:hover {
-    background: #2980b9;
-}
-
-.btn-secondary {
-    background: #95a5a6;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 4px;
-    cursor: pointer;
-}
-
-.btn-secondary:hover {
-    background: #7f8c8d;
-}
-
-.table-container {
-    overflow-x: auto;
-    margin-top: 30px;
-}
-
-table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-table th {
-    background: #2c3e50;
-    color: white;
-    padding: 12px;
-    text-align: left;
-}
-
-table td {
-    padding: 10px;
-    border-bottom: 1px solid #ddd;
-}
-
-table tr:hover {
-    background: #f5f5f5;
-}
-</style>
+</div>
 
 <!-- ================= REPORTES ================= -->
 <div id="reportes" class="content-section">
