@@ -561,6 +561,163 @@
                 </table>
             </div>
         </div>
+        <script>
+        class GeneradorCodigos {
+            constructor() {
+                this.prefijo = 'B';
+                this.digitos = 3;
+                this.init();
+            }
+            
+            init() {
+                this.cargarCodigosExistentes();
+                this.configurarEventos();
+                this.generarSiNecesario();
+            }
+            
+            cargarCodigosExistentes() {
+                this.codigos = [];
+                document.querySelectorAll('#productos table tbody tr td:first-child').forEach(td => {
+                    const codigo = td.textContent.trim();
+                    if (codigo) this.codigos.push(codigo);
+                });
+            }
+            
+            getSiguienteCodigo() {
+                let siguienteNumero = 1;
+                
+                // Extraer números de los códigos existentes
+                this.codigos.forEach(codigo => {
+                    const match = codigo.match(new RegExp(`${this.prefijo}(\\d+)`, 'i'));
+                    if (match) {
+                        const num = parseInt(match[1]);
+                        if (num >= siguienteNumero) siguienteNumero = num + 1;
+                    }
+                });
+                
+                // Verificar que no exista
+                let codigoPropuesto;
+                let intentos = 0;
+                
+                do {
+                    codigoPropuesto = this.prefijo + siguienteNumero.toString().padStart(this.digitos, '0');
+                    if (!this.codigos.includes(codigoPropuesto)) break;
+                    siguienteNumero++;
+                    intentos++;
+                } while (intentos < 100);
+                
+                return codigoPropuesto;
+            }
+            
+            generarSiNecesario() {
+                const input = document.getElementById('producto_codigo');
+                const enEdicion = document.getElementById('producto_id').value;
+                
+                if (!enEdicion && !input.value.trim()) {
+                    input.value = this.getSiguienteCodigo();
+                    this.mostrarNotificacion();
+                }
+            }
+            
+            mostrarNotificacion() {
+                const notificado = sessionStorage.getItem('codigoAutoNotificado');
+                if (!notificado) {
+                    const codigo = document.getElementById('producto_codigo').value;
+                    const notificacion = document.createElement('div');
+                    notificacion.className = 'alert alert-info fade show';
+                    notificacion.style.cssText = `
+                        position: fixed;
+                        top: 20px;
+                        right: 20px;
+                        z-index: 9999;
+                        max-width: 300px;
+                        animation: slideIn 0.3s ease;
+                    `;
+                    notificacion.innerHTML = `
+                        <strong>📝 Código generado:</strong> ${codigo}<br>
+                        <small>Se genera automáticamente. Puedes editarlo.</small>
+                        <button type="button" class="close" onclick="this.parentElement.remove()">
+                            &times;
+                        </button>
+                    `;
+                    document.body.appendChild(notificacion);
+                    
+                    setTimeout(() => notificacion.remove(), 5000);
+                    sessionStorage.setItem('codigoAutoNotificado', 'true');
+                }
+            }
+            
+            configurarEventos() {
+                // Cuando se muestre la sección productos
+                const observer = new MutationObserver(() => {
+                    if (document.getElementById('productos').classList.contains('active')) {
+                        this.cargarCodigosExistentes();
+                        this.generarSiNecesario();
+                    }
+                });
+                
+                observer.observe(document.getElementById('productos'), {
+                    attributes: true,
+                    attributeFilter: ['class']
+                });
+                
+                // Cuando se haga clic en la pestaña
+                document.querySelectorAll('.nav-tabs button').forEach(btn => {
+                    if (btn.getAttribute('onclick')?.includes("'productos'")) {
+                        btn.addEventListener('click', () => {
+                            setTimeout(() => this.generarSiNecesario(), 150);
+                        });
+                    }
+                });
+                
+                // Validar que el código no se repita
+                document.getElementById('producto_codigo')?.addEventListener('blur', (e) => {
+                    const codigo = e.target.value.trim().toUpperCase();
+                    if (codigo && this.codigos.includes(codigo) && !document.getElementById('producto_id').value) {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Código duplicado',
+                            text: `El código "${codigo}" ya existe. Se sugiere: ${this.getSiguienteCodigo()}`,
+                            showCancelButton: true,
+                            confirmButtonText: 'Usar sugerencia',
+                            cancelButtonText: 'Mantener'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                e.target.value = this.getSiguienteCodigo();
+                            }
+                        });
+                    }
+                });
+            }
+        }
+
+        // Inicializar cuando el DOM esté listo
+        document.addEventListener('DOMContentLoaded', function() {
+            new GeneradorCodigos();
+        });
+
+        // Añade este CSS para la animación
+        const estilo = document.createElement('style');
+        estilo.textContent = `
+            @keyframes slideIn {
+                from {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+            }
+            
+            .alert-info {
+                background-color: #d1ecf1;
+                border-color: #bee5eb;
+                color: #0c5460;
+            }
+        `;
+        document.head.appendChild(estilo);
+        </script>
         
         <!-- CONSENTIMIENTOS ------------------------------------------------------------------------------------>
         <div id="consentimientos" class="content-section">
