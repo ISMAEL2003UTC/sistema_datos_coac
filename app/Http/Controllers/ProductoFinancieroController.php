@@ -26,10 +26,7 @@ class ProductoFinancieroController extends Controller
             'estado' => 'activo',
         ]);
 
-        return redirect()->back()
-    ->with('success', 'Producto registrado correctamente')
-    ->with('activeTab', 'productos');
-
+        return redirect()->back()->with('success', 'Producto registrado correctamente');
     }
 
     public function update(Request $request, $id)
@@ -52,10 +49,7 @@ class ProductoFinancieroController extends Controller
             'datos_procesados' => $request->datos_procesados,
         ]);
 
-        return redirect()->back()
-    ->with('success', 'Producto actualizado correctamente')
-    ->with('activeTab', 'productos');
-
+        return redirect()->back()->with('success', 'Producto actualizado correctamente');
     }
 
     public function cambiarEstado($id)
@@ -64,17 +58,14 @@ class ProductoFinancieroController extends Controller
         $producto->estado = $producto->estado === 'activo' ? 'inactivo' : 'activo';
         $producto->save();
 
-return redirect()->back()
-        ->with('success', 'Estado actualizado correctamente')
-        ->with('activeTab', 'productos');    }
+        return redirect()->back()->with('success', 'Estado actualizado correctamente');
+    }
 
     public function destroy($id)
     {
         $producto = ProductoFinanciero::findOrFail($id);
         $producto->delete();
 
-        return redirect()->back()
-            ->with('success', 'Producto eliminado correctamente')
-            ->with('activeTab', 'productos');
+        return redirect()->back()->with('success', 'Producto eliminado correctamente');
     }
 }
