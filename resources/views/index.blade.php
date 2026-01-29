@@ -422,6 +422,7 @@
             </div>
         </div>
        <!-- PRODUCTOS FINANCIEROS ------------------------------------------------------>
+       <!-- PRODUCTOS FINANCIEROS ------------------------------------------------------>
         <div id="productos" class="content-section">
             <h2 class="section-title">Productos Financieros</h2>
             
@@ -433,11 +434,13 @@
                 <div class="form-row">
                     <div class="form-group">
                         <label>Código Producto *</label>
-                        <input type="text" name="codigo" id="producto_codigo">
+                        <input type="text" name="codigo" id="producto_codigo" placeholder="Ej: CA-001, CR-2024">
+                    
                     </div>
                     <div class="form-group">
                         <label>Nombre del Producto *</label>
-                        <input type="text" name="nombre" id="producto_nombre">
+                        <input type="text" name="nombre" id="producto_nombre" placeholder="Ej: Cuenta de Ahorro Juvenil, Crédito Personal Express">
+                        
                     </div>
                     <div class="form-group">
                         <label>Tipo *</label>
@@ -452,13 +455,23 @@
                 </div>
 
                 <div class="form-group">
-                    <label>Descripción</label>
-                    <textarea name="descripcion" id="producto_descripcion" rows="3"></textarea>
+                    <label>Descripción *</label>
+                    <textarea name="descripcion" id="producto_descripcion" rows="3" placeholder="Describa el producto, sus características principales, público objetivo, etc."></textarea>
+                    <small class="form-text text-muted">Proporcione una descripción clara </small>
                 </div>
 
                 <div class="form-group">
-                    <label>Datos Personales Procesados</label>
-                    <textarea name="datos_procesados" id="producto_datos" rows="3"></textarea>
+                    <label>Datos Personales Procesados *</label>
+                    <textarea name="datos_procesados" id="producto_datos" rows="4" placeholder="Ejemplo:
+        - Nombre completo
+        - Cédula de identidad
+        - Fecha de nacimiento
+        - Dirección
+        - Teléfono
+        - Correo electrónico
+
+        Incluya todos los datos personales."></textarea>
+                    <small class="form-text text-muted">Liste los datos personales que se recopilan</small>
                 </div>
 
                 <button type="submit" class="btn btn-primary">Guardar Producto</button>
@@ -468,11 +481,11 @@
                 <table>
                     <thead>
                         <tr>
-                            <th>ID</th>
                             <th>Código</th>
                             <th>Producto</th>
                             <th>Tipo</th>
                             <th>Descripción</th>
+                            <th>Datos Procesados</th>
                             <th>Estado</th>
                             <th>Acciones</th>
                         </tr>
@@ -480,7 +493,6 @@
                     <tbody>
                         @forelse($productos as $producto)
                         <tr>
-                            <td>{{ $producto->id }}</td>
                             <td>{{ $producto->codigo }}</td>
                             <td>{{ $producto->nombre }}</td>
                             <td>
@@ -494,7 +506,20 @@
                                     <span class="badge badge-primary">Seguros</span>
                                 @endif
                             </td>
-                            <td>{{ $producto->descripcion ? Str::limit($producto->descripcion, 40) : 'N/A' }}</td>
+                            <td>{{ $producto->descripcion ? Str::limit($producto->descripcion, 50) : 'N/A' }}</td>
+                            <td>
+                                @if($producto->datos_procesados)
+                                    <button type="button" class="btn btn-sm btn-info" onclick="Swal.fire({
+                                        title: 'Datos Procesados: {{ $producto->nombre }}',
+                                        html: `<pre style='text-align: left; white-space: pre-wrap;'>{{ $producto->datos_procesados }}</pre>`,
+                                        confirmButtonText: 'Cerrar'
+                                    })">
+                                        Ver Datos
+                                    </button>
+                                @else
+                                    <span class="badge badge-danger">No definidos</span>
+                                @endif
+                            </td>
                             <td>
                                 @if($producto->estado === 'activo')
                                     <span class="badge badge-success">Activo</span>
@@ -509,8 +534,8 @@
                                         '{{ $producto->codigo }}',
                                         '{{ $producto->nombre }}',
                                         '{{ $producto->tipo }}',
-                                        '{{ str_replace("'", "\'", $producto->descripcion ?? '') }}',
-                                        '{{ str_replace("'", "\'", $producto->datos_procesados ?? '') }}'
+                                        `{{ str_replace('"', '&quot;', $producto->descripcion ?? '') }}`,
+                                        `{{ str_replace('"', '&quot;', $producto->datos_procesados ?? '') }}`
                                     )">
                                     Editar
                                 </button>
@@ -525,17 +550,6 @@
                                     </button>
                                 </form>
 
-                                <form action="{{ route('productos.destroy', $producto->id) }}"
-                                    method="POST"
-                                    style="display:inline;">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="button"
-                                        class="btn btn-danger"
-                                        onclick="confirmarEliminacion(this)">
-                                        Eliminar
-                                    </button>
-                                </form>
                             </td>
                         </tr>
                         @empty
