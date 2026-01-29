@@ -731,50 +731,58 @@
                 <div class="form-row">
                     <div class="form-group">
                         <label>Sujeto de Datos (ID) *</label>
-                        <select name="sujeto_id" id="consentimiento_sujeto_id">
+                        <select name="sujeto_id" id="consentimiento_sujeto_id" required>
                             <option value="">Seleccionar...</option>
                             @foreach($sujetos as $sujeto)
                                 <option value="{{ $sujeto->id }}">{{ $sujeto->cedula }} - {{ $sujeto->nombre_completo }}</option>
                             @endforeach
                         </select>
+                        <span class="text-error" id="error-sujeto_id"></span>
                     </div>
                     <div class="form-group">
                         <label>Propósito del Tratamiento *</label>
-                        <select name="proposito" id="consentimiento_proposito">
+                        <select name="proposito" id="consentimiento_proposito" required>
                             <option value="">Seleccionar...</option>
                             <option value="productos">Oferta de Productos</option>
                             <option value="marketing">Marketing</option>
                             <option value="analisis">Análisis Crediticio</option>
                             <option value="cumplimiento">Cumplimiento Legal</option>
                         </select>
+                        <span class="text-error" id="error-proposito"></span>
                     </div>
                     <div class="form-group">
                         <label>Estado *</label>
-                        <select name="estado" id="consentimiento_estado">
+                        <select name="estado" id="consentimiento_estado" required>
                             <option value="">Seleccionar...</option>
                             <option value="otorgado">Otorgado</option>
                             <option value="revocado">Revocado</option>
                             <option value="pendiente">Pendiente</option>
                         </select>
+                        <span class="text-error" id="error-estado"></span>
                     </div>
                 </div>
                 <div class="form-row">
                     <div class="form-group">
-                        <label>Fecha de Otorgamiento</label>
-                        <input type="date" name="fecha_otorgamiento" id="consentimiento_fecha_otorgamiento">
+                        <label>Fecha de Otorgamiento (Hoy) *</label>
+                        <input type="date" name="fecha_otorgamiento" id="consentimiento_fecha_otorgamiento" readonly style="background-color: #f0f0f0; cursor: not-allowed;">
+                        <small style="display: block; margin-top: 5px; color: #666;">Esta fecha se establece automáticamente con la fecha actual</small>
+                        <span class="text-error" id="error-fecha_otorgamiento"></span>
                     </div>
                     <div class="form-group">
-                        <label>Método de Obtención</label>
-                        <select name="metodo" id="consentimiento_metodo">
+                        <label>Método de Obtención *</label>
+                        <select name="metodo" id="consentimiento_metodo" required>
                             <option value="">Seleccionar...</option>
                             <option value="presencial">Presencial</option>
                             <option value="digital">Digital</option>
                             <option value="telefono">Telefónico</option>
                         </select>
+                        <span class="text-error" id="error-metodo"></span>
                     </div>
                     <div class="form-group">
-                        <label>Fecha de Expiración</label>
-                        <input type="date" name="fecha_expiracion" id="consentimiento_fecha_expiracion">
+                        <label>Fecha de Expiración *</label>
+                        <input type="date" name="fecha_expiracion" id="consentimiento_fecha_expiracion" required>
+                        <small style="display: block; margin-top: 5px; color: #666;">Se calculará automáticamente un año desde la fecha de otorgamiento</small>
+                        <span class="text-error" id="error-fecha_expiracion"></span>
                     </div>
                 </div>
                 <button type="submit" class="btn btn-primary">Registrar Consentimiento</button>
@@ -844,17 +852,17 @@
                                     Editar
                                 </button>
 
-                                <form action="{{ route('consentimientos.destroy', $consentimiento->id) }}"
+                                <form action="{{ route('consentimientos.toggleActivo', $consentimiento->id) }}"
                                     method="POST"
                                     style="display:inline;">
                                     @csrf
-                                    @method('DELETE')
-                                    <button type="button"
-                                        class="btn btn-danger"
-                                        onclick="confirmarEliminacion(this)">
-                                        Eliminar
+                                    <button type="submit"
+                                        class="btn {{ $consentimiento->activo ? 'btn-success' : 'btn-warning' }}"
+                                        style="padding: 8px 15px;">
+                                        {{ $consentimiento->activo ? 'Desactivar' : 'Activar' }}
                                     </button>
                                 </form>
+                            </td>
                             </td>
                         </tr>
                         @empty
