@@ -422,7 +422,7 @@
             </div>
         </div>
        <!-- PRODUCTOS FINANCIEROS ------------------------------------------------------>
-       <!-- PRODUCTOS FINANCIEROS ------------------------------------------------------>
+        <!-- PRODUCTOS FINANCIEROS ------------------------------------------------------>
         <div id="productos" class="content-section">
             <h2 class="section-title">Productos Financieros</h2>
             
@@ -434,8 +434,16 @@
                 <div class="form-row">
                     <div class="form-group">
                         <label>Código Producto *</label>
-                        <input type="text" name="codigo" id="producto_codigo" placeholder="Ej: CA-001, CR-2024">
-                    
+                        <div style="position: relative;">
+                            <input type="text" name="codigo" id="producto_codigo" placeholder="Generando código..." readonly 
+                                style="background-color: #f5f5f5; padding-right: 40px;">
+                            <span style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); color: #28a745;">
+                                <i class="fas fa-bolt"></i> Auto
+                            </span>
+                        </div>
+                        <small style="display:block; font-size:12px; color:#666; margin-top:5px;">
+                            <i class="fas fa-info-circle"></i> Se genera automáticamente. No puede ser editado.
+                        </small>
                     </div>
                     <div class="form-group">
                         <label>Nombre del Producto *</label>
@@ -463,18 +471,23 @@
                 <div class="form-group">
                     <label>Datos Personales Procesados *</label>
                     <textarea name="datos_procesados" id="producto_datos" rows="4" placeholder="Ejemplo:
-        - Nombre completo
-        - Cédula de identidad
-        - Fecha de nacimiento
-        - Dirección
-        - Teléfono
-        - Correo electrónico
+            - Nombre completo
+            - Cédula de identidad
+            - Fecha de nacimiento
+            - Dirección
+            - Teléfono
+            - Correo electrónico
 
-        Incluya todos los datos personales."></textarea>
+            Incluya todos los datos personales."></textarea>
                     <small class="form-text text-muted">Liste los datos personales que se recopilan</small>
                 </div>
 
-                <button type="submit" class="btn btn-primary">Guardar Producto</button>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save"></i> Guardar Producto
+                </button>
+                <button type="button" class="btn btn-outline-secondary" onclick="resetFormProductos()" style="margin-left: 10px;">
+                    <i class="fas fa-redo"></i> Limpiar
+                </button>
             </form>
             
             <div class="table-container">
@@ -493,11 +506,11 @@
                     <tbody>
                         @forelse($productos as $producto)
                         <tr>
-                            <td>{{ $producto->codigo }}</td>
+                            <td><strong>{{ $producto->codigo }}</strong></td>
                             <td>{{ $producto->nombre }}</td>
                             <td>
                                 @if($producto->tipo === 'ahorro')
-                                    <span class="badge badge-info">Cuenta de Ahorro</span>
+                                    <span class="badge badge-info">Ahorro</span>
                                 @elseif($producto->tipo === 'credito')
                                     <span class="badge badge-success">Crédito</span>
                                 @elseif($producto->tipo === 'inversion')
@@ -537,7 +550,7 @@
                                         `{{ str_replace('"', '&quot;', $producto->descripcion ?? '') }}`,
                                         `{{ str_replace('"', '&quot;', $producto->datos_procesados ?? '') }}`
                                     )">
-                                    Editar
+                                    <i class="fas fa-edit"></i> Editar
                                 </button>
 
                                 <form action="{{ route('productos.estado', $producto->id) }}"
@@ -546,7 +559,7 @@
                                     @csrf
                                     @method('PUT')
                                     <button type="submit" class="btn btn-warning">
-                                        Cambiar estado
+                                        <i class="fas fa-exchange-alt"></i> Estado
                                     </button>
                                 </form>
 
@@ -554,13 +567,17 @@
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="7" style="text-align: center;">No hay productos registrados</td>
+                            <td colspan="7" style="text-align: center;">
+                                <i class="fas fa-box-open" style="font-size: 24px; margin-bottom: 10px; display: block; color: #999;"></i>
+                                No hay productos registrados
+                            </td>
                         </tr>
                         @endforelse
                     </tbody>
                 </table>
             </div>
         </div>
+
         <script>
         class GeneradorCodigos {
             constructor() {
@@ -595,7 +612,7 @@
                     }
                 });
                 
-                // Verificar que no exista
+                // Verificar que no exista (por si hay saltos)
                 let codigoPropuesto;
                 let intentos = 0;
                 
@@ -613,37 +630,50 @@
                 const input = document.getElementById('producto_codigo');
                 const enEdicion = document.getElementById('producto_id').value;
                 
-                if (!enEdicion && !input.value.trim()) {
-                    input.value = this.getSiguienteCodigo();
-                    this.mostrarNotificacion();
+                if (!enEdicion) {
+                    // Generar nuevo código solo si no estamos editando
+                    this.cargarCodigosExistentes();
+                    const nuevoCodigo = this.getSiguienteCodigo();
+                    input.value = nuevoCodigo;
+                    
+                    // Aplicar estilo de solo lectura
+                    input.setAttribute('readonly', true);
+                    input.style.backgroundColor = '#f5f5f5';
+                    
+                    this.mostrarNotificacion(nuevoCodigo);
+                } else {
+                    // En modo edición, mantener el código existente pero también bloquear
+                    input.setAttribute('readonly', true);
+                    input.style.backgroundColor = '#f5f5f5';
                 }
             }
             
-            mostrarNotificacion() {
+            mostrarNotificacion(codigo) {
                 const notificado = sessionStorage.getItem('codigoAutoNotificado');
                 if (!notificado) {
-                    const codigo = document.getElementById('producto_codigo').value;
-                    const notificacion = document.createElement('div');
-                    notificacion.className = 'alert alert-info fade show';
-                    notificacion.style.cssText = `
-                        position: fixed;
-                        top: 20px;
-                        right: 20px;
-                        z-index: 9999;
-                        max-width: 300px;
-                        animation: slideIn 0.3s ease;
-                    `;
-                    notificacion.innerHTML = `
-                        <strong>📝 Código generado:</strong> ${codigo}<br>
-                        <small>Se genera automáticamente. Puedes editarlo.</small>
-                        <button type="button" class="close" onclick="this.parentElement.remove()">
-                            &times;
-                        </button>
-                    `;
-                    document.body.appendChild(notificacion);
-                    
-                    setTimeout(() => notificacion.remove(), 5000);
-                    sessionStorage.setItem('codigoAutoNotificado', 'true');
+                    setTimeout(() => {
+                        const notificacion = document.createElement('div');
+                        notificacion.className = 'alert alert-info fade show';
+                        notificacion.style.cssText = `
+                            position: fixed;
+                            top: 20px;
+                            right: 20px;
+                            z-index: 9999;
+                            max-width: 300px;
+                            animation: slideIn 0.3s ease;
+                        `;
+                        notificacion.innerHTML = `
+                            <strong>📝 Código generado:</strong> ${codigo}<br>
+                            <small>Se genera automáticamente. No es editable.</small>
+                            <button type="button" class="close" onclick="this.parentElement.remove()">
+                                &times;
+                            </button>
+                        `;
+                        document.body.appendChild(notificacion);
+                        
+                        setTimeout(() => notificacion.remove(), 4000);
+                        sessionStorage.setItem('codigoAutoNotificado', 'true');
+                    }, 500);
                 }
             }
             
@@ -651,8 +681,7 @@
                 // Cuando se muestre la sección productos
                 const observer = new MutationObserver(() => {
                     if (document.getElementById('productos').classList.contains('active')) {
-                        this.cargarCodigosExistentes();
-                        this.generarSiNecesario();
+                        setTimeout(() => this.generarSiNecesario(), 100);
                     }
                 });
                 
@@ -665,26 +694,7 @@
                 document.querySelectorAll('.nav-tabs button').forEach(btn => {
                     if (btn.getAttribute('onclick')?.includes("'productos'")) {
                         btn.addEventListener('click', () => {
-                            setTimeout(() => this.generarSiNecesario(), 150);
-                        });
-                    }
-                });
-                
-                // Validar que el código no se repita
-                document.getElementById('producto_codigo')?.addEventListener('blur', (e) => {
-                    const codigo = e.target.value.trim().toUpperCase();
-                    if (codigo && this.codigos.includes(codigo) && !document.getElementById('producto_id').value) {
-                        Swal.fire({
-                            icon: 'warning',
-                            title: 'Código duplicado',
-                            text: `El código "${codigo}" ya existe. Se sugiere: ${this.getSiguienteCodigo()}`,
-                            showCancelButton: true,
-                            confirmButtonText: 'Usar sugerencia',
-                            cancelButtonText: 'Mantener'
-                        }).then((result) => {
-                            if (result.isConfirmed) {
-                                e.target.value = this.getSiguienteCodigo();
-                            }
+                            setTimeout(() => this.generarSiNecesario(), 200);
                         });
                     }
                 });
@@ -693,10 +703,70 @@
 
         // Inicializar cuando el DOM esté listo
         document.addEventListener('DOMContentLoaded', function() {
-            new GeneradorCodigos();
+            window.generadorCodigos = new GeneradorCodigos();
         });
 
-        // Añade este CSS para la animación
+        // Función para resetear el formulario
+        function resetFormProductos() {
+            if (confirm('¿Limpiar formulario? Se generará un nuevo código automático.')) {
+                document.getElementById('producto_id').value = '';
+                document.getElementById('form_producto_method').value = 'POST';
+                document.getElementById('formProductos').action = "{{ route('productos.store') }}";
+                document.getElementById('producto_nombre').value = '';
+                document.getElementById('producto_tipo').value = '';
+                document.getElementById('producto_descripcion').value = '';
+                document.getElementById('producto_datos').value = '';
+                
+                // Cambiar texto del botón
+                document.querySelector('#formProductos button[type="submit"]').innerHTML = '<i class="fas fa-save"></i> Guardar Producto';
+                
+                // Generar nuevo código
+                window.generadorCodigos.generarSiNecesario();
+                
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Formulario limpio',
+                    text: 'Se ha generado un nuevo código automático',
+                    timer: 1500,
+                    showConfirmButton: false
+                });
+            }
+        }
+
+        // Modificar función editarProducto
+        function editarProducto(id, codigo, nombre, tipo, descripcion, datos) {
+            // Rellenar formulario
+            document.getElementById('producto_id').value = id;
+            document.getElementById('producto_codigo').value = codigo;
+            document.getElementById('producto_nombre').value = nombre;
+            document.getElementById('producto_tipo').value = tipo;
+            document.getElementById('producto_descripcion').value = descripcion;
+            document.getElementById('producto_datos').value = datos;
+            
+            // Mantener bloqueado en modo edición
+            document.getElementById('producto_codigo').setAttribute('readonly', true);
+            document.getElementById('producto_codigo').style.backgroundColor = '#f5f5f5';
+            
+            // Cambiar método
+            document.getElementById('form_producto_method').value = 'PUT';
+            document.getElementById('formProductos').action = '/productos/' + id;
+            
+            // Cambiar texto del botón
+            const btnSubmit = document.querySelector('#formProductos button[type="submit"]');
+            btnSubmit.innerHTML = '<i class="fas fa-sync-alt"></i> Actualizar Producto';
+            btnSubmit.style.backgroundColor = '#28a745';
+            
+            // Mostrar notificación
+            Swal.fire({
+                icon: 'info',
+                title: 'Modo edición',
+                text: 'Editando producto: ' + codigo,
+                timer: 2000,
+                showConfirmButton: false
+            });
+        }
+
+        // Añadir CSS para la animación y estilos
         const estilo = document.createElement('style');
         estilo.textContent = `
             @keyframes slideIn {
@@ -710,10 +780,29 @@
                 }
             }
             
+            #producto_codigo[readonly] {
+                background-color: #f5f5f5 !important;
+                cursor: not-allowed;
+            }
+            
             .alert-info {
                 background-color: #d1ecf1;
                 border-color: #bee5eb;
                 color: #0c5460;
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            }
+            
+            .alert-info .close {
+                color: #0c5460;
+                opacity: 0.8;
+                position: absolute;
+                top: 8px;
+                right: 10px;
+                font-size: 20px;
+                background: none;
+                border: none;
+                cursor: pointer;
             }
         `;
         document.head.appendChild(estilo);
@@ -1443,7 +1532,11 @@ Swal.fire({
                 <label>Fecha de Inicio *</label>
                 <input type="date" name="fecha_inicio" required>
             </div>
-        </div>
+
+            <div class="form-group">
+                <label>Fecha de Finalización</label>
+                <input type="date" name="fecha_fin">
+            </div>
 
             <div class="form-group">
                 <label>Estado *</label>
@@ -1454,7 +1547,6 @@ Swal.fire({
                     <option value="revisada">Revisada</option>
                 </select>
             </div>
-            <span id="error-alcance" class="error-message"></span>
         </div>
 
         <div class="form-group">
@@ -1468,11 +1560,7 @@ Swal.fire({
         </div>
 
         <button type="submit" class="btn btn-primary">
-            ✅ Registrar Auditoría
-        </button>
-        
-        <button type="button" class="btn btn-secondary" onclick="limpiarFormulario()">
-            🗑️ Limpiar Formulario
+            Registrar Auditoría
         </button>
     </form>
 
@@ -1516,22 +1604,22 @@ Swal.fire({
                         <a href="{{ route('auditorias.show', $auditoria->id) }}"
                            class="btn btn-secondary"
                            style="padding: 8px 15px;">
-                            👁️ Ver
+                            Ver
                         </a>
                     </td>
                 </tr>
                 @endforeach
 
                 @if($auditorias->isEmpty())
-                <tr>
-                    <td colspan="7" style="text-align:center;">
-                        No hay auditorías registradas
-                    </td>
-                </tr>
-                @endif
-            </tbody>
-        </table>
-    </div>
+            <tr>
+                <td colspan="7" style="text-align:center;">
+                    No hay auditorías registradas
+                </td>
+            </tr>
+        @endif
+    </tbody>
+</table>
+</div>
 </div>
 
 </div>
