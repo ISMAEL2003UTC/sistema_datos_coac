@@ -209,7 +209,7 @@
                 <div class="form-row">
                     <div class="form-group">
                         <label>Cédula*</label>
-                        <input type="text" name="cedula" required>
+                        <input type="text" name="cedula" required maxlength="10" pattern="\d{10}" title="Debe tener 10 dígitos">
                     </div>
                     <div class="form-group">
                         <label>Nombre *</label>
@@ -228,7 +228,7 @@
                     </div>
                     <div class="form-group">
                         <label>Teléfono</label>
-                        <input type="tel" name="telefono">
+                        <input type="tel" name="telefono" required maxlength="10" pattern="\d{10}" title="Debe tener 10 dígitos">
                     </div>
                     <div class="form-group">
                         <label>Ciudad</label>
