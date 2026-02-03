@@ -57,7 +57,7 @@
     @if(auth()->user()->rol === 'admin')
         <button class="active" onclick="showSection('usuarios')">Usuarios</button>
         <button onclick="showSection('sujetos')">Sujetos</button>
-        <button onclick="showSection('miembros')">Miembros</button>
+        <button onclick="showSection('miembros')">Miembros</button>i
         <button onclick="showSection('productos')">Productos</button>
         <button onclick="showSection('consentimientos')">Consentimientos</button>
         <button onclick="showSection('dsar')">DSAR</button>
@@ -103,7 +103,7 @@
                 <input type="hidden" name="id" id="usuario_id">
                 <div class="form-row">
                     <div class="form-group">
-                        <label>Nombre Completo *</label>
+                        <label>Nombres y apellidos *</label>
                         <input type="text" name="nombre_completo" id="nombre_completo">
 
                     </div>
@@ -116,7 +116,7 @@
                         <select name="rol" id="rol" >
                             <option value="">Seleccionar...</option>
                             <option value="admin">Administrador</option>
-                            <option value="dpo">DPO (Oficial de Protección)</option>
+                            <option value="dpo"> Oficial de Protección de Datos</option>
                             <option value="auditor">Auditor</option>
                             <option value="operador">Operador</option>
                         </select>
@@ -130,7 +130,7 @@
                     <thead>
                         <tr>
                             <th>ID</th>
-                            <th>Nombre</th>
+                            <th>Nombres y apellidos</th>
                             <th>Email</th>
                             <th>Rol</th>
                             <th>Estado</th>
@@ -143,7 +143,8 @@
                             <td>{{ $usuario->id }}</td>
                             <td>{{ $usuario->nombre_completo }}</td>
                             <td>{{ $usuario->email }}</td>
-                            <td>{{ ucfirst($usuario->rol) }}</td>
+                            <td>{{ $usuario->rol_texto }}</td>
+
                             <td>
                                 @if($usuario->estado === 'activo')
                                     <span class="badge badge-success">Activo</span>
@@ -381,7 +382,6 @@
                                     @endif
                                 </td>
                                 <td>
-                                    <!-- BOTÓN EDITAR CORREGIDO -->
                                     <button class="btn btn-secondary btn-editar-miembro" 
                                         data-id="{{ $miembro->id }}"
                                         data-numero="{{ $miembro->numero_socio }}"
@@ -422,7 +422,6 @@
             </div>
         </div>
        <!-- PRODUCTOS FINANCIEROS ------------------------------------------------------>
-        <!-- PRODUCTOS FINANCIEROS ------------------------------------------------------>
         <div id="productos" class="content-section">
             <h2 class="section-title">Productos Financieros</h2>
             
@@ -733,9 +732,7 @@
             }
         }
 
-        // Modificar función editarProducto
         function editarProducto(id, codigo, nombre, tipo, descripcion, datos) {
-            // Rellenar formulario
             document.getElementById('producto_id').value = id;
             document.getElementById('producto_codigo').value = codigo;
             document.getElementById('producto_nombre').value = nombre;
@@ -743,7 +740,6 @@
             document.getElementById('producto_descripcion').value = descripcion;
             document.getElementById('producto_datos').value = datos;
             
-            // Mantener bloqueado en modo edición
             document.getElementById('producto_codigo').setAttribute('readonly', true);
             document.getElementById('producto_codigo').style.backgroundColor = '#f5f5f5';
             
@@ -1330,7 +1326,6 @@
     </div>
 </div>
 
-// ...existing code...
 <script>
 function editarIncidente(id, codigo, fecha, severidad, descripcion, tipo, afectados, estado){
     Swal.fire({
@@ -1560,7 +1555,6 @@ Swal.fire({
 <div id="auditorias" class="content-section">
     <h2 class="section-title">Gestión de Auditorías</h2>
 
-    {{-- FORMULARIO --}}
     <form method="POST" action="{{ route('auditorias.store') }}">
         @csrf
 
