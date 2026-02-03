@@ -5,7 +5,6 @@
     <title>Registro</title>
     <link rel="stylesheet" href="{{ asset('styles/styles.css') }}">
     <link rel="stylesheet" href="{{ asset('styles/estilos_registro.css') }}">
-
 </head>
 <body>
 
@@ -16,13 +15,33 @@
         @csrf
 
         <div class="form-group">
-            <label>Nombre completo</label>
-            <input type="text" name="nombre_completo" required>
+            <label>Nombre</label>
+            <input type="text" name="nombre" required value="{{ old('nombre') }}">
+        </div>
+
+        <div class="form-group">
+            <label>Apellido</label>
+            <input type="text" name="apellido" required value="{{ old('apellido') }}">
+        </div>
+
+        <div class="form-group">
+            <label>Cédula</label>
+            <input type="text" name="cedula" required value="{{ old('cedula') }}">
+        </div>
+
+        <div class="form-group">
+            <label>Ciudad</label>
+            <input type="text" name="ciudad" value="{{ old('ciudad') }}">
+        </div>
+
+        <div class="form-group">
+            <label>Dirección</label>
+            <input type="text" name="direccion" value="{{ old('direccion') }}">
         </div>
 
         <div class="form-group">
             <label>Email</label>
-            <input type="email" name="email" required>
+            <input type="email" name="email" required value="{{ old('email') }}">
         </div>
 
         <div class="form-group">
