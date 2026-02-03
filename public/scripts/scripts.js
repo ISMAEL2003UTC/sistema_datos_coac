@@ -77,7 +77,8 @@ function editarUsuario(id, nombre, email, rol) {
 // ========== FUNCIONES PARA SUJETOS ==========
 
 // EDITAR SUJETO
-function editarSujeto(id, cedula, nombre, email, telefono, direccion, tipo) {
+// EDITAR SUJETO
+function editarSujeto(id, cedula, nombre, apellido, email, telefono, direccion, ciudad, tipo) {
     Swal.fire({
         icon: 'info',
         title: 'Editar Sujeto de datos',
@@ -86,17 +87,22 @@ function editarSujeto(id, cedula, nombre, email, telefono, direccion, tipo) {
     });
     
     const form = document.getElementById('formSujetos');
+    
     form.querySelector('input[name="cedula"]').value = cedula;
     form.querySelector('input[name="nombre"]').value = nombre;
+    form.querySelector('input[name="apellido"]').value = apellido;
     form.querySelector('input[name="email"]').value = email;
     form.querySelector('input[name="telefono"]').value = telefono;
     form.querySelector('input[name="direccion"]').value = direccion;
+    form.querySelector('input[name="ciudad"]').value = ciudad;
     form.querySelector('select[name="tipo"]').value = tipo;
+    
     document.getElementById('sujeto_id').value = id;
     document.getElementById('form_sujeto_method').value = 'PUT';
     form.action = `/sujetos/${id}`;
     form.querySelector('button[type="submit"]').innerText = 'Actualizar Sujeto';
 }
+
 
 // ========== FUNCIONES PARA PRODUCTOS FINANCIEROS ==========
 
