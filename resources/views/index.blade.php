@@ -289,19 +289,20 @@
                     <td>{{ $sujeto->direccion }}</td>
                     <td><span class="badge badge-info">{{ ucfirst($sujeto->tipo) }}</span></td>
                     <td>
-                        <button class="btn btn-secondary btn-editar-sujeto"
-                            data-id="{{ $sujeto->id }}"
-                            data-cedula="{{ $sujeto->cedula }}"
-                            data-nombre="{{ $sujeto->nombre }}"
-                            data-apellido="{{ $sujeto->apellido }}"
-                            data-email="{{ $sujeto->email }}"
-                            data-telefono="{{ $sujeto->telefono }}"
-                            data-direccion="{{ $sujeto->direccion }}"
-                            data-ciudad="{{ $sujeto->ciudad }}"
-                            data-tipo="{{ $sujeto->tipo }}">
+                        <button class="btn btn-secondary"
+                             onclick="editarSujeto(
+                            {{ $sujeto->id }},
+                            '{{ $sujeto->cedula }}',
+                            '{{ $sujeto->nombre }}',
+                            '{{ $sujeto->apellido }}',
+                            '{{ $sujeto->email }}',
+                            '{{ $sujeto->telefono }}',
+                            '{{ $sujeto->direccion }}',
+                            '{{ $sujeto->ciudad }}',
+                            '{{ $sujeto->tipo }}'
+                        )">
                             Editar
                         </button>
-
 
                         <form action="{{ route('sujetos.destroy', $sujeto->id) }}" method="POST" style="display:inline;">
                             @csrf
