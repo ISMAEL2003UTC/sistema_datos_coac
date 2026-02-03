@@ -197,56 +197,69 @@
             </div>
         </div>
         @endif
+        <!-- SUJETOS DE DATOS -------------------------------------------------------------------------------->
+<div id="sujetos" class="content-section">
+    <h2 class="section-title">Registro de Sujetos de Datos</h2>
+
+    <form id="formSujetos" method="POST" action="{{ route('sujetos.store') }}">
+        @csrf
+        <input type="hidden" name="_method" id="form_sujeto_method" value="POST">
+        <input type="hidden" id="sujeto_id" name="sujeto_id">
+
+        <div class="form-row">
+            <div class="form-group">
+                <label>Cédula*</label>
+                <input type="text" name="cedula" required>
+            </div>
+            <div class="form-group">
+                <label>Nombre *</label>
+                <input type="text" name="nombre" required>
+            </div>
+            <div class="form-group">
+                <label>Apellido *</label>
+                <input type="text" name="apellido" required>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" name="email">
+            </div>
+            <div class="form-group">
+                <label>Teléfono</label>
+                <input type="tel" name="telefono">
+            </div>
+            <div class="form-group">
+                <label>Ciudad</label>
+                <input type="text" name="ciudad">
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label>Dirección</label>
+                <input type="text" name="direccion">
+            </div>
+            <div class="form-group">
+                <label>Tipo de Sujeto *</label>
+                <select name="tipo" required>
+                    <option value="">Seleccionar...</option>
+                    <option value="cliente">Cliente</option>
+                    <option value="empleado">Empleado</option>
+                    <option value="proveedor">Proveedor</option>
+                    <option value="tercero">Tercero</option>
+                </select>
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Registrar Sujeto</button>
+    </form>
+</div>
+
 
         
-        <!-- SUJETOS DE DATOS -------------------------------------------------------------------------------->
-        <div id="sujetos"  class="content-section">
-            <h2 class="section-title">Registro de Sujetos de Datos</h2>
-            
-            <form id="formSujetos" method="POST" action="{{ route('sujetos.store') }}">
-                
-            @csrf
-            <input type="hidden" name="_method" id="form_sujeto_method" value="POST">
-
-            <input type="hidden" id="sujeto_id" name="sujeto_id">
-
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Cédula/Identificación *</label>
-                        <input type="text" name="cedula" >
-                    </div>
-                    <div class="form-group">
-                        <label>Nombres y apellidos *</label>
-                        <input type="text" name="nombre" >
-                    </div>
-                    <div class="form-group">
-                        <label>Email</label>
-                        <input type="email" name="email">
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Teléfono</label>
-                        <input type="tel" name="telefono">
-                    </div>
-                    <div class="form-group">
-                        <label>Dirección</label>
-                        <input type="text" name="direccion">
-                    </div>
-                    <div class="form-group">
-                        <label>Tipo de Sujeto *</label>
-                        <select name="tipo" >
-                            <option value="">Seleccionar...</option>
-                            <option value="cliente">Cliente</option>
-                            <option value="empleado">Empleado</option>
-                            <option value="proveedor">Proveedor</option>
-                            <option value="tercero">Tercero</option>
-                        </select>
-                    </div>
-                </div>
-                <button type="submit" class="btn btn-primary">Registrar Sujeto</button>
-            </form>
+       
             
             <div class="table-container">
                 <table>
