@@ -436,7 +436,7 @@ $("#formSujetos").validate({
             soloLetras: true
         },
         email: {
-            required: false,
+            required: true,
             email: true,
             remote: {
                 url: "/verificar-email-sujeto",
@@ -454,12 +454,12 @@ $("#formSujetos").validate({
             maxlength: 10
         },
         ciudad: {
-            required: false,
+            required: true,
             minlength: 3,
             soloLetras: true
         },
         direccion: {
-            required: false,
+            required: true,
             minlength: 5
         },
         tipo: {
