@@ -76,32 +76,6 @@ function editarUsuario(id, nombre, email, rol) {
 
 // ========== FUNCIONES PARA SUJETOS ==========
 
-// EDITAR SUJETO
-// EDITAR SUJETO
-function editarSujeto(id, cedula, nombre, apellido, email, telefono, direccion, ciudad, tipo) {
-    Swal.fire({
-        icon: 'info',
-        title: 'Editar Sujeto de datos',
-        text: 'El formulario ha entrado en modo edición',
-        timer: 2000
-    });
-    
-    const form = document.getElementById('formSujetos');
-    
-    form.querySelector('input[name="cedula"]').value = cedula;
-    form.querySelector('input[name="nombre"]').value = nombre;
-    form.querySelector('input[name="apellido"]').value = apellido;
-    form.querySelector('input[name="email"]').value = email;
-    form.querySelector('input[name="telefono"]').value = telefono;
-    form.querySelector('input[name="direccion"]').value = direccion;
-    form.querySelector('input[name="ciudad"]').value = ciudad;
-    form.querySelector('select[name="tipo"]').value = tipo;
-    
-    document.getElementById('sujeto_id').value = id;
-    document.getElementById('form_sujeto_method').value = 'PUT';
-    form.action = `/sujetos/${id}`;
-    form.querySelector('button[type="submit"]').innerText = 'Actualizar Sujeto';
-}
 
 
 // ========== FUNCIONES PARA PRODUCTOS FINANCIEROS ==========
@@ -539,7 +513,8 @@ $("#formSujetos").validate({
     }
 });
 
-// FUNCION EDITAR SUJETO
+// EDITAR SUJETO
+// EDITAR SUJETO
 function editarSujeto(id, cedula, nombre, apellido, email, telefono, direccion, ciudad, tipo) {
     Swal.fire({
         icon: 'info',
@@ -547,24 +522,23 @@ function editarSujeto(id, cedula, nombre, apellido, email, telefono, direccion, 
         text: 'El formulario ha entrado en modo edición',
         timer: 2000
     });
-
+    
     const form = document.getElementById('formSujetos');
-    $("#sujeto_id").val(id);
-    $("input[name='cedula']").val(cedula);
-    $("input[name='nombre']").val(nombre);
-    $("input[name='apellido']").val(apellido);
-    $("input[name='email']").val(email);
-    $("input[name='telefono']").val(telefono);
-    $("input[name='direccion']").val(direccion);
-    $("input[name='ciudad']").val(ciudad);
-    $("select[name='tipo']").val(tipo);
-
-    // Cambiar método y acción del formulario para PUT
-    $("#form_sujeto_method").val('PUT');
+    
+    form.querySelector('input[name="cedula"]').value = cedula;
+    form.querySelector('input[name="nombre"]').value = nombre;
+    form.querySelector('input[name="apellido"]').value = apellido;
+    form.querySelector('input[name="email"]').value = email;
+    form.querySelector('input[name="telefono"]').value = telefono;
+    form.querySelector('input[name="direccion"]').value = direccion;
+    form.querySelector('input[name="ciudad"]').value = ciudad;
+    form.querySelector('select[name="tipo"]').value = tipo;
+    
+    document.getElementById('sujeto_id').value = id;
+    document.getElementById('form_sujeto_method').value = 'PUT';
     form.action = `/sujetos/${id}`;
     form.querySelector('button[type="submit"]').innerText = 'Actualizar Sujeto';
 }
-
 
 
 
