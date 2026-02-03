@@ -57,7 +57,7 @@
     @if(auth()->user()->rol === 'admin')
         <button class="active" onclick="showSection('usuarios')">Usuarios</button>
         <button onclick="showSection('sujetos')">Sujetos</button>
-        <button onclick="showSection('miembros')">Miembros</button>i
+        <button onclick="showSection('miembros')">Miembros</button>
         <button onclick="showSection('productos')">Productos</button>
         <button onclick="showSection('consentimientos')">Consentimientos</button>
         <button onclick="showSection('dsar')">DSAR</button>
@@ -102,26 +102,36 @@
                 <input type="hidden" name="_method" id="form_method" value="POST">
                 <input type="hidden" name="id" id="usuario_id">
                 <div class="form-row">
-                    <div class="form-group">
-                        <label>Nombres y apellidos *</label>
-                        <input type="text" name="nombre_completo" id="nombre_completo">
-
-                    </div>
-                    <div class="form-group">
-                        <label>Email *</label>
-                        <input type="email" name="email" >
-                    </div>
-                    <div class="form-group">
-                        <label>Rol *</label>
-                        <select name="rol" id="rol" >
-                            <option value="">Seleccionar...</option>
-                            <option value="admin">Administrador</option>
-                            <option value="dpo"> Oficial de Protección de Datos</option>
-                            <option value="auditor">Auditor</option>
-                            <option value="operador">Operador</option>
-                        </select>
-                    </div>
+                <div class="form-group">
+                    <label>Nombres y apellidos *</label>
+                    <input 
+                        type="text" 
+                        name="nombre_completo" 
+                        id="nombre_completo"
+                        placeholder="Ingrese sus nombres y apellidos completos">
+                    
                 </div>
+
+                <div class="form-group">
+                    <label>Email *</label>
+                    <input 
+                        type="email" 
+                        name="email"
+                        placeholder="Ingrese un correo electrónico válido">
+                </div>
+
+                <div class="form-group">
+                    <label>Rol *</label>
+                    <select name="rol" id="rol">
+                        <option value="">Seleccionar...</option>
+                        <option value="admin">Administrador</option>
+                        <option value="dpo">Oficial de Protección de Datos</option>
+                        <option value="auditor">Auditor</option>
+                        <option value="operador">Operador</option>
+                    </select>
+                </div>
+            </div>
+
                 <button type="submit" class="btn btn-primary">Agregar Usuario</button>
             </form>
             
@@ -207,7 +217,7 @@
                         <input type="text" name="cedula" >
                     </div>
                     <div class="form-group">
-                        <label>Nombre Completo *</label>
+                        <label>Nombres y apellidos *</label>
                         <input type="text" name="nombre" >
                     </div>
                     <div class="form-group">
