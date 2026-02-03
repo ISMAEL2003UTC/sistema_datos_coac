@@ -12,25 +12,31 @@ class Usuario extends Authenticatable
     protected $table = 'usuarios';
 
     protected $fillable = [
-        'nombre_completo',
+        'nombre',
+        'apellido',
+        'cedula',
+        'ciudad',
+        'direccion',
         'email',
         'password',
         'rol',
-        'estado'
+        'estado',
+        'created_at',
+        'updated_at'
     ];
 
     protected $hidden = [
         'password'
     ];
-    public function getRolTextoAttribute()
-{
-    return match ($this->rol) {
-        'admin'    => 'Administrador',
-        'dpo'      => 'Oficial de Protección de Datos',
-        'auditor'  => 'Auditor',
-        'operador' => 'Operador',
-        default    => ucfirst($this->rol),
-    };
-}
 
+    public function getRolTextoAttribute()
+    {
+        return match ($this->rol) {
+            'admin'    => 'Administrador',
+            'dpo'      => 'Oficial de Protección de Datos',
+            'auditor'  => 'Auditor',
+            'operador' => 'Operador',
+            default    => ucfirst($this->rol),
+        };
+    }
 }
