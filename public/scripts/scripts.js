@@ -520,14 +520,18 @@ function editarSujeto(id, cedula, nombre, email, telefono, direccion, tipo) {
     $("select[name='tipo']").val(tipo);
 }
 $.validator.addMethod("cedulaEC", function (value) {
+    // Limpiar espacios u otros caracteres accidentales
+    value = value.replace(/\s+/g, '');
+
+    // Debe tener exactamente 10 dígitos
     if (!/^\d{10}$/.test(value)) return false;
 
     let total = 0;
-    let digito = parseInt(value[9]);
+    let digito = parseInt(value[9], 10); // dígito verificador
 
     for (let i = 0; i < 9; i++) {
-        let num = parseInt(value[i]);
-        if (i % 2 === 0) {
+        let num = parseInt(value[i], 10);
+        if (i % 2 === 0) { // posiciones impares (0,2,4,6,8)
             num *= 2;
             if (num > 9) num -= 9;
         }
@@ -535,8 +539,10 @@ $.validator.addMethod("cedulaEC", function (value) {
     }
 
     let verificador = (10 - (total % 10)) % 10;
+
     return verificador === digito;
 }, "La cédula no es válida");
+
 
 
     // VALIDACIÓN PRODUCTOS FINANCIEROS
