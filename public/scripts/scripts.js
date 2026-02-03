@@ -415,9 +415,23 @@ function editarUsuario(id, nombre, email, rol) {
 }
 
 
-    // VALIDACIÓN SUJETOS
-    $("#formSujetos").validate({
-        
+    // Métodos adicionales
+$.validator.addMethod("soloLetras", function(value, element) {
+    return this.optional(element) || /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/.test(value);
+}, "Solo se permiten letras");
+
+$.validator.addMethod("soloNumeros", function(value, element) {
+    return this.optional(element) || /^\d+$/.test(value);
+}, "Solo se permiten números");
+
+// Método para cédula (exactamente 10 dígitos)
+$.validator.addMethod("cedulaEC", function (value) {
+    value = value.replace(/\D/g, '');
+    return value.length === 10;
+}, "La cédula debe tener exactamente 10 dígitos");
+
+// VALIDACIÓN SUJETOS
+$("#formSujetos").validate({
     rules: {
         cedula: {
             required: true,
@@ -426,16 +440,17 @@ function editarUsuario(id, nombre, email, rol) {
                 url: "/verificar-cedula-sujeto",
                 type: "get",
                 data: {
-                    cedula: function () {
-                        return $("input[name='cedula']").val();
-                    },
-                    sujeto_id: function () {
-                        return $("#sujeto_id").val();
-                    }
+                    cedula: function () { return $("input[name='cedula']").val(); },
+                    sujeto_id: function () { return $("#sujeto_id").val(); }
                 }
             }
         },
         nombre: {
+            required: true,
+            minlength: 3,
+            soloLetras: true
+        },
+        apellido: {
             required: true,
             minlength: 3,
             soloLetras: true
@@ -447,20 +462,21 @@ function editarUsuario(id, nombre, email, rol) {
                 url: "/verificar-email-sujeto",
                 type: "get",
                 data: {
-                    email: function () {
-                        return $("input[name='email']").val();
-                    },
-                    sujeto_id: function () {
-                        return $("#sujeto_id").val();
-                    }
+                    email: function () { return $("input[name='email']").val(); },
+                    sujeto_id: function () { return $("#sujeto_id").val(); }
                 }
             }
         },
         telefono: {
             required: true,
             soloNumeros: true,
-            minlength: 7,
+            minlength: 10,
             maxlength: 10
+        },
+        ciudad: {
+            required: true,
+            minlength: 3,
+            soloLetras: true
         },
         direccion: {
             required: true,
@@ -474,6 +490,7 @@ function editarUsuario(id, nombre, email, rol) {
     messages: {
         cedula: {
             required: "La cédula es obligatoria",
+            cedulaEC: "La cédula debe tener exactamente 10 dígitos",
             remote: "Esta cédula ya está registrada"
         },
         nombre: {
@@ -494,15 +511,14 @@ function editarUsuario(id, nombre, email, rol) {
         telefono: {
             required: "El teléfono es obligatorio",
             soloNumeros: "Solo se permiten números",
-            minlength: "Mínimo 10 dígitos",
-            maxlength: "Máximo 10 dígitos"
+            minlength: "El teléfono debe tener 10 dígitos",
+            maxlength: "El teléfono debe tener 10 dígitos"
         },
         ciudad: {
-            required: "La ciudad es obligatorio",
+            required: "La ciudad es obligatoria",
             minlength: "Debe tener al menos 3 caracteres",
             soloLetras: "Solo se permiten letras"
         },
-        
         direccion: {
             required: "La dirección es obligatoria",
             minlength: "La dirección es muy corta"
@@ -521,22 +537,19 @@ function editarUsuario(id, nombre, email, rol) {
         $(element).removeClass("is-invalid");
     }
 });
-function editarSujeto(id, cedula, nombre, email, telefono, direccion, tipo) {
+
+// Función para editar sujeto
+function editarSujeto(id, cedula, nombre, apellido, email, telefono, direccion, ciudad, tipo) {
     $("#sujeto_id").val(id);
     $("input[name='cedula']").val(cedula);
     $("input[name='nombre']").val(nombre);
+    $("input[name='apellido']").val(apellido);
     $("input[name='email']").val(email);
     $("input[name='telefono']").val(telefono);
     $("input[name='direccion']").val(direccion);
+    $("input[name='ciudad']").val(ciudad);
     $("select[name='tipo']").val(tipo);
 }
-$.validator.addMethod("cedulaEC", function (value) {
-    // Eliminar cualquier carácter que no sea número
-    value = value.replace(/\D/g, '');
-
-    // Verificar que tenga exactamente 10 dígitos
-    return value.length === 10;
-}, "La cédula debe tener exactamente 10 dígitos");
 
 
 
