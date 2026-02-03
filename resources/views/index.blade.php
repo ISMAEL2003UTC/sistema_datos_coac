@@ -268,8 +268,11 @@
                 <tr>
                     <th>Cédula</th>
                     <th>Nombre</th>
+                    <th>Apellido</th>
                     <th>Email</th>
                     <th>Teléfono</th>
+                    <th>Ciudad</th>
+                    <th>Dirección</th>
                     <th>Tipo</th>
                     <th>Acciones</th>
                 </tr>
@@ -278,23 +281,26 @@
                 @foreach($sujetos as $sujeto)
                 <tr>
                     <td>{{ $sujeto->cedula }}</td>
-                    <td>{{ $sujeto->nombre }} {{ $sujeto->apellido }}</td>
+                    <td>{{ $sujeto->nombre }}</td>
+                    <td>{{ $sujeto->apellido }}</td>
                     <td>{{ $sujeto->email }}</td>
                     <td>{{ $sujeto->telefono }}</td>
+                    <td>{{ $sujeto->ciudad }}</td>
+                    <td>{{ $sujeto->direccion }}</td>
                     <td><span class="badge badge-info">{{ ucfirst($sujeto->tipo) }}</span></td>
                     <td>
                         <button class="btn btn-secondary"
-                            onclick="editarSujeto(
-                                {{ $sujeto->id }},
-                                '{{ $sujeto->cedula }}',
-                                '{{ $sujeto->nombre }}',
-                                '{{ $sujeto->apellido }}',
-                                '{{ $sujeto->email }}',
-                                '{{ $sujeto->telefono }}',
-                                '{{ $sujeto->direccion }}',
-                                '{{ $sujeto->ciudad }}',
-                                '{{ $sujeto->tipo }}'
-                            )">
+                             onclick="editarSujeto(
+                            {{ $sujeto->id }},
+                            '{{ $sujeto->cedula }}',
+                            '{{ $sujeto->nombre }}',
+                            '{{ $sujeto->apellido }}',
+                            '{{ $sujeto->email }}',
+                            '{{ $sujeto->telefono }}',
+                            '{{ $sujeto->direccion }}',
+                            '{{ $sujeto->ciudad }}',
+                            '{{ $sujeto->tipo }}'
+                        )">
                             Editar
                         </button>
 
