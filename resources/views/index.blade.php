@@ -198,123 +198,117 @@
         </div>
         @endif
         <!-- SUJETOS DE DATOS -------------------------------------------------------------------------------->
-<div id="sujetos" class="content-section">
-    <h2 class="section-title">Registro de Sujetos de Datos</h2>
+        <div id="sujetos" class="content-section">
+            <h2 class="section-title">Registro de Sujetos de Datos</h2>
 
-    <form id="formSujetos" method="POST" action="{{ route('sujetos.store') }}">
-        @csrf
-        <input type="hidden" name="_method" id="form_sujeto_method" value="POST">
-        <input type="hidden" id="sujeto_id" name="sujeto_id">
+            <form id="formSujetos" method="POST" action="{{ route('sujetos.store') }}">
+                @csrf
+                <input type="hidden" name="_method" id="form_sujeto_method" value="POST">
+                <input type="hidden" id="sujeto_id" name="sujeto_id">
 
-        <div class="form-row">
-            <div class="form-group">
-                <label>Cédula*</label>
-                <input type="text" name="cedula" required>
-            </div>
-            <div class="form-group">
-                <label>Nombre *</label>
-                <input type="text" name="nombre" required>
-            </div>
-            <div class="form-group">
-                <label>Apellido *</label>
-                <input type="text" name="apellido" required>
-            </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Cédula*</label>
+                        <input type="text" name="cedula" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Nombre *</label>
+                        <input type="text" name="nombre" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Apellido *</label>
+                        <input type="text" name="apellido" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" name="email">
+                    </div>
+                    <div class="form-group">
+                        <label>Teléfono</label>
+                        <input type="tel" name="telefono">
+                    </div>
+                    <div class="form-group">
+                        <label>Ciudad</label>
+                        <input type="text" name="ciudad">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Dirección</label>
+                        <input type="text" name="direccion">
+                    </div>
+                    <div class="form-group">
+                        <label>Tipo de Sujeto *</label>
+                        <select name="tipo" required>
+                            <option value="">Seleccionar...</option>
+                            <option value="cliente">Cliente</option>
+                            <option value="empleado">Empleado</option>
+                            <option value="proveedor">Proveedor</option>
+                            <option value="tercero">Tercero</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Registrar Sujeto</button>
+            </form>
         </div>
+            <div class="table-container">
+    <table>
+        <thead>
+            <tr>
+                <th>Cédula</th>
+                <th>Nombre</th>
+                <th>Email</th>
+                <th>Teléfono</th>
+                <th>Tipo</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach($sujetos as $sujeto)
+            <tr>
+                <td>{{ $sujeto->cedula }}</td>
+                <td>{{ $sujeto->nombre }} {{ $sujeto->apellido }}</td>
+                <td>{{ $sujeto->email }}</td>
+                <td>{{ $sujeto->telefono }}</td>
+                <td>
+                    <span class="badge badge-info">{{ ucfirst($sujeto->tipo) }}</span>
+                </td>
+                <td>
+                    <button class="btn btn-secondary"
+                        onclick="editarSujeto(
+                            {{ $sujeto->id }},
+                            '{{ $sujeto->cedula }}',
+                            '{{ $sujeto->nombre }}',
+                            '{{ $sujeto->apellido }}',
+                            '{{ $sujeto->email }}',
+                            '{{ $sujeto->telefono }}',
+                            '{{ $sujeto->direccion }}',
+                            '{{ $sujeto->ciudad }}',
+                            '{{ $sujeto->tipo }}'
+                        )">
+                        Editar
+                    </button>
 
-        <div class="form-row">
-            <div class="form-group">
-                <label>Email</label>
-                <input type="email" name="email">
-            </div>
-            <div class="form-group">
-                <label>Teléfono</label>
-                <input type="tel" name="telefono">
-            </div>
-            <div class="form-group">
-                <label>Ciudad</label>
-                <input type="text" name="ciudad">
-            </div>
-        </div>
+                    <form action="{{ route('sujetos.destroy', $sujeto->id) }}"
+                        method="POST"
+                        style="display:inline;">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="btn btn-danger">Eliminar</button>
+                    </form>
 
-        <div class="form-row">
-            <div class="form-group">
-                <label>Dirección</label>
-                <input type="text" name="direccion">
-            </div>
-            <div class="form-group">
-                <label>Tipo de Sujeto *</label>
-                <select name="tipo" required>
-                    <option value="">Seleccionar...</option>
-                    <option value="cliente">Cliente</option>
-                    <option value="empleado">Empleado</option>
-                    <option value="proveedor">Proveedor</option>
-                    <option value="tercero">Tercero</option>
-                </select>
-            </div>
-        </div>
-
-        <button type="submit" class="btn btn-primary">Registrar Sujeto</button>
-    </form>
+                </td>
+            </tr>
+            @endforeach
+        </tbody>
+    </table>
 </div>
 
-
-        
-       
-            
-            <div class="table-container">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Cédula</th>
-                            <th>Nombre</th>
-                            <th>Email</th>
-                            <th>Teléfono</th>
-                            
-                            <th>Tipo</th>
-                            <th>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach($sujetos as $sujeto)
-                        <tr>
-                            <td>{{ $sujeto->cedula }}</td>
-                            <td>{{ $sujeto->nombre_completo }}</td>
-                            <td>{{ $sujeto->email }}</td>
-                            <td>{{ $sujeto->telefono }}</td>
-                            <td>
-                                <span class="badge badge-info">{{ ucfirst($sujeto->tipo) }}</span>
-                            </td>
-                            <td>
-                                <button class="btn btn-secondary"
-                                    onclick="editarSujeto(
-                                        {{ $sujeto->id }},
-                                        '{{ $sujeto->cedula }}',
-                                        '{{ $sujeto->nombre_completo }}',
-                                        '{{ $sujeto->email }}',
-                                        '{{ $sujeto->telefono }}',
-                                        '{{ $sujeto->direccion }}',
-                                        '{{ $sujeto->tipo }}'
-                                    )">
-                                    Editar
-                                </button>
-
-                                <form action="{{ route('sujetos.destroy', $sujeto->id) }}"
-                                    method="POST"
-                                    style="display:inline;">
-                                    @csrf
-                                    @method('DELETE')
-
-                                    
-                                </form>
-
-                            </td>
-                        </tr>
-                        @endforeach
-                        </tbody>
-
-                </table>
-            </div>
-        </div>
         
         <!-- MIEMBROS COAC -->
         <div id="miembros" class="content-section">
