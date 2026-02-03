@@ -481,6 +481,11 @@ function editarUsuario(id, nombre, email, rol) {
             minlength: "Debe tener al menos 3 caracteres",
             soloLetras: "Solo se permiten letras"
         },
+        apellido: {
+            required: "El apellido es obligatorio",
+            minlength: "Debe tener al menos 3 caracteres",
+            soloLetras: "Solo se permiten letras"
+        },
         email: {
             required: "El correo es obligatorio",
             email: "Correo no válido",
@@ -492,6 +497,12 @@ function editarUsuario(id, nombre, email, rol) {
             minlength: "Mínimo 10 dígitos",
             maxlength: "Máximo 10 dígitos"
         },
+        ciudad: {
+            required: "La ciudad es obligatorio",
+            minlength: "Debe tener al menos 3 caracteres",
+            soloLetras: "Solo se permiten letras"
+        },
+        
         direccion: {
             required: "La dirección es obligatoria",
             minlength: "La dirección es muy corta"
