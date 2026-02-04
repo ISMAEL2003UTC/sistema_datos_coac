@@ -1656,10 +1656,12 @@ Swal.fire({
                 </select>
             </div>
 
-            <div class="form-group">
-                <label>Auditor Responsable *</label>
-                <input type="text" name="auditor" required placeholder="Nombre del auditor">
-            </div>
+            <select name="sujeto_id" id="consentimiento_sujeto_id" required>
+                            <option value="">Seleccionar...</option>
+                            @foreach($sujetos as $sujeto)
+                                <option value="{{ $sujeto->id }}">{{ $sujeto->cedula }} - {{ $sujeto->nombre_completo }}</option>
+                            @endforeach
+                        </select>
         </div>
 
 <div class="form-row">
