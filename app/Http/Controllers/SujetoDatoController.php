@@ -109,18 +109,17 @@ class SujetoDatoController extends Controller
      * Verificar si el email existe.
      */
     public function verificarEmail(Request $request)
-    {
-        $email = $request->email;
-        $id = $request->sujeto_id;
+{
+    $email = $request->email;
+    $id = $request->sujeto_id;
 
-        if (!$email) {
-            return response()->json(true);
-        }
+    $existe = SujetoDato::where('email', $email)
+        ->when($id, function ($query) use ($id) {
+            $query->where('id', '!=', $id);
+        })
+        ->exists();
 
-        $existe = SujetoDato::where('email', $email)
-            ->when($id, fn($query) => $query->where('id', '!=', $id))
-            ->exists();
+    return response()->json(!$existe);
+}
 
-        return response()->json(!$existe);
-    }
 }
