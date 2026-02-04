@@ -99,3 +99,5 @@ Route::get('/verificar-email-sujeto', [SujetoDatoController::class, 'verificarEm
 Route::get('/verificar-nombre', [UsuarioController::class, 'verificarNombre']);
 // validar cedula usurio
 Route::get('/verificar-cedula', [UsuarioController::class, 'verificarCedula']);
+// ruta para verificar el token de verificacion de correo
+Route::get('/verificar-correo/{token}', [UsuarioController::class, 'verificarCorreo']);

@@ -2,6 +2,12 @@
 
 namespace App\Http\Controllers;
 
+// nuevo para el correo 
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\VerificarCorreoUsuario;
+//-------------------------------
+
 use App\Models\Usuario; 
 use App\Models\SujetoDato;
 use App\Models\MiembroCoac;
@@ -81,11 +87,15 @@ class UsuarioController extends Controller
             'ciudad'    => $request->ciudad,
             'direccion' => $request->direccion,
             'rol'       => $request->rol,
-            'estado'    => 'activo',
+            'estado'    => 'inactivo', // El usuario queda INACTIVO hasta verificar el correo
+            // lo del correo 
+            'email_verificado'=> false,
+            'email_verificacion_token' => Str::uuid(),
             'password'  => Hash::make('123456')
         ]);
+        Mail::to($usuario->email)->send(new VerificarCorreoUsuario($usuario));
 
-        return redirect()->back()->with('success', 'Usuario registrado correctamente');
+        return redirect()->back()->with('success', 'Usuario registrado correctamente Se envió un correo de verificación.');
     }
 
     public function update(Request $request, Usuario $usuario)
@@ -161,6 +171,18 @@ class UsuarioController extends Controller
 
         return response()->json(!$existe);
     }
+        public function verificarCorreo($token)
+    {
+        $usuario = Usuario::where('email_verificacion_token', $token)->firstOrFail();
+
+        $usuario->email_verificado = true;
+        $usuario->estado = 'activo';
+        $usuario->email_verificacion_token = null;
+        $usuario->save();
+
+        return redirect('/')->with('success', 'Correo verificado correctamente. Cuenta activada.');
+    }
+
 
 
 
