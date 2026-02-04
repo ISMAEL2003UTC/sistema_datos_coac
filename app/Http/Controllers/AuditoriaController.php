@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Auditoria;
+use App\Models\Usuario;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -17,9 +18,8 @@ class AuditoriaController extends Controller
     {
         try {
             // Obtener auditores (usuarios con rol 'auditor')
-            $auditores = User::where('rol', 'auditor')
-                ->orderBy('nombre_completo')
-                ->get();
+            $auditores = Usuario::all();
+
             
             // Obtener auditorías con paginación y eager loading
             $auditorias = Auditoria::with('usuarioAuditor')
@@ -43,7 +43,7 @@ class AuditoriaController extends Controller
             // Validación de datos
             $validated = $request->validate([
                 'tipo_aud' => 'required|in:interna,externa',
-                'auditor_id' => 'required|exists:users,id',
+                'auditor_id' => 'required|exists:usuarios,id',
                 'fecha_inicio' => 'required|date|date_format:Y-m-d',
                 'hora_inicio' => 'required|date_format:H:i',
                 'fecha_fin' => 'required|date|date_format:Y-m-d|after:fecha_inicio',
