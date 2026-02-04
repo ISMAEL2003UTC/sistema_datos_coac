@@ -16,18 +16,19 @@ class AuditoriaController extends Controller
      */
     public function index()
 {
-    // Solo usuarios con rol auditor y estado activo
+    // Solo usuarios activos con rol 'auditor'
     $usuarios = Usuario::where('rol', 'auditor')
                         ->where('estado', 'activo')
                         ->orderBy('nombre', 'asc')
                         ->get();
 
-    // Traer auditorías si las necesitas en la vista
+    // Traer auditorías si las necesitas
     $auditorias = Auditoria::orderBy('created_at', 'desc')->get();
 
-    // Pasamos ambas variables a la vista
-    return view('tu_vista', compact('auditorias', 'usuarios'));
+    // Pasar ambas a la vista
+    return view('auditorias.index', compact('auditorias', 'usuarios'));
 }
+
 
 
 

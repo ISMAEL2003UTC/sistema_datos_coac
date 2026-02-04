@@ -1657,12 +1657,10 @@ Swal.fire({
             </div>
             <div class="form-group">
                 <label>Auditor Responsable *</label>
-                <select name="usuario_id" id="usuario_auditor_id" class="form-control" required>
+                <select name="auditor_id" id="usuario_auditor_id" class="form-control" required>
     <option value="">Seleccione un auditor</option>
-
     @forelse($usuarios as $usuario)
-        <option value="{{ $usuario->id }}"
-            {{ old('usuario_id') == $usuario->id ? 'selected' : '' }}>
+        <option value="{{ $usuario->id }}" {{ old('auditor_id') == $usuario->id ? 'selected' : '' }}>
             {{ $usuario->nombre }} {{ $usuario->apellido ?? '' }}
         </option>
     @empty
