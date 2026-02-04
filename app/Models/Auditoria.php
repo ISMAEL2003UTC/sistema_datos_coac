@@ -1,8 +1,6 @@
 <?php
 
 namespace App\Models;
-use App\Models\Usuario;
-
 
 use Illuminate\Database\Eloquent\Model;
 
@@ -11,19 +9,15 @@ class Auditoria extends Model
     protected $table = 'auditorias';
 
     protected $fillable = [
-    'codigo',
-    'tipo',
-    'auditor_id',
-    'fecha_inicio',
-    'hora_inicio',
-    'fecha_fin',
-    'hora_fin',
-    'estado',
-    'alcance',
-    'hallazgos',
-    'creado_por'
-];
-
+        'codigo',  
+        'tipo',
+        'auditor',
+        'fecha_inicio',
+        'fecha_fin',
+        'estado',
+        'alcance',
+        'hallazgos'
+    ];
 
     /**
      * Boot method para generar código automático
@@ -49,9 +43,4 @@ class Auditoria extends Model
             }
         });
     }
-    public function usuarioAuditor()
-    {
-        return $this->belongsTo(Usuario::class, 'auditor_id');
-    }
-
 }

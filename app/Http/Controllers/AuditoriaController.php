@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Auditoria;
-use App\Models\Usuario;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -15,27 +15,25 @@ class AuditoriaController extends Controller
      * Display a listing of the resource.
      */
     public function index()
-{
-    try {
-        // Traer solo usuarios con rol 'auditor'
-        $auditores = Usuario::where('rol', 'ILIKE', 'auditor')
-    ->orderBy('nombre')
-    ->get();
-
-
-        // Obtener auditorías con paginación y eager loading
-        $auditorias = Auditoria::with('usuarioAuditor')
-            ->orderBy('created_at', 'desc')
-            ->paginate(15);
-        
-        return view('auditorias.index', compact('auditorias', 'auditores'));
-        
-    } catch (\Exception $e) {
-        Log::error('Error al cargar auditorías: ' . $e->getMessage());
-        return redirect()->back()->with('error', 'Error al cargar las auditorías.');
+    {
+        try {
+            // Obtener auditores (usuarios con rol 'auditor')
+            $auditores = User::where('rol', 'auditor')
+                ->orderBy('nombre_completo')
+                ->get();
+            
+            // Obtener auditorías con paginación y eager loading
+            $auditorias = Auditoria::with('usuarioAuditor')
+                ->orderBy('created_at', 'desc')
+                ->paginate(15);
+            
+            return view('auditorias.index', compact('auditorias', 'auditores'));
+            
+        } catch (\Exception $e) {
+            Log::error('Error al cargar auditorías: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Error al cargar las auditorías.');
+        }
     }
-}
-
 
     /**
      * Store a newly created resource in storage.
@@ -46,7 +44,7 @@ class AuditoriaController extends Controller
             // Validación de datos
             $validated = $request->validate([
                 'tipo_aud' => 'required|in:interna,externa',
-                'auditor_id' => 'required|exists:usuarios,id',
+                'auditor_id' => 'required|exists:users,id',
                 'fecha_inicio' => 'required|date|date_format:Y-m-d',
                 'hora_inicio' => 'required|date_format:H:i',
                 'fecha_fin' => 'required|date|date_format:Y-m-d|after:fecha_inicio',
@@ -77,7 +75,7 @@ class AuditoriaController extends Controller
             ]);
             
             // Validar que el usuario tenga rol de auditor
-            $auditor = Usuario::find($validated['auditor_id']);
+            $auditor = User::find($validated['auditor_id']);
             if ($auditor->rol !== 'auditor') {
                 throw ValidationException::withMessages([
                     'auditor_id' => 'El usuario seleccionado no tiene rol de auditor.',
