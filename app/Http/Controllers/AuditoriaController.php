@@ -18,9 +18,10 @@ class AuditoriaController extends Controller
 {
     try {
         // Traer solo usuarios con rol 'auditor'
-        $auditores = Usuario::where('rol', 'Auditor')
-            ->orderBy('nombre')
-            ->get();
+        $auditores = Usuario::where('rol', 'ILIKE', 'auditor')
+    ->orderBy('nombre')
+    ->get();
+
 
         // Obtener auditorías con paginación y eager loading
         $auditorias = Auditoria::with('usuarioAuditor')
