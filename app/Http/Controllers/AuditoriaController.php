@@ -17,10 +17,11 @@ class AuditoriaController extends Controller
     public function index()
 {
     // Solo usuarios activos con rol 'auditor'
-    $usuarios = Usuario::where('rol', 'auditor')
-                   ->where('estado', 'activo')
+    $usuarios = Usuario::whereRaw('LOWER(rol) = ?', ['auditor'])
+                   ->whereRaw('LOWER(estado) = ?', ['activo'])
                    ->orderBy('nombre', 'asc')
                    ->get();
+
 
 
 
