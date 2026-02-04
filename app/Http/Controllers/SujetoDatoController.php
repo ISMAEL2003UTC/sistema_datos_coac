@@ -26,7 +26,7 @@ class SujetoDatoController extends Controller
             'nombre' => 'required|string|max:100',
             'apellido' => 'required|string|max:100',
             'tipo' => 'required|string|max:50',
-            'email' => 'nullable|email|unique:sujetos_datos,email',
+            'email' => 'required|email|unique:sujetos_datos,email',
             'telefono' => 'nullable|string|max:20',
             'direccion' => 'nullable|string|max:200',
             'ciudad' => 'nullable|string|max:100',
