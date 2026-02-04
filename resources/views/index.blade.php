@@ -139,7 +139,6 @@
                 <label>Rol *</label>
                 <select name="rol" id="rol">
                     <option value="">Seleccionar...</option>
-                    <option value="admin">Administrador</option>
                     <option value="dpo">Oficial de Protección de Datos</option>
                     <option value="auditor">Auditor</option>
                     <option value="operador">Operador</option>

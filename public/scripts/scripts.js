@@ -57,7 +57,8 @@ function resetFormularioUsuarios() {
 }
 
 // EDITAR USUARIO
-function editarUsuario(id, nombre, email, rol) {
+// EDITAR USUARIO
+function editarUsuario(id, nombre, apellido, email, cedula, ciudad, direccion, rol) {
     Swal.fire({
         icon: 'info',
         title: 'Editar usuario',
@@ -66,13 +67,19 @@ function editarUsuario(id, nombre, email, rol) {
     });
 
     $('#usuario_id').val(id);
-    $('#nombre_completo').val(nombre);
-    $('input[name="email"]').val(email);
+    $('#nombre').val(nombre);
+    $('#apellido').val(apellido);
+    $('#email').val(email);
+    $('#cedula').val(cedula);
+    $('#ciudad').val(ciudad);
+    $('#direccion').val(direccion);
     $('#rol').val(rol);
+
     $('#form_method').val('PUT');
     $('#formUsuarios').attr('action', '/usuarios/' + id);
     $('#formUsuarios button[type="submit"]').text('Actualizar Usuario');
 }
+
 
 // ========== FUNCIONES PARA SUJETOS ==========
 
