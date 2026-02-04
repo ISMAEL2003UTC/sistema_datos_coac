@@ -10,94 +10,74 @@ class MiembroController extends Controller
 {
     public function index()
     {
-        $miembros = MiembroCoac::orderBy('id', 'desc')->get();
-        return view('tu_vista', compact('miembros')); // ajusta si tu vista tiene otro nombre
+        $miembros = MiembroCoac::orderBy('id', 'asc')->get();
+        return view('tu_vista', compact('miembros')); // cambia tu_vista si tu blade se llama distinto
     }
 
-    /**
-     * REGISTRAR MIEMBRO
-     */
+    // ==========================
+    // REGISTRAR
+    // ==========================
     public function store(Request $request)
     {
         $request->validate([
-            'cedula' => [
-                'required',
-                'string',
-                'max:20',
-                'unique:miembros_coac,cedula'
-            ],
+            'cedula' => ['required', 'string', 'max:20', 'unique:miembros_coac,cedula'],
             'nombres' => ['required', 'string', 'max:100'],
             'apellidos' => ['required', 'string', 'max:100'],
             'fecha_ingreso' => [
                 'required',
                 'date',
                 'after_or_equal:1920-01-01',
-                'before_or_equal:today'
+                'before_or_equal:now'
             ],
             'categoria' => ['required', Rule::in(['activo', 'inactivo', 'honorario'])],
             'aportacion' => ['nullable', 'numeric', 'min:0', 'max:10000'],
         ], [
             'cedula.unique' => 'Ya existe un miembro con ese número de cédula.',
-            'cedula.required' => 'La cédula es obligatoria.',
-            'nombres.required' => 'Los nombres son obligatorios.',
-            'apellidos.required' => 'Los apellidos son obligatorios.',
-            'fecha_ingreso.required' => 'La fecha de ingreso es obligatoria.',
-            'fecha_ingreso.after_or_equal' => 'La fecha debe ser desde 1920 en adelante.',
-            'fecha_ingreso.before_or_equal' => 'La fecha no puede ser mayor a hoy.',
-            'categoria.required' => 'Seleccione una categoría.',
-            'aportacion.max' => 'La aportación no puede superar 10.000.',
         ]);
 
-        // Generar número de socio automáticamente (numérico)
         $ultimoNumero = MiembroCoac::max('numero_socio');
         $nuevoNumero = $ultimoNumero ? ((int)$ultimoNumero + 1) : 1;
 
+        $nombreCompleto = trim($request->nombres . ' ' . $request->apellidos);
+
         MiembroCoac::create([
-            'numero_socio'    => $nuevoNumero,
-            'cedula'          => $request->cedula,
-            'nombre_completo' => trim($request->nombres . ' ' . $request->apellidos),
-            'fecha_ingreso'   => $request->fecha_ingreso,
-            'categoria'       => $request->categoria,
-            'aportacion'      => $request->aportacion ?? 0.00,
-            'estado'          => 'vigente'
+            'numero_socio'     => (string)$nuevoNumero,
+            'cedula'           => $request->cedula,
+            'nombre_completo'  => $nombreCompleto,
+            'fecha_ingreso'    => $request->fecha_ingreso, // datetime
+            'categoria'        => $request->categoria,
+            'aportacion'       => $request->aportacion ?? 0.00,
+            'estado'           => 'vigente',
         ]);
 
         return redirect()->back()->with('success', 'Miembro registrado correctamente');
     }
 
-    /**
-     * ACTUALIZAR MIEMBRO
-     * - NO permite cambiar la cédula (se ignora)
-     */
+    // ==========================
+    // ACTUALIZAR (NO editar cédula)
+    // ==========================
     public function update(Request $request, $id)
     {
-        // OJO: cedula NO se valida ni se actualiza (queda fija)
+        $miembro = MiembroCoac::findOrFail($id);
+
         $request->validate([
+            // cedula NO se valida porque NO se edita
             'nombres' => ['required', 'string', 'max:100'],
             'apellidos' => ['required', 'string', 'max:100'],
             'fecha_ingreso' => [
                 'required',
                 'date',
                 'after_or_equal:1920-01-01',
-                'before_or_equal:today'
+                'before_or_equal:now'
             ],
             'categoria' => ['required', Rule::in(['activo', 'inactivo', 'honorario'])],
             'aportacion' => ['nullable', 'numeric', 'min:0', 'max:10000'],
-        ], [
-            'nombres.required' => 'Los nombres son obligatorios.',
-            'apellidos.required' => 'Los apellidos son obligatorios.',
-            'fecha_ingreso.required' => 'La fecha de ingreso es obligatoria.',
-            'fecha_ingreso.after_or_equal' => 'La fecha debe ser desde 1920 en adelante.',
-            'fecha_ingreso.before_or_equal' => 'La fecha no puede ser mayor a hoy.',
-            'categoria.required' => 'Seleccione una categoría.',
-            'aportacion.max' => 'La aportación no puede superar 10.000.',
         ]);
 
-        $miembro = MiembroCoac::findOrFail($id);
+        $nombreCompleto = trim($request->nombres . ' ' . $request->apellidos);
 
-        // NO se toca numero_socio NI cedula
         $miembro->update([
-            'nombre_completo' => trim($request->nombres . ' ' . $request->apellidos),
+            'nombre_completo' => $nombreCompleto,
             'fecha_ingreso'   => $request->fecha_ingreso,
             'categoria'       => $request->categoria,
             'aportacion'      => $request->aportacion ?? 0.00,
@@ -106,9 +86,9 @@ class MiembroController extends Controller
         return redirect()->back()->with('success', 'Miembro actualizado correctamente');
     }
 
-    /**
-     * CAMBIAR ESTADO
-     */
+    // ==========================
+    // CAMBIAR ESTADO
+    // ==========================
     public function cambiarEstado($id)
     {
         $miembro = MiembroCoac::findOrFail($id);
