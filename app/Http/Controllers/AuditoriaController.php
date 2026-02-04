@@ -16,8 +16,11 @@ class AuditoriaController extends Controller
      */
     public function index()
     {
-        $usuarios = Usuario::orderBy('id', 'asc')->get();
-        return view('tu_vista', compact('auditorias')); 
+        $usuarios = Usuario::where('rol', 'auditor')
+                        ->where('estado', 'activo')
+                        ->orderBy('nombre', 'asc')
+                        ->get();
+    return view('tu_vista', compact('auditorias')); 
     }
 
     /**
