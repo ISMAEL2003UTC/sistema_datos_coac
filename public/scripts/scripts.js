@@ -78,7 +78,6 @@ function editarUsuario(id, nombre, email, rol) {
 
 // EDITAR SUJETO
 function editarSujeto(id, cedula, nombre, apellido, email, telefono, direccion, ciudad, tipo) {
-
     Swal.fire({
         icon: 'info',
         title: 'Editar Sujeto de datos',
@@ -88,11 +87,11 @@ function editarSujeto(id, cedula, nombre, apellido, email, telefono, direccion, 
 
     const form = $("#formSujetos");
 
-    // 🔹 Limpiar validaciones anteriores
+    // Limpiar validaciones previas
     form.validate().resetForm();
     form.find(".is-invalid").removeClass("is-invalid");
 
-    // 🔹 Cargar datos
+    // Cargar datos
     $("#sujeto_id").val(id);
     $("input[name='cedula']").val(cedula);
     $("input[name='nombre']").val(nombre);
@@ -103,10 +102,14 @@ function editarSujeto(id, cedula, nombre, apellido, email, telefono, direccion, 
     $("input[name='ciudad']").val(ciudad);
     $("select[name='tipo']").val(tipo);
 
-    // 🔹 Cambiar a modo edición
+    // Cambiar a modo edición
     $("#form_sujeto_method").val("PUT");
     form.attr("action", `/sujetos/${id}`);
     form.find("button[type='submit']").text("Actualizar Sujeto");
+
+    // Forzar revalidación de campos remotos
+    $("input[name='email']").valid();
+    $("input[name='cedula']").valid();
 }
 
 
