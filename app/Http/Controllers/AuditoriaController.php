@@ -18,7 +18,7 @@ class AuditoriaController extends Controller
 {
     try {
         // Traer solo usuarios con rol 'auditor'
-        $auditores = Usuario::where('rol', 'auditor')
+        $auditores = Usuario::where('rol', 'Auditor')
             ->orderBy('nombre')
             ->get();
 
