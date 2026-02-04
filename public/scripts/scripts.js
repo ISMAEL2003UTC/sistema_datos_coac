@@ -79,11 +79,13 @@ function editarUsuario(id, nombre, email, rol) {
 // EDITAR SUJETO
 function editarSujeto(id, cedula, nombre, apellido, email, telefono, direccion, ciudad, tipo) {
     Swal.fire({
-        icon: 'info',
-        title: 'Editar Sujeto de datos',
-        text: 'El formulario ha entrado en modo edición',
-        timer: 1500
-    });
+    icon: 'info',
+    title: 'Editar Sujeto de datos',
+    text: 'El formulario ha entrado en modo edición',
+    timer: 1500,
+    showConfirmButton: false
+});
+
 
     const form = $("#formSujetos");
 
