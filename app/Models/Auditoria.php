@@ -11,7 +11,7 @@ class Auditoria extends Model
     protected $fillable = [
         'codigo',
         'tipo',
-        'auditor_id', // Cambiado para relacionar con el usuario
+        'auditor',
         'fecha_inicio',
         'fecha_fin',
         'estado',
