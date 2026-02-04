@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Auditoria;
-use App\Models\Usuario; // Importar modelo Usuario
+use App\Models\Usuario;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -11,10 +11,10 @@ class AuditoriaController extends Controller
 {
     public function index()
     {
-        // Traemos las auditorías
+        // Listado de auditorías
         $auditorias = Auditoria::orderBy('id', 'desc')->paginate(10);
 
-        // Traemos solo los usuarios que son auditores y están activos
+        // Solo usuarios auditores activos
         $auditores = Usuario::where('rol', 'auditor')
                             ->where('estado', 'activo')
                             ->get();
@@ -25,19 +25,19 @@ class AuditoriaController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'tipo_aud'   => 'required',
-            'auditor_id' => 'required|exists:usuarios,id', // Validación del auditor
+            'tipo_aud'     => 'required',
+            'auditor_id'   => 'required|exists:usuarios,id',
             'fecha_inicio' => 'required|date',
-            'fecha_fin'    => 'nullable|date',
+            'fecha_fin'    => 'nullable|date|after:fecha_inicio',
             'estado_aud'   => 'required',
             'alcance'      => 'nullable|string',
             'hallazgos'    => 'nullable|string',
         ]);
 
         DB::transaction(function () use ($request) {
+
             $auditor = Usuario::findOrFail($request->auditor_id);
 
-            // Guardamos el nombre completo del auditor en la auditoría
             Auditoria::create([
                 'codigo'       => 'AUD-' . str_pad(Auditoria::max('id') + 1, 3, '0', STR_PAD_LEFT),
                 'tipo'         => $request->tipo_aud,
