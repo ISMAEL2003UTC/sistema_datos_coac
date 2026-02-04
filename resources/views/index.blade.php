@@ -91,141 +91,123 @@
 
         
         <!-- USUARIOS ----------------------------------------------------------------------------------------->
-        @if(auth()->user()->rol === 'admin')
-        <div id="usuarios" class="content-section active">
-            <h2 class="section-title">Gestión de Usuarios del Sistema</h2>
-  
-            <form id="formUsuarios"  method="POST" action="{{ url('/usuarios') }}">
-            <input type="hidden" id="id_usuario" name="id_usuario">
+@if(auth()->user()->rol === 'admin')
+<div id="usuarios" class="content-section active">
+    <h2 class="section-title">Gestión de Usuarios del Sistema</h2>
 
-                @csrf
-                <input type="hidden" name="_method" id="form_method" value="POST">
-                <input type="hidden" name="id" id="usuario_id">
-                <div class="form-row">
-                <div class="form-group">
-                    <label>Nombres y apellidos *</label>
-                    <input 
-                        type="text" 
-                        name="nombre_completo" 
-                        id="nombre_completo"
-                        placeholder="Ingrese sus nombres y apellidos completos">
-                    
-                </div>
+    <form id="formUsuarios" method="POST" action="{{ url('/usuarios') }}">
+        @csrf
+        <input type="hidden" name="_method" id="form_method" value="POST">
+        <input type="hidden" name="id" id="usuario_id">
 
-                <div class="form-group">
-                    <label>Email *</label>
-                    <input 
-                        type="email" 
-                        name="email"
-                        placeholder="Ingrese un correo electrónico válido">
-                </div>
-                <div class="form-group">
-                <label>Cédula *</label>
-                    <input type="text"
-                        name="cedula"
-                        placeholder="Ingrese su número de cédula"
-                        maxlength="10"
-                        pattern="[0-9]{10}"
-                        required>
-                </div>
-
-                <div class="form-group">
-                    <label>Provincia *</label>
-                    <input type="text" name="provincia"
-                    placeholder="Ej: Cotopaxi"
-                    required>
-                </div>
-
-                <div class="form-group">
-                    <label>Cantón *</label>
-                    <input type="text"
-                        name="canton"
-                        placeholder="Ej: Latacunga"
-                        required>
-                </div>
-
-                <div class="form-group">
-                    <label>Rol *</label>
-                    <select name="rol" id="rol">
-                        <option value="">Seleccionar...</option>
-                        <option value="admin">Administrador</option>
-                        <option value="dpo">Oficial de Protección de Datos</option>
-                        <option value="auditor">Auditor</option>
-                        <option value="operador">Operador</option>
-                    </select>
-                </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Nombre *</label>
+                <input type="text" name="nombre" id="nombre" placeholder="Ingrese su nombre">
             </div>
 
-                <button type="submit" class="btn btn-primary">Agregar Usuario</button>
-            </form>
-            
-            <div class="table-container">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Nombres y apellidos</th>
-                            <th>Cédula</th>
-                            <th>Email</th>
-                            <th>Provincia</th>
-                            <th>Cantón</th>
-                            <th>Rol</th>
-                            <th>Estado</th>
-                            <th>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    @foreach ($usuarios as $usuario)
-                        <tr>
-                            <td>{{ $usuario->nombre_completo }}</td>
-                            <td>{{ $usuario->cedula }}</td>
-                            <td>{{ $usuario->email }}</td>
-                            <td>{{ $usuario->provincia }}</td>
-                            <td>{{ $usuario->canton }}</td>
-                            <td>{{ $usuario->rol_texto }}</td>
+            <div class="form-group">
+                <label>Apellido *</label>
+                <input type="text" name="apellido" id="apellido" placeholder="Ingrese su apellido">
+            </div>
 
+            <div class="form-group">
+                <label>Email *</label>
+                <input type="email" name="email" id="email" placeholder="Ingrese un correo electrónico válido">
+            </div>
 
-                            <td>
-                                @if($usuario->estado === 'activo')
-                                    <span class="badge badge-success">Activo</span>
-                                @else
-                                    <span class="badge badge-danger">Inactivo</span>
-                                @endif
-                            </td>
+            <div class="form-group">
+                <label>Cédula *</label>
+                <input type="text" name="cedula" id="cedula"
+                       placeholder="Ingrese su número de cédula"
+                       maxlength="10"
+                       pattern="[0-9]{10}"
+                       required>
+            </div>
 
+            <div class="form-group">
+                <label>Ciudad</label>
+                <input type="text" name="ciudad" id="ciudad" placeholder="Ej: Quito">
+            </div>
 
-                            <td>
-                                <button class="btn btn-secondary" style="padding: 8px 15px;"
-                                    onclick="editarUsuario({{ $usuario->id }}, 
-                                    '{{ $usuario->nombre_completo }}', 
-                                    '{{ $usuario->email }}', 
-                                    '{{ $usuario->rol }}')">
-                                    Editar
-                                </button>
+            <div class="form-group">
+                <label>Dirección</label>
+                <input type="text" name="direccion" id="direccion" placeholder="Ej: Calle 123">
+            </div>
 
-                                <form action="{{ route('usuarios.estado', $usuario->id) }}"
-                                    method="POST"
-                                    style="display:inline;">
-                                    @csrf
-                                    @method('PUT')
-                                    <button type="submit" class="btn btn-warning">
-                                        Cambiar estado
-                                    </button>
-                                </form>
-                                <form action="{{ route('usuarios.destroy', $usuario->id) }}"
-                                    method="POST"
-                                    style="display:inline;">
-                                    @csrf
-                                    @method('DELETE')
-                                    
-                                </form>
-                            </td>
-                        </tr>
-                    @endforeach
-                    </tbody>
-                </table>
+            <div class="form-group">
+                <label>Rol *</label>
+                <select name="rol" id="rol">
+                    <option value="">Seleccionar...</option>
+                    <option value="admin">Administrador</option>
+                    <option value="dpo">Oficial de Protección de Datos</option>
+                    <option value="auditor">Auditor</option>
+                    <option value="operador">Operador</option>
+                </select>
             </div>
         </div>
-        @endif
+
+        <button type="submit" class="btn btn-primary">Agregar Usuario</button>
+    </form>
+
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Apellido</th>
+                    <th>Cédula</th>
+                    <th>Email</th>
+                    <th>Ciudad</th>
+                    <th>Dirección</th>
+                    <th>Rol</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach ($usuarios as $usuario)
+                <tr>
+                    <td>{{ $usuario->nombre }}</td>
+                    <td>{{ $usuario->apellido }}</td>
+                    <td>{{ $usuario->cedula }}</td>
+                    <td>{{ $usuario->email }}</td>
+                    <td>{{ $usuario->ciudad }}</td>
+                    <td>{{ $usuario->direccion }}</td>
+                    <td>{{ $usuario->rol }}</td>
+                    <td>
+                        @if($usuario->estado === 'activo')
+                            <span class="badge badge-success">Activo</span>
+                        @else
+                            <span class="badge badge-danger">Inactivo</span>
+                        @endif
+                    </td>
+                    <td>
+                        <button class="btn btn-secondary"
+                                onclick="editarUsuario('{{ $usuario->id }}', '{{ $usuario->nombre }}', '{{ $usuario->apellido }}', '{{ $usuario->email }}', '{{ $usuario->cedula }}', '{{ $usuario->ciudad }}', '{{ $usuario->direccion }}', '{{ $usuario->rol }}')">
+                            Editar
+                        </button>
+
+                        <form action="{{ route('usuarios.estado', $usuario->id) }}" method="POST" style="display:inline;">
+                            @csrf
+                            @method('PUT')
+                            <button type="submit" class="btn btn-warning">Cambiar estado</button>
+                        </form>
+
+                        <form action="{{ route('usuarios.destroy', $usuario->id) }}" method="POST" style="display:inline;">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="btn btn-danger">Eliminar</button>
+                        </form>
+                    </td>
+                </tr>
+                @endforeach
+            </tbody>
+        </table>
+    </div>
+</div>
+@endif
+
         <!-- SUJETOS DE DATOS -------------------------------------------------------------------------------->
          <!-- ========================================= -->
 <!-- SUJETOS DE DATOS -------------------------------------------------------------------------------->

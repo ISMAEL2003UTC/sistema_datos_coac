@@ -12,10 +12,11 @@ class Usuario extends Authenticatable
     protected $table = 'usuarios';
 
     protected $fillable = [
-        'nombre_completo',
+        'nombre',
+        'apellido',
         'cedula',
-        'provincia',
-        'canton',
+        'ciudad',
+        'direccion',
         'email',
         'password',
         'rol',
@@ -26,6 +27,9 @@ class Usuario extends Authenticatable
         'password'
     ];
 
+    /**
+     * Retorna el nombre del rol en texto legible
+     */
     public function getRolTextoAttribute()
     {
         return match ($this->rol) {
