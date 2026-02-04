@@ -1657,7 +1657,7 @@ Swal.fire({
             </div>
 
             <select name="auditor_id" required>
-    <option value="">Seleccionar auditor...</option>
+    <option value="">Seleccionar auditor.....</option>
 
     @isset($auditores)
         @foreach($auditores as $auditor)
