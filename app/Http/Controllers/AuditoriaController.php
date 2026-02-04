@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Auditoria;
-use App\Models\Usuario; // Importamos el modelo Usuario
+use App\Models\Usuario; // Importar modelo Usuario
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -11,10 +11,10 @@ class AuditoriaController extends Controller
 {
     public function index()
     {
-        // Traemos todas las auditorías paginadas
+        // Traemos las auditorías
         $auditorias = Auditoria::orderBy('id', 'desc')->paginate(10);
 
-        // Traemos solo los usuarios con rol 'auditor' y estado 'activo'
+        // Traemos solo los usuarios que son auditores y están activos
         $auditores = Usuario::where('rol', 'auditor')
                             ->where('estado', 'activo')
                             ->get();
@@ -22,23 +22,11 @@ class AuditoriaController extends Controller
         return view('auditorias.index', compact('auditorias', 'auditores'));
     }
 
-    public function show($id)
-    {
-        $auditoria = Auditoria::find($id);
-
-        if (!$auditoria) {
-            return redirect()->route('auditorias.index')
-                             ->with('error', 'Auditoría no encontrada');
-        }
-
-        return view('auditorias.show', compact('auditoria'));
-    }
-
     public function store(Request $request)
     {
         $request->validate([
-            'tipo_aud'     => 'required',
-            'auditor_id'   => 'required|exists:usuarios,id', // Validamos que exista el auditor
+            'tipo_aud'   => 'required',
+            'auditor_id' => 'required|exists:usuarios,id', // Validación del auditor
             'fecha_inicio' => 'required|date',
             'fecha_fin'    => 'nullable|date',
             'estado_aud'   => 'required',
@@ -47,19 +35,18 @@ class AuditoriaController extends Controller
         ]);
 
         DB::transaction(function () use ($request) {
+            $auditor = Usuario::findOrFail($request->auditor_id);
 
-            $ultimoCodigo = Auditoria::lockForUpdate()->max('codigo');
-            $nuevoCodigo = $ultimoCodigo ? $ultimoCodigo + 1 : 1;
-
+            // Guardamos el nombre completo del auditor en la auditoría
             Auditoria::create([
-                'codigo'        => $nuevoCodigo,
-                'tipo'          => $request->tipo_aud,
-                'auditor_id'    => $request->auditor_id, // Guardamos el id del auditor
-                'fecha_inicio'  => $request->fecha_inicio,
-                'fecha_fin'     => $request->fecha_fin,
-                'estado'        => $request->estado_aud,
-                'alcance'       => $request->alcance,
-                'hallazgos'     => $request->hallazgos,
+                'codigo'       => 'AUD-' . str_pad(Auditoria::max('id') + 1, 3, '0', STR_PAD_LEFT),
+                'tipo'         => $request->tipo_aud,
+                'auditor'      => $auditor->nombre . ' ' . $auditor->apellido,
+                'fecha_inicio' => $request->fecha_inicio,
+                'fecha_fin'    => $request->fecha_fin,
+                'estado'       => $request->estado_aud,
+                'alcance'      => $request->alcance,
+                'hallazgos'    => $request->hallazgos,
             ]);
         });
 
