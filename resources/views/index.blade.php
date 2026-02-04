@@ -1656,10 +1656,10 @@ Swal.fire({
                 </select>
             </div>
 
-            <select name="sujeto_id" id="consentimiento_sujeto_id" required>
+            <select name="usuario_id" id="usuario_auditor_id" required>
                             <option value="">Seleccionar...</option>
-                            @foreach($sujetos as $sujeto)
-                                <option value="{{ $sujeto->id }}">{{ $sujeto->cedula }} - {{ $sujeto->nombre_completo }}</option>
+                            @foreach($usuarios as $usuario)
+                                <option value="{{ $usuario->id }}">{{ $usuario->cedula }} - {{ $usuario->nombre }}</option>
                             @endforeach
                         </select>
         </div>
