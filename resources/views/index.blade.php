@@ -346,6 +346,7 @@
     
         
         <!-- MIEMBROS COAC -->
+        <!-- MIEMBROS COAC -->
         <div id="miembros" class="content-section">
             <h2 class="section-title">Gestión de Miembros de la Cooperativa</h2>
 
@@ -364,75 +365,52 @@
                 <div class="form-row">
                     <div class="form-group">
                         <label>Cédula *</label>
-                        <input
-                            type="text"
-                            name="cedula"
-                            id="miembro_cedula"
-                            value="{{ old('cedula') }}"
-                            class="{{ $errors->has('cedula') ? 'input-error' : '' }}"
-                            required>
+                        <input type="text" name="cedula" id="miembro_cedula" value="{{ old('cedula') }}" required>
 
                         @error('cedula')
-                            <small class="text-error">{{ $message }}</small>
+                            <div class="text-error" style="margin-top:6px;">{{ $message }}</div>
                         @enderror
                     </div>
 
                     <div class="form-group">
                         <label>Nombres *</label>
-                        <input
-                            type="text"
-                            name="nombres"
-                            id="miembro_nombres"
-                            value="{{ old('nombres') }}"
-                            class="{{ $errors->has('nombres') ? 'input-error' : '' }}"
-                            required>
+                        <input type="text" name="nombres" id="miembro_nombres" value="{{ old('nombres') }}" required>
 
                         @error('nombres')
-                            <small class="text-error">{{ $message }}</small>
+                            <div class="text-error" style="margin-top:6px;">{{ $message }}</div>
                         @enderror
                     </div>
 
                     <div class="form-group">
                         <label>Apellidos *</label>
-                        <input
-                            type="text"
-                            name="apellidos"
-                            id="miembro_apellidos"
-                            value="{{ old('apellidos') }}"
-                            class="{{ $errors->has('apellidos') ? 'input-error' : '' }}"
-                            required>
+                        <input type="text" name="apellidos" id="miembro_apellidos" value="{{ old('apellidos') }}" required>
 
                         @error('apellidos')
-                            <small class="text-error">{{ $message }}</small>
+                            <div class="text-error" style="margin-top:6px;">{{ $message }}</div>
                         @enderror
                     </div>
                 </div>
 
                 <div class="form-row">
                     <div class="form-group">
-                        <label>Fecha de Ingreso *</label>
+                        <label>Fecha y Hora de Ingreso *</label>
                         <input
-                            type="date"
+                            type="datetime-local"
                             name="fecha_ingreso"
                             id="miembro_fecha_ingreso"
-                            value="{{ old('fecha_ingreso') }}"
-                            min="1920-01-01"
-                            max="{{ date('Y-m-d') }}"
-                            class="{{ $errors->has('fecha_ingreso') ? 'input-error' : '' }}"
+                            min="1920-01-01T00:00"
+                            max="{{ now()->format('Y-m-d\TH:i') }}"
+                            value="{{ old('fecha_ingreso', now()->format('Y-m-d\TH:i')) }}"
                             required>
 
                         @error('fecha_ingreso')
-                            <small class="text-error">{{ $message }}</small>
+                            <div class="text-error" style="margin-top:6px;">{{ $message }}</div>
                         @enderror
                     </div>
 
                     <div class="form-group">
-                        <label>Categoría *</label>
-                        <select
-                            name="categoria"
-                            id="miembro_categoria"
-                            class="{{ $errors->has('categoria') ? 'input-error' : '' }}"
-                            required>
+                        <label>Estado *</label>
+                        <select name="categoria" id="miembro_categoria" required>
                             <option value="">Seleccionar...</option>
                             <option value="activo" {{ old('categoria')=='activo'?'selected':'' }}>Activo</option>
                             <option value="inactivo" {{ old('categoria')=='inactivo'?'selected':'' }}>Inactivo</option>
@@ -440,7 +418,7 @@
                         </select>
 
                         @error('categoria')
-                            <small class="text-error">{{ $message }}</small>
+                            <div class="text-error" style="margin-top:6px;">{{ $message }}</div>
                         @enderror
                     </div>
 
@@ -450,14 +428,13 @@
                             type="number"
                             name="aportacion"
                             id="miembro_aportacion"
-                            value="{{ old('aportacion', 0) }}"
                             step="0.01"
                             min="0"
                             max="10000"
-                            class="{{ $errors->has('aportacion') ? 'input-error' : '' }}">
+                            value="{{ old('aportacion', 0) }}">
 
                         @error('aportacion')
-                            <small class="text-error">{{ $message }}</small>
+                            <div class="text-error" style="margin-top:6px;">{{ $message }}</div>
                         @enderror
                     </div>
                 </div>
@@ -478,7 +455,7 @@
                             <th>N° Socio</th>
                             <th>Cédula</th>
                             <th>Nombre</th>
-                            <th>Fecha Ingreso</th>
+                            <th>Fecha/Hora Ingreso</th>
                             <th>Categoría</th>
                             <th>Estado</th>
                             <th>Acciones</th>
@@ -491,7 +468,7 @@
                             <td>{{ $miembro->numero_socio }}</td>
                             <td>{{ $miembro->cedula }}</td>
                             <td>{{ $miembro->nombre_completo }}</td>
-                            <td>{{ \Carbon\Carbon::parse($miembro->fecha_ingreso)->format('d/m/Y') }}</td>
+                            <td>{{ \Carbon\Carbon::parse($miembro->fecha_ingreso)->format('d/m/Y H:i') }}</td>
                             <td>{{ ucfirst($miembro->categoria) }}</td>
                             <td>
                                 @if($miembro->estado === 'vigente')
@@ -507,7 +484,7 @@
                                     data-id="{{ $miembro->id }}"
                                     data-cedula="{{ $miembro->cedula }}"
                                     data-nombre="{{ $miembro->nombre_completo }}"
-                                    data-fecha="{{ $miembro->fecha_ingreso }}"
+                                    data-fecha="{{ \Carbon\Carbon::parse($miembro->fecha_ingreso)->format('Y-m-d\TH:i') }}"
                                     data-categoria="{{ $miembro->categoria }}"
                                     data-aportacion="{{ $miembro->aportacion ?? 0 }}">
                                     Editar
