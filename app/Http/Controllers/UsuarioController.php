@@ -79,23 +79,25 @@ class UsuarioController extends Controller
             'rol'       => 'required|string|max:50'
         ]);
 
-        Usuario::create([
-            'nombre'    => $request->nombre,
-            'apellido'  => $request->apellido,
-            'email'     => $request->email,
-            'cedula'    => $request->cedula,
-            'ciudad'    => $request->ciudad,
-            'direccion' => $request->direccion,
-            'rol'       => $request->rol,
-            'estado'    => 'inactivo', // El usuario queda INACTIVO hasta verificar el correo
-            // lo del correo 
-            'email_verificado'=> false,
-            'email_verificacion_token' => Str::uuid(),
-            'password'  => Hash::make('123456')
-        ]);
-        Mail::to($usuario->email)->send(new VerificarCorreoUsuario($usuario));
+        $usuario = Usuario::create([
+        'nombre'    => $request->nombre,
+        'apellido'  => $request->apellido,
+        'email'     => $request->email,
+        'cedula'    => $request->cedula,
+        'ciudad'    => $request->ciudad,
+        'direccion' => $request->direccion,
+        'rol'       => $request->rol,
+        'estado'    => 'activo', // El usuario queda INACTIVO hasta verificar el correo
+        //'email_verificado'=> false,
+        //'email_verificacion_token' => Str::uuid(),
+        'password'  => Hash::make('123456')
+    ]);
 
-        return redirect()->back()->with('success', 'Usuario registrado correctamente Se envió un correo de verificación.');
+    //Mail::to($usuario->email)->send(new VerificarCorreoUsuario($usuario));
+
+    return redirect()->back()
+        ->with('success', 'Usuario registrado correctamente.');
+
     }
 
     public function update(Request $request, Usuario $usuario)
