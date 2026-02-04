@@ -1661,21 +1661,11 @@ Swal.fire({
     </div>
 </div> 
 
-<<<<<<< HEAD
 <!-- AUDITORÍAS -->
 <div id="auditorias" class="content-section">
     <h2 class="section-title">Gestión de Auditorías</h2>
 
     <form method="POST" action="{{ route('auditorias.store') }}">
-=======
-
-<!-- AUDITORÍAS --><!-- AUDITORÍAS -->
-<div id="auditorias" class="content-section">
-    <h2 class="section-title">Gestión de Auditorías</h2>
-
-    {{-- FORMULARIO --}}
-    <form method="POST" action="{{ route('auditorias.store') }}" id="auditoriaForm">
->>>>>>> upstream/main
         @csrf
 
         <div class="form-row">
@@ -1685,18 +1675,14 @@ Swal.fire({
                     <option value="">Seleccionar...</option>
                     <option value="interna">Interna</option>
                     <option value="externa">Externa</option>
-<<<<<<< HEAD
                     <option value="cumplimiento">Cumplimiento</option>
                     <option value="certificacion">Certificación</option>
                     <option value="seguimiento">Seguimiento</option>
-=======
->>>>>>> upstream/main
                 </select>
             </div>
 
             <div class="form-group">
                 <label>Auditor Responsable *</label>
-<<<<<<< HEAD
                 <input type="text" name="auditor" required placeholder="Nombre del auditor">
             </div>
         </div>
@@ -1723,194 +1709,6 @@ Swal.fire({
     <small class="form-text text-muted">Debe ser posterior a la fecha actual (mañana o después)</small>
     <div id="error-fecha" class="text-danger small mt-1" style="display: none;"></div>
 </div>
-=======
-                <select name="auditor_id" id="auditor_id" required>
-                    <option value="">Seleccionar auditor...</option>
-                    @foreach($auditores as $auditor)
-                        <option value="{{ $auditor->id }}"
-                                data-email="{{ $auditor->email }}"
-                                data-rol="{{ $auditor->rol }}">
-                            {{ $auditor->nombre_completo }}
-                            @if($auditor->email)
-                                - {{ $auditor->email }}
-                            @endif
-                        </option>
-                    @endforeach
-                </select>
-                
-                @if($auditores->isEmpty())
-                    <div class="alert alert-warning small mt-2">
-                        <i class="fas fa-exclamation-triangle"></i>
-                        No hay usuarios con rol de auditor registrados.
-                    </div>
-                @else
-                    <small class="form-text text-muted">
-                        {{ $auditores->count() }} auditores disponibles
-                    </small>
-                @endif
-            </div>
-        </div>
-
-        <div class="form-row">
-            {{-- FECHA DE INICIO --}}
-            <div class="form-group">
-                <label>Fecha de Inicio *</label>
-                <div class="date-time-container" style="display: flex; gap: 10px; align-items: flex-start;">
-                    {{-- Calendario --}}
-                    <div class="calendar-container" style="flex: 1; min-width: 250px;">
-                        <div class="calendar-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                            <button type="button" class="btn-calendar-nav" onclick="changeMonth(-1)" style="background: none; border: 1px solid #ced4da; border-radius: 4px; padding: 5px 10px; cursor: pointer;">
-                                <i class="fas fa-chevron-left"></i>
-                            </button>
-                            <span id="currentMonth" style="font-weight: bold; font-size: 14px;">
-                                {{ \Carbon\Carbon::now()->locale('es')->translatedFormat('F Y') }}
-                            </span>
-                            <button type="button" class="btn-calendar-nav" onclick="changeMonth(1)" style="background: none; border: 1px solid #ced4da; border-radius: 4px; padding: 5px 10px; cursor: pointer;">
-                                <i class="fas fa-chevron-right"></i>
-                            </button>
-                        </div>
-                        <div class="calendar-weekdays" style="display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; font-weight: bold; font-size: 12px; margin-bottom: 5px; color: #666;">
-                            <span>DO</span>
-                            <span>LU</span>
-                            <span>MA</span>
-                            <span>MI</span>
-                            <span>JU</span>
-                            <span>VI</span>
-                            <span>SA</span>
-                        </div>
-                        <div id="calendarDays" class="calendar-days" style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px;">
-                            {{-- Los días se generarán con JavaScript --}}
-                        </div>
-                        <input type="hidden" id="selectedDate" name="fecha_inicio" value="{{ date('Y-m-d') }}">
-                    </div>
-                    
-                    {{-- Selector de hora --}}
-                    <div class="time-container" style="flex: 1; min-width: 100px;">
-                        <div class="time-selector" style="display: flex; gap: 5px; flex-direction: column;">
-                            <div style="display: flex; gap: 5px; align-items: center;">
-                                <select id="hourSelect" style="flex: 1; padding: 8px; border: 1px solid #ced4da; border-radius: 4px;">
-                                    @for($i = 0; $i < 24; $i++)
-                                        <option value="{{ str_pad($i, 2, '0', STR_PAD_LEFT) }}"
-                                                {{ date('H') == $i ? 'selected' : '' }}>
-                                            {{ str_pad($i, 2, '0', STR_PAD_LEFT) }}
-                                        </option>
-                                    @endfor
-                                </select>
-                                <span style="font-weight: bold;">:</span>
-                                <select id="minuteSelect" style="flex: 1; padding: 8px; border: 1px solid #ced4da; border-radius: 4px;">
-                                    @for($i = 0; $i < 60; $i += 5)
-                                        <option value="{{ str_pad($i, 2, '0', STR_PAD_LEFT) }}"
-                                                {{ round(date('i')/5)*5 == $i ? 'selected' : '' }}>
-                                            {{ str_pad($i, 2, '0', STR_PAD_LEFT) }}
-                                        </option>
-                                    @endfor
-                                </select>
-                            </div>
-                            <input type="hidden" id="selectedTime" name="hora_inicio" value="{{ date('H:i') }}">
-                        </div>
-                        <div style="margin-top: 10px; display: flex; gap: 5px;">
-                            <button type="button" onclick="setCurrentDateTime()" 
-                                    class="btn btn-sm btn-outline-secondary" 
-                                    style="padding: 5px 10px; font-size: 12px;">
-                                <i class="fas fa-clock"></i> Ahora
-                            </button>
-                            <button type="button" onclick="clearDateTime()" 
-                                    class="btn btn-sm btn-outline-danger" 
-                                    style="padding: 5px 10px; font-size: 12px;">
-                                <i class="fas fa-times"></i> Borrar
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                <small class="form-text text-muted">
-                    Seleccione la fecha y hora de inicio de la auditoría
-                </small>
-                <div id="selectedDateTimeDisplay" style="margin-top: 8px; padding: 8px; background-color: #f8f9fa; border-radius: 4px; border: 1px solid #dee2e6; font-size: 14px;">
-                    <strong>Fecha y hora seleccionadas:</strong><br>
-                    {{ \Carbon\Carbon::now()->format('d/m/Y H:i') }}
-                </div>
-            </div>
-
-            {{-- FECHA DE FINALIZACIÓN --}}
-            <div class="form-group">
-                <label>Fecha de Finalización *</label>
-                <div class="date-time-container" style="display: flex; gap: 10px; align-items: flex-start;">
-                    {{-- Calendario para fecha fin --}}
-                    <div class="calendar-container" style="flex: 1; min-width: 250px;">
-                        <div class="calendar-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                            <button type="button" class="btn-calendar-nav" onclick="changeMonthFin(-1)" style="background: none; border: 1px solid #ced4da; border-radius: 4px; padding: 5px 10px; cursor: pointer;">
-                                <i class="fas fa-chevron-left"></i>
-                            </button>
-                            <span id="currentMonthFin" style="font-weight: bold; font-size: 14px;">
-                                {{ \Carbon\Carbon::now()->addDay()->locale('es')->translatedFormat('F Y') }}
-                            </span>
-                            <button type="button" class="btn-calendar-nav" onclick="changeMonthFin(1)" style="background: none; border: 1px solid #ced4da; border-radius: 4px; padding: 5px 10px; cursor: pointer;">
-                                <i class="fas fa-chevron-right"></i>
-                            </button>
-                        </div>
-                        <div class="calendar-weekdays" style="display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; font-weight: bold; font-size: 12px; margin-bottom: 5px; color: #666;">
-                            <span>DO</span>
-                            <span>LU</span>
-                            <span>MA</span>
-                            <span>MI</span>
-                            <span>JU</span>
-                            <span>VI</span>
-                            <span>SA</span>
-                        </div>
-                        <div id="calendarDaysFin" class="calendar-days" style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px;">
-                            {{-- Los días se generarán con JavaScript --}}
-                        </div>
-                        <input type="hidden" id="selectedDateFin" name="fecha_fin" value="{{ date('Y-m-d', strtotime('+1 day')) }}">
-                    </div>
-                    
-                    {{-- Selector de hora para fecha fin --}}
-                    <div class="time-container" style="flex: 1; min-width: 100px;">
-                        <div class="time-selector" style="display: flex; gap: 5px; flex-direction: column;">
-                            <div style="display: flex; gap: 5px; align-items: center;">
-                                <select id="hourSelectFin" style="flex: 1; padding: 8px; border: 1px solid #ced4da; border-radius: 4px;">
-                                    @for($i = 0; $i < 24; $i++)
-                                        <option value="{{ str_pad($i, 2, '0', STR_PAD_LEFT) }}"
-                                                {{ date('H') == $i ? 'selected' : '' }}>
-                                            {{ str_pad($i, 2, '0', STR_PAD_LEFT) }}
-                                        </option>
-                                    @endfor
-                                </select>
-                                <span style="font-weight: bold;">:</span>
-                                <select id="minuteSelectFin" style="flex: 1; padding: 8px; border: 1px solid #ced4da; border-radius: 4px;">
-                                    @for($i = 0; $i < 60; $i += 5)
-                                        <option value="{{ str_pad($i, 2, '0', STR_PAD_LEFT) }}"
-                                                {{ round(date('i')/5)*5 == $i ? 'selected' : '' }}>
-                                            {{ str_pad($i, 2, '0', STR_PAD_LEFT) }}
-                                        </option>
-                                    @endfor
-                                </select>
-                            </div>
-                            <input type="hidden" id="selectedTimeFin" name="hora_fin" value="{{ date('H:i') }}">
-                        </div>
-                        <div style="margin-top: 10px; display: flex; gap: 5px;">
-                            <button type="button" onclick="setCurrentDateTimeFin()" 
-                                    class="btn btn-sm btn-outline-secondary" 
-                                    style="padding: 5px 10px; font-size: 12px;">
-                                <i class="fas fa-clock"></i> Ahora
-                            </button>
-                            <button type="button" onclick="clearDateTimeFin()" 
-                                    class="btn btn-sm btn-outline-danger" 
-                                    style="padding: 5px 10px; font-size: 12px;">
-                                <i class="fas fa-times"></i> Borrar
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                <small class="form-text text-muted">
-                    Seleccione la fecha y hora de finalización de la auditoría (debe ser posterior a la fecha de inicio)
-                </small>
-                <div id="selectedDateTimeDisplayFin" style="margin-top: 8px; padding: 8px; background-color: #f8f9fa; border-radius: 4px; border: 1px solid #dee2e6; font-size: 14px;">
-                    <strong>Fecha y hora seleccionadas:</strong><br>
-                    {{ \Carbon\Carbon::now()->addDay()->format('d/m/Y H:i') }}
-                </div>
-                <div id="error-fecha" class="text-danger small mt-1" style="display: none;"></div>
-            </div>
->>>>>>> upstream/main
 
             <div class="form-group">
                 <label>Estado *</label>
