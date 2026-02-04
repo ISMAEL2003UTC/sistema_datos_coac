@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Auditoria;
-use App\Models\Usuario;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -11,24 +10,29 @@ class AuditoriaController extends Controller
 {
     public function index()
     {
-        // Listado de auditorías
         $auditorias = Auditoria::orderBy('id', 'desc')->paginate(10);
+        return view('auditorias.index', compact('auditorias'));
+    }
 
-        // Solo usuarios auditores activos
-        $auditores = Usuario::where('rol', 'auditor')
-                            ->where('estado', 'activo')
-                            ->get();
+    public function show($id)
+    {
+        $auditoria = Auditoria::find($id);
 
-        return view('auditorias.index', compact('auditorias', 'auditores'));
+        if (!$auditoria) {
+            return redirect()->route('auditorias.index')
+                ->with('error', 'Auditoría no encontrada');
+        }
+
+        return view('auditorias.show', compact('auditoria'));
     }
 
     public function store(Request $request)
     {
         $request->validate([
             'tipo_aud'     => 'required',
-            'auditor_id'   => 'required|exists:usuarios,id',
+            'auditor'      => 'required|max:150',
             'fecha_inicio' => 'required|date',
-            'fecha_fin'    => 'nullable|date|after:fecha_inicio',
+            'fecha_fin'    => 'nullable|date',
             'estado_aud'   => 'required',
             'alcance'      => 'nullable|string',
             'hallazgos'    => 'nullable|string',
@@ -36,17 +40,18 @@ class AuditoriaController extends Controller
 
         DB::transaction(function () use ($request) {
 
-            $auditor = Usuario::findOrFail($request->auditor_id);
+            $ultimoCodigo = Auditoria::lockForUpdate()->max('codigo');
+            $nuevoCodigo = $ultimoCodigo ? $ultimoCodigo + 1 : 1;
 
             Auditoria::create([
-                'codigo'       => 'AUD-' . str_pad(Auditoria::max('id') + 1, 3, '0', STR_PAD_LEFT),
-                'tipo'         => $request->tipo_aud,
-                'auditor'      => $auditor->nombre . ' ' . $auditor->apellido,
-                'fecha_inicio' => $request->fecha_inicio,
-                'fecha_fin'    => $request->fecha_fin,
-                'estado'       => $request->estado_aud,
-                'alcance'      => $request->alcance,
-                'hallazgos'    => $request->hallazgos,
+                'codigo'        => $nuevoCodigo,
+                'tipo'          => $request->tipo_aud,
+                'auditor'       => $request->auditor,
+                'fecha_inicio'  => $request->fecha_inicio,
+                'fecha_fin'     => $request->fecha_fin,
+                'estado'        => $request->estado_aud,
+                'alcance'       => $request->alcance,
+                'hallazgos'     => $request->hallazgos,
             ]);
         });
 

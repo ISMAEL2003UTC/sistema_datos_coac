@@ -1661,11 +1661,21 @@ Swal.fire({
     </div>
 </div> 
 
+<<<<<<< HEAD
 <!-- AUDITORÍAS -->
 <div id="auditorias" class="content-section">
     <h2 class="section-title">Gestión de Auditorías</h2>
 
     <form method="POST" action="{{ route('auditorias.store') }}">
+=======
+
+<!-- AUDITORÍAS --><!-- AUDITORÍAS -->
+<div id="auditorias" class="content-section">
+    <h2 class="section-title">Gestión de Auditorías</h2>
+
+    {{-- FORMULARIO --}}
+    <form method="POST" action="{{ route('auditorias.store') }}" id="auditoriaForm">
+>>>>>>> upstream/main
         @csrf
 
         <div class="form-row">
@@ -1675,23 +1685,20 @@ Swal.fire({
                     <option value="">Seleccionar...</option>
                     <option value="interna">Interna</option>
                     <option value="externa">Externa</option>
-                    
+<<<<<<< HEAD
+                    <option value="cumplimiento">Cumplimiento</option>
+                    <option value="certificacion">Certificación</option>
+                    <option value="seguimiento">Seguimiento</option>
+=======
+>>>>>>> upstream/main
                 </select>
             </div>
+
             <div class="form-group">
                 <label>Auditor Responsable *</label>
-                <select name="auditor_id" required>
-                    <option value="">Seleccionar auditor...</option>
-                    @foreach($auditores as $auditor)
-                        <option value="{{ $auditor->id }}">
-                            {{ $auditor->nombre }} {{ $auditor->apellido }}
-                        </option>
-                    @endforeach
-                </select>
+<<<<<<< HEAD
+                <input type="text" name="auditor" required placeholder="Nombre del auditor">
             </div>
-
-            
-
         </div>
 
 <div class="form-row">
@@ -1716,6 +1723,194 @@ Swal.fire({
     <small class="form-text text-muted">Debe ser posterior a la fecha actual (mañana o después)</small>
     <div id="error-fecha" class="text-danger small mt-1" style="display: none;"></div>
 </div>
+=======
+                <select name="auditor_id" id="auditor_id" required>
+                    <option value="">Seleccionar auditor...</option>
+                    @foreach($auditores as $auditor)
+                        <option value="{{ $auditor->id }}"
+                                data-email="{{ $auditor->email }}"
+                                data-rol="{{ $auditor->rol }}">
+                            {{ $auditor->nombre_completo }}
+                            @if($auditor->email)
+                                - {{ $auditor->email }}
+                            @endif
+                        </option>
+                    @endforeach
+                </select>
+                
+                @if($auditores->isEmpty())
+                    <div class="alert alert-warning small mt-2">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        No hay usuarios con rol de auditor registrados.
+                    </div>
+                @else
+                    <small class="form-text text-muted">
+                        {{ $auditores->count() }} auditores disponibles
+                    </small>
+                @endif
+            </div>
+        </div>
+
+        <div class="form-row">
+            {{-- FECHA DE INICIO --}}
+            <div class="form-group">
+                <label>Fecha de Inicio *</label>
+                <div class="date-time-container" style="display: flex; gap: 10px; align-items: flex-start;">
+                    {{-- Calendario --}}
+                    <div class="calendar-container" style="flex: 1; min-width: 250px;">
+                        <div class="calendar-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                            <button type="button" class="btn-calendar-nav" onclick="changeMonth(-1)" style="background: none; border: 1px solid #ced4da; border-radius: 4px; padding: 5px 10px; cursor: pointer;">
+                                <i class="fas fa-chevron-left"></i>
+                            </button>
+                            <span id="currentMonth" style="font-weight: bold; font-size: 14px;">
+                                {{ \Carbon\Carbon::now()->locale('es')->translatedFormat('F Y') }}
+                            </span>
+                            <button type="button" class="btn-calendar-nav" onclick="changeMonth(1)" style="background: none; border: 1px solid #ced4da; border-radius: 4px; padding: 5px 10px; cursor: pointer;">
+                                <i class="fas fa-chevron-right"></i>
+                            </button>
+                        </div>
+                        <div class="calendar-weekdays" style="display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; font-weight: bold; font-size: 12px; margin-bottom: 5px; color: #666;">
+                            <span>DO</span>
+                            <span>LU</span>
+                            <span>MA</span>
+                            <span>MI</span>
+                            <span>JU</span>
+                            <span>VI</span>
+                            <span>SA</span>
+                        </div>
+                        <div id="calendarDays" class="calendar-days" style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px;">
+                            {{-- Los días se generarán con JavaScript --}}
+                        </div>
+                        <input type="hidden" id="selectedDate" name="fecha_inicio" value="{{ date('Y-m-d') }}">
+                    </div>
+                    
+                    {{-- Selector de hora --}}
+                    <div class="time-container" style="flex: 1; min-width: 100px;">
+                        <div class="time-selector" style="display: flex; gap: 5px; flex-direction: column;">
+                            <div style="display: flex; gap: 5px; align-items: center;">
+                                <select id="hourSelect" style="flex: 1; padding: 8px; border: 1px solid #ced4da; border-radius: 4px;">
+                                    @for($i = 0; $i < 24; $i++)
+                                        <option value="{{ str_pad($i, 2, '0', STR_PAD_LEFT) }}"
+                                                {{ date('H') == $i ? 'selected' : '' }}>
+                                            {{ str_pad($i, 2, '0', STR_PAD_LEFT) }}
+                                        </option>
+                                    @endfor
+                                </select>
+                                <span style="font-weight: bold;">:</span>
+                                <select id="minuteSelect" style="flex: 1; padding: 8px; border: 1px solid #ced4da; border-radius: 4px;">
+                                    @for($i = 0; $i < 60; $i += 5)
+                                        <option value="{{ str_pad($i, 2, '0', STR_PAD_LEFT) }}"
+                                                {{ round(date('i')/5)*5 == $i ? 'selected' : '' }}>
+                                            {{ str_pad($i, 2, '0', STR_PAD_LEFT) }}
+                                        </option>
+                                    @endfor
+                                </select>
+                            </div>
+                            <input type="hidden" id="selectedTime" name="hora_inicio" value="{{ date('H:i') }}">
+                        </div>
+                        <div style="margin-top: 10px; display: flex; gap: 5px;">
+                            <button type="button" onclick="setCurrentDateTime()" 
+                                    class="btn btn-sm btn-outline-secondary" 
+                                    style="padding: 5px 10px; font-size: 12px;">
+                                <i class="fas fa-clock"></i> Ahora
+                            </button>
+                            <button type="button" onclick="clearDateTime()" 
+                                    class="btn btn-sm btn-outline-danger" 
+                                    style="padding: 5px 10px; font-size: 12px;">
+                                <i class="fas fa-times"></i> Borrar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <small class="form-text text-muted">
+                    Seleccione la fecha y hora de inicio de la auditoría
+                </small>
+                <div id="selectedDateTimeDisplay" style="margin-top: 8px; padding: 8px; background-color: #f8f9fa; border-radius: 4px; border: 1px solid #dee2e6; font-size: 14px;">
+                    <strong>Fecha y hora seleccionadas:</strong><br>
+                    {{ \Carbon\Carbon::now()->format('d/m/Y H:i') }}
+                </div>
+            </div>
+
+            {{-- FECHA DE FINALIZACIÓN --}}
+            <div class="form-group">
+                <label>Fecha de Finalización *</label>
+                <div class="date-time-container" style="display: flex; gap: 10px; align-items: flex-start;">
+                    {{-- Calendario para fecha fin --}}
+                    <div class="calendar-container" style="flex: 1; min-width: 250px;">
+                        <div class="calendar-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                            <button type="button" class="btn-calendar-nav" onclick="changeMonthFin(-1)" style="background: none; border: 1px solid #ced4da; border-radius: 4px; padding: 5px 10px; cursor: pointer;">
+                                <i class="fas fa-chevron-left"></i>
+                            </button>
+                            <span id="currentMonthFin" style="font-weight: bold; font-size: 14px;">
+                                {{ \Carbon\Carbon::now()->addDay()->locale('es')->translatedFormat('F Y') }}
+                            </span>
+                            <button type="button" class="btn-calendar-nav" onclick="changeMonthFin(1)" style="background: none; border: 1px solid #ced4da; border-radius: 4px; padding: 5px 10px; cursor: pointer;">
+                                <i class="fas fa-chevron-right"></i>
+                            </button>
+                        </div>
+                        <div class="calendar-weekdays" style="display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; font-weight: bold; font-size: 12px; margin-bottom: 5px; color: #666;">
+                            <span>DO</span>
+                            <span>LU</span>
+                            <span>MA</span>
+                            <span>MI</span>
+                            <span>JU</span>
+                            <span>VI</span>
+                            <span>SA</span>
+                        </div>
+                        <div id="calendarDaysFin" class="calendar-days" style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px;">
+                            {{-- Los días se generarán con JavaScript --}}
+                        </div>
+                        <input type="hidden" id="selectedDateFin" name="fecha_fin" value="{{ date('Y-m-d', strtotime('+1 day')) }}">
+                    </div>
+                    
+                    {{-- Selector de hora para fecha fin --}}
+                    <div class="time-container" style="flex: 1; min-width: 100px;">
+                        <div class="time-selector" style="display: flex; gap: 5px; flex-direction: column;">
+                            <div style="display: flex; gap: 5px; align-items: center;">
+                                <select id="hourSelectFin" style="flex: 1; padding: 8px; border: 1px solid #ced4da; border-radius: 4px;">
+                                    @for($i = 0; $i < 24; $i++)
+                                        <option value="{{ str_pad($i, 2, '0', STR_PAD_LEFT) }}"
+                                                {{ date('H') == $i ? 'selected' : '' }}>
+                                            {{ str_pad($i, 2, '0', STR_PAD_LEFT) }}
+                                        </option>
+                                    @endfor
+                                </select>
+                                <span style="font-weight: bold;">:</span>
+                                <select id="minuteSelectFin" style="flex: 1; padding: 8px; border: 1px solid #ced4da; border-radius: 4px;">
+                                    @for($i = 0; $i < 60; $i += 5)
+                                        <option value="{{ str_pad($i, 2, '0', STR_PAD_LEFT) }}"
+                                                {{ round(date('i')/5)*5 == $i ? 'selected' : '' }}>
+                                            {{ str_pad($i, 2, '0', STR_PAD_LEFT) }}
+                                        </option>
+                                    @endfor
+                                </select>
+                            </div>
+                            <input type="hidden" id="selectedTimeFin" name="hora_fin" value="{{ date('H:i') }}">
+                        </div>
+                        <div style="margin-top: 10px; display: flex; gap: 5px;">
+                            <button type="button" onclick="setCurrentDateTimeFin()" 
+                                    class="btn btn-sm btn-outline-secondary" 
+                                    style="padding: 5px 10px; font-size: 12px;">
+                                <i class="fas fa-clock"></i> Ahora
+                            </button>
+                            <button type="button" onclick="clearDateTimeFin()" 
+                                    class="btn btn-sm btn-outline-danger" 
+                                    style="padding: 5px 10px; font-size: 12px;">
+                                <i class="fas fa-times"></i> Borrar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <small class="form-text text-muted">
+                    Seleccione la fecha y hora de finalización de la auditoría (debe ser posterior a la fecha de inicio)
+                </small>
+                <div id="selectedDateTimeDisplayFin" style="margin-top: 8px; padding: 8px; background-color: #f8f9fa; border-radius: 4px; border: 1px solid #dee2e6; font-size: 14px;">
+                    <strong>Fecha y hora seleccionadas:</strong><br>
+                    {{ \Carbon\Carbon::now()->addDay()->format('d/m/Y H:i') }}
+                </div>
+                <div id="error-fecha" class="text-danger small mt-1" style="display: none;"></div>
+            </div>
+>>>>>>> upstream/main
 
             <div class="form-group">
                 <label>Estado *</label>
@@ -1774,9 +1969,29 @@ Swal.fire({
                         <br><small class="text-muted">Generado automáticamente</small>
                     </td>
                     <td>{{ ucfirst($auditoria->tipo) }}</td>
+<<<<<<< HEAD
                     <td>{{ $auditoria->auditor }}</td>
                     <td>
                         {{ \Carbon\Carbon::parse($auditoria->fecha_inicio)->format('d/m/Y') }}
+=======
+                    <td>
+                        @if($auditoria->auditor_id && $auditoria->usuarioAuditor)
+                            <strong>{{ $auditoria->usuarioAuditor->nombre_completo }}</strong>
+                            @if($auditoria->usuarioAuditor->email)
+                                <br><small class="text-muted">{{ $auditoria->usuarioAuditor->email }}</small>
+                            @endif
+                            <br><small class="badge badge-info">{{ $auditoria->usuarioAuditor->rol }}</small>
+                        @else
+                            {{ $auditoria->auditor }}
+                            <br><small class="text-warning">(Asignación manual)</small>
+                        @endif
+                    </td>
+                    <td>
+                        {{ \Carbon\Carbon::parse($auditoria->fecha_inicio)->format('d/m/Y') }}
+                        @if($auditoria->hora_inicio)
+                            <br><small class="text-muted">{{ \Carbon\Carbon::parse($auditoria->hora_inicio)->format('H:i') }}</small>
+                        @endif
+>>>>>>> upstream/main
                         @if(\Carbon\Carbon::parse($auditoria->fecha_inicio)->isToday())
                             <br><small class="text-success">Hoy</small>
                         @endif
@@ -1784,6 +1999,12 @@ Swal.fire({
                     <td>
                         @if($auditoria->fecha_fin)
                             {{ \Carbon\Carbon::parse($auditoria->fecha_fin)->format('d/m/Y') }}
+<<<<<<< HEAD
+=======
+                            @if($auditoria->hora_fin)
+                                <br><small class="text-muted">{{ \Carbon\Carbon::parse($auditoria->hora_fin)->format('H:i') }}</small>
+                            @endif
+>>>>>>> upstream/main
                             @if(\Carbon\Carbon::parse($auditoria->fecha_fin)->isPast())
                                 <br><small class="text-danger">Vencida</small>
                             @elseif(\Carbon\Carbon::parse($auditoria->fecha_fin)->isToday())
@@ -1834,6 +2055,329 @@ Swal.fire({
         @endif
     </div>
 </div>
+<<<<<<< HEAD
+=======
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Variables globales para los calendarios
+    let currentDateInicio = new Date();
+    let currentDateFin = new Date();
+    currentDateFin.setDate(currentDateFin.getDate() + 1); // Mañana por defecto
+
+    // Función para generar días del calendario
+    function generateCalendarDays(date, containerId, selectedDate, isFechaFin = false) {
+        const container = document.getElementById(containerId);
+        const month = date.getMonth();
+        const year = date.getFullYear();
+        
+        // Primer día del mes
+        const firstDay = new Date(year, month, 1);
+        // Último día del mes
+        const lastDay = new Date(year, month + 1, 0);
+        // Día de la semana del primer día (0 = Domingo, 6 = Sábado)
+        const firstDayWeekday = firstDay.getDay();
+        
+        // Limpiar contenedor
+        container.innerHTML = '';
+        
+        // Agregar días vacíos al inicio si es necesario
+        for (let i = 0; i < firstDayWeekday; i++) {
+            const emptyDay = document.createElement('div');
+            emptyDay.style.height = '30px';
+            container.appendChild(emptyDay);
+        }
+        
+        // Agregar los días del mes
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        
+        for (let day = 1; day <= lastDay.getDate(); day++) {
+            const dayElement = document.createElement('div');
+            dayElement.textContent = day;
+            dayElement.style.textAlign = 'center';
+            dayElement.style.padding = '5px';
+            dayElement.style.cursor = 'pointer';
+            dayElement.style.borderRadius = '4px';
+            dayElement.style.fontSize = '14px';
+            
+            const currentDay = new Date(year, month, day);
+            
+            // Estilos según el día
+            if (currentDay.toDateString() === selectedDate.toDateString()) {
+                dayElement.style.backgroundColor = '#007bff';
+                dayElement.style.color = 'white';
+                dayElement.style.fontWeight = 'bold';
+            } else if (currentDay.toDateString() === today.toDateString()) {
+                dayElement.style.backgroundColor = '#28a745';
+                dayElement.style.color = 'white';
+            } else if (currentDay < today) {
+                dayElement.style.color = '#ccc';
+                dayElement.style.cursor = 'not-allowed';
+            } else {
+                dayElement.style.backgroundColor = '#f8f9fa';
+                dayElement.style.color = '#333';
+            }
+            
+            // Solo permitir seleccionar días futuros para fecha fin
+            if (!isFechaFin || currentDay >= today) {
+                dayElement.addEventListener('click', function() {
+                    // Remover selección anterior
+                    const selectedElements = container.querySelectorAll('[style*="background-color: rgb(0, 123, 255)"]');
+                    selectedElements.forEach(el => {
+                        el.style.backgroundColor = '#f8f9fa';
+                        el.style.color = '#333';
+                    });
+                    
+                    // Seleccionar nuevo día
+                    dayElement.style.backgroundColor = '#007bff';
+                    dayElement.style.color = 'white';
+                    
+                    // Actualizar fecha seleccionada
+                    if (containerId === 'calendarDays') {
+                        selectedDate.setFullYear(year, month, day);
+                        updateSelectedDateTime();
+                    } else {
+                        currentDateFin.setFullYear(year, month, day);
+                        updateSelectedDateTimeFin();
+                    }
+                });
+            }
+            
+            container.appendChild(dayElement);
+        }
+    }
+
+    // Función para actualizar la fecha seleccionada (inicio)
+    function updateSelectedDateTime() {
+        const selectedDateInput = document.getElementById('selectedDate');
+        const hourSelect = document.getElementById('hourSelect');
+        const minuteSelect = document.getElementById('minuteSelect');
+        const selectedTimeInput = document.getElementById('selectedTime');
+        
+        // Formato YYYY-MM-DD
+        const formattedDate = currentDateInicio.getFullYear() + '-' + 
+                            String(currentDateInicio.getMonth() + 1).padStart(2, '0') + '-' + 
+                            String(currentDateInicio.getDate()).padStart(2, '0');
+        
+        // Hora seleccionada
+        const time = hourSelect.value + ':' + minuteSelect.value;
+        
+        // Actualizar inputs hidden
+        selectedDateInput.value = formattedDate;
+        selectedTimeInput.value = time;
+        
+        // Actualizar display
+        const displayElement = document.getElementById('selectedDateTimeDisplay');
+        const formattedDisplay = String(currentDateInicio.getDate()).padStart(2, '0') + '/' + 
+                               String(currentDateInicio.getMonth() + 1).padStart(2, '0') + '/' + 
+                               currentDateInicio.getFullYear() + ' ' + time;
+        displayElement.innerHTML = `<strong>Fecha y hora seleccionadas:</strong><br>${formattedDisplay}`;
+        
+        // Validar que fecha fin sea posterior
+        validarFechas();
+    }
+
+    // Función para actualizar la fecha seleccionada (fin)
+    function updateSelectedDateTimeFin() {
+        const selectedDateInput = document.getElementById('selectedDateFin');
+        const hourSelect = document.getElementById('hourSelectFin');
+        const minuteSelect = document.getElementById('minuteSelectFin');
+        const selectedTimeInput = document.getElementById('selectedTimeFin');
+        
+        // Formato YYYY-MM-DD
+        const formattedDate = currentDateFin.getFullYear() + '-' + 
+                            String(currentDateFin.getMonth() + 1).padStart(2, '0') + '-' + 
+                            String(currentDateFin.getDate()).padStart(2, '0');
+        
+        // Hora seleccionada
+        const time = hourSelect.value + ':' + minuteSelect.value;
+        
+        // Actualizar inputs hidden
+        selectedDateInput.value = formattedDate;
+        selectedTimeInput.value = time;
+        
+        // Actualizar display
+        const displayElement = document.getElementById('selectedDateTimeDisplayFin');
+        const formattedDisplay = String(currentDateFin.getDate()).padStart(2, '0') + '/' + 
+                               String(currentDateFin.getMonth() + 1).padStart(2, '0') + '/' + 
+                               currentDateFin.getFullYear() + ' ' + time;
+        displayElement.innerHTML = `<strong>Fecha y hora seleccionadas:</strong><br>${formattedDisplay}`;
+        
+        // Validar que fecha fin sea posterior
+        validarFechas();
+    }
+
+    // Función para cambiar mes (inicio)
+    window.changeMonth = function(delta) {
+        currentDateInicio.setMonth(currentDateInicio.getMonth() + delta);
+        updateMonthDisplay('currentMonth', currentDateInicio);
+        generateCalendarDays(currentDateInicio, 'calendarDays', currentDateInicio);
+    }
+
+    // Función para cambiar mes (fin)
+    window.changeMonthFin = function(delta) {
+        currentDateFin.setMonth(currentDateFin.getMonth() + delta);
+        updateMonthDisplay('currentMonthFin', currentDateFin);
+        generateCalendarDays(currentDateFin, 'calendarDaysFin', currentDateFin, true);
+    }
+
+    // Función para actualizar el display del mes
+    function updateMonthDisplay(elementId, date) {
+        const element = document.getElementById(elementId);
+        const monthNames = [
+            'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+            'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+        ];
+        element.textContent = monthNames[date.getMonth()] + ' ' + date.getFullYear();
+    }
+
+    // Función para establecer fecha y hora actual (inicio)
+    window.setCurrentDateTime = function() {
+        const now = new Date();
+        currentDateInicio = new Date(now);
+        
+        // Actualizar calendario
+        updateMonthDisplay('currentMonth', currentDateInicio);
+        generateCalendarDays(currentDateInicio, 'calendarDays', currentDateInicio);
+        
+        // Actualizar selectores de hora
+        document.getElementById('hourSelect').value = String(now.getHours()).padStart(2, '0');
+        document.getElementById('minuteSelect').value = String(Math.floor(now.getMinutes() / 5) * 5).padStart(2, '0');
+        
+        updateSelectedDateTime();
+    }
+
+    // Función para establecer fecha y hora actual (fin)
+    window.setCurrentDateTimeFin = function() {
+        const now = new Date();
+        now.setDate(now.getDate() + 1); // Mañana por defecto
+        currentDateFin = new Date(now);
+        
+        // Actualizar calendario
+        updateMonthDisplay('currentMonthFin', currentDateFin);
+        generateCalendarDays(currentDateFin, 'calendarDaysFin', currentDateFin, true);
+        
+        // Actualizar selectores de hora
+        document.getElementById('hourSelectFin').value = String(now.getHours()).padStart(2, '0');
+        document.getElementById('minuteSelectFin').value = String(Math.floor(now.getMinutes() / 5) * 5).padStart(2, '0');
+        
+        updateSelectedDateTimeFin();
+    }
+
+    // Función para borrar fecha y hora (inicio)
+    window.clearDateTime = function() {
+        // No se puede borrar completamente, se establece a hoy
+        setCurrentDateTime();
+    }
+
+    // Función para borrar fecha y hora (fin)
+    window.clearDateTimeFin = function() {
+        // Establecer a mañana
+        setCurrentDateTimeFin();
+    }
+
+    // Función para validar que fecha fin sea posterior a fecha inicio
+    function validarFechas() {
+        const errorDiv = document.getElementById('error-fecha');
+        const fechaInicio = new Date(document.getElementById('selectedDate').value + 'T' + document.getElementById('selectedTime').value);
+        const fechaFin = new Date(document.getElementById('selectedDateFin').value + 'T' + document.getElementById('selectedTimeFin').value);
+        
+        if (fechaFin <= fechaInicio) {
+            errorDiv.textContent = 'La fecha de finalización debe ser posterior a la fecha de inicio';
+            errorDiv.style.display = 'block';
+            return false;
+        }
+        
+        errorDiv.style.display = 'none';
+        return true;
+    }
+
+    // Inicializar calendarios
+    updateMonthDisplay('currentMonth', currentDateInicio);
+    updateMonthDisplay('currentMonthFin', currentDateFin);
+    generateCalendarDays(currentDateInicio, 'calendarDays', currentDateInicio);
+    generateCalendarDays(currentDateFin, 'calendarDaysFin', currentDateFin, true);
+    
+    // Asignar eventos a los selectores de hora
+    document.getElementById('hourSelect').addEventListener('change', updateSelectedDateTime);
+    document.getElementById('minuteSelect').addEventListener('change', updateSelectedDateTime);
+    document.getElementById('hourSelectFin').addEventListener('change', updateSelectedDateTimeFin);
+    document.getElementById('minuteSelectFin').addEventListener('change', updateSelectedDateTimeFin);
+
+    // Validación del formulario
+    const form = document.getElementById('auditoriaForm');
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            const auditorSelect = document.getElementById('auditor_id');
+            
+            // Validar que se seleccionó un auditor
+            if (auditorSelect && !auditorSelect.value) {
+                e.preventDefault();
+                alert('Por favor, seleccione un auditor responsable');
+                auditorSelect.focus();
+                return false;
+            }
+            
+            // Validar fechas
+            if (!validarFechas()) {
+                e.preventDefault();
+                document.getElementById('selectedDateFin').focus();
+                return false;
+            }
+            
+            // Validar que el usuario seleccionado tenga rol de auditor
+            if (auditorSelect && auditorSelect.value) {
+                const selectedOption = auditorSelect.options[auditorSelect.selectedIndex];
+                const rol = selectedOption.getAttribute('data-rol');
+                
+                if (rol !== 'auditor') {
+                    e.preventDefault();
+                    alert('Error: El usuario seleccionado no tiene rol de auditor');
+                    auditorSelect.focus();
+                    return false;
+                }
+            }
+            
+            return true;
+        });
+    }
+
+    // Mostrar información del auditor seleccionado
+    const auditorSelect = document.getElementById('auditor_id');
+    if (auditorSelect) {
+        const infoContainer = document.createElement('div');
+        infoContainer.className = 'auditor-info mt-2 small';
+        infoContainer.style.display = 'none';
+        infoContainer.style.padding = '8px';
+        infoContainer.style.backgroundColor = '#f8f9fa';
+        infoContainer.style.borderRadius = '4px';
+        infoContainer.style.border = '1px solid #dee2e6';
+        
+        auditorSelect.parentNode.insertBefore(infoContainer, auditorSelect.nextSibling);
+        
+        auditorSelect.addEventListener('change', function() {
+            const selectedOption = this.options[this.selectedIndex];
+            const email = selectedOption.getAttribute('data-email');
+            const rol = selectedOption.getAttribute('data-rol');
+            
+            if (this.value && email) {
+                infoContainer.innerHTML = `
+                    <strong>Información del auditor:</strong><br>
+                    Email: ${email}<br>
+                    Rol: ${rol}
+                `;
+                infoContainer.style.display = 'block';
+            } else {
+                infoContainer.style.display = 'none';
+            }
+        });
+    }
+});
+</script>
+@endpush
+>>>>>>> upstream/main
 
 @push('scripts')
 <script>
