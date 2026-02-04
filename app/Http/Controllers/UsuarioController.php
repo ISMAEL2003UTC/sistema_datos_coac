@@ -13,6 +13,8 @@ use App\Models\ActividadProcesamiento;
 use App\Models\Auditoria;
 use App\Models\Reporte;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
+
 
 use Illuminate\Http\Request;
 
@@ -88,37 +90,58 @@ class UsuarioController extends Controller
         return redirect()->back()->with('success', 'Estado actualizado');
     }
 
-    public function store(Request $request)
-    {
-        $request->validate([
-            'nombre_completo' => 'required|string|max:150',
-            'email' => 'required|email',
-            'rol' => 'required'
-        ]);
+public function store(Request $request)
+{
+    $request->validate([
+        'nombre_completo' => 'required|string|min:5|max:150|unique:usuarios,nombre_completo',
+        'email'           => 'required|email|unique:usuarios,email',
+        'cedula'          => 'required|digits:10|unique:usuarios,cedula',
+        'provincia'       => 'required|string|max:100',
+        'canton'          => 'required|string|max:100',
+        'rol'             => 'required'
+    ]);
 
-        Usuario::create([
-            'nombre_completo' => $request->nombre_completo,
-            'email' => $request->email,
-            'rol' => $request->rol,
-            'estado' => 'activo',
-            'password' => Hash::make('123456')
-        ]);
+    Usuario::create([
+        'nombre_completo' => $request->nombre_completo,
+        'email'           => $request->email,
+        'cedula'          => $request->cedula,
+        'provincia'       => $request->provincia,
+        'canton'          => $request->canton,
+        'rol'             => $request->rol,
+        'estado'          => 'activo',
+        'password'        => Hash::make('123456')
+    ]);
 
-        return redirect()->back();
-    }
+    return redirect()->back()->with('success', 'Usuario registrado correctamente');
+}
 
-    public function update(Request $request, $id)
-    {
-        $usuario = Usuario::findOrFail($id);
 
-        $usuario->nombre_completo = $request->nombre_completo;
-        $usuario->email = $request->email;
-        $usuario->rol = $request->rol;
+// ------------------------------------------
 
-        $usuario->save();
+    public function update(Request $request, User $user)
+{
+    $request->validate([
+        'nombre_completo' => 'required|string|min:5|max:150',
+        'email'           => 'required|email|unique:users,email,' . $user->id,
+        'cedula'          => 'required|digits:10|unique:users,cedula,' . $user->id,
+        'provincia'       => 'required|string|max:100',
+        'canton'          => 'required|string|max:100',
+        'rol'             => 'required'
+    ]);
 
-        return redirect()->back();
-    }
+    $user->update([
+        'name'      => $request->nombre_completo,
+        'email'     => $request->email,
+        'cedula'    => $request->cedula,
+        'provincia' => $request->provincia,
+        'canton'    => $request->canton,
+        'rol'       => $request->rol,
+    ]);
+
+    return redirect()->back()->with('success', 'Usuario actualizado correctamente');
+}
+
+
 
     public function destroy($id)
     {
@@ -134,12 +157,37 @@ class UsuarioController extends Controller
 
         $existe = Usuario::where('email', $email)
             ->when($id, function ($query) use ($id) {
-                $query->where('id', '!=', $id); // 👈 excluye el mismo usuario
+                $query->where('id', '!=', $id); 
             })
             ->exists();
 
         return response()->json(!$existe);
     }
+
+    public function verificarNombre(Request $request)
+    {
+        $nombre = $request->nombre_completo;
+        $id = $request->id;
+
+        $existe = Usuario::whereRaw('LOWER(nombre_completo) = ?', [strtolower($nombre)])
+            ->when($id, fn($q) => $q->where('id', '!=', $id))
+            ->exists();
+
+        return response()->json(!$existe);
+    }
+
+    public function verificarCedula(Request $request)
+    {
+        $cedula = $request->cedula;
+        $id = $request->id;
+
+        $existe = Usuario::where('cedula', $cedula)
+            ->when($id, fn ($q) => $q->where('id', '!=', $id))
+            ->exists();
+
+        return response()->json(!$existe);
+    }
+
 
 
 }

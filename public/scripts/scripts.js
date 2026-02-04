@@ -374,16 +374,28 @@ $(document).ready(function () {
         return this.optional(element) || /^[0-9]+$/.test(value);
     }, "Solo se permiten números");
 
-    // VALIDACIÓN USUARIOS
-    $("#formUsuarios").validate({
+ // VALIDACIÓN USUARIOS
+$("#formUsuarios").validate({
     rules: {
-        nombre_completo: { 
-            required: true, 
-            minlength: 3, 
-            soloLetras: true 
+        nombre_completo: {
+            required: true,
+            minlength: 3,
+            soloLetras: true,
+            remote: {
+                url: "/verificar-nombre",
+                type: "get",
+                data: {
+                    nombre_completo: function () {
+                        return $("#nombre_completo").val();
+                    },
+                    id: function () {
+                        return $("#id_usuario").val(); // 👈 para edición
+                    }
+                }
+            }
         },
-        email: { 
-            required: true, 
+        email: {
+            required: true,
             email: true,
             remote: {
                 url: "/verificar-email",
@@ -393,25 +405,78 @@ $(document).ready(function () {
                         return $("input[name='email']").val();
                     },
                     id: function () {
-                        return $("#id_usuario").val(); // 👈 input hidden
+                        return $("#id_usuario").val();
                     }
                 }
             }
         },
-        rol: { required: true }
+        cedula: {
+            required: true,
+            digits: true,
+            minlength: 10,
+            maxlength: 10,
+            remote: {
+                url: "/verificar-cedula",
+                type: "get",
+                data: {
+                    cedula: function () {
+                        return $("input[name='cedula']").val();
+                    },
+                    id: function () {
+                        return $("#id_usuario").val();
+                    }
+                }
+            }
+        },
+        provincia: {
+            required: true,
+            minlength: 3,
+            soloLetras: true
+        },
+
+        canton: {
+            required: true,
+            minlength: 3,
+            soloLetras: true
+        },
+        rol: {
+            required: true
+        }
     },
     messages: {
         nombre_completo: {
             required: "El nombre es obligatorio",
             minlength: "Debe tener al menos 3 caracteres",
-            soloLetras: "Solo se permiten letras"
+            soloLetras: "Solo se permiten letras",
+            remote: "Este nombre ya está registrado"
         },
         email: {
             required: "El correo es obligatorio",
             email: "Correo no válido",
             remote: "Este correo ya está registrado"
         },
-        rol: { required: "El rol es obligatorio" }
+        cedula: {
+            required: "La cédula es obligatoria",
+            digits: "La cédula solo debe contener números",
+            minlength: "La cédula debe tener 10 dígitos",
+            maxlength: "La cédula debe tener 10 dígitos",
+            remote: "Esta cédula ya está registrada"
+        },
+
+        provincia: {
+            required: "La provincia es obligatoria",
+            minlength: "Debe tener al menos 3 caracteres",
+            soloLetras: "Solo se permiten letras"
+        },
+
+        canton: {
+            required: "El cantón es obligatorio",
+            minlength: "Debe tener al menos 3 caracteres",
+            soloLetras: "Solo se permiten letras"
+        },
+        rol: {
+            required: "El rol es obligatorio"
+        }
     },
     errorElement: "div",
     errorClass: "invalid-feedback",
@@ -421,9 +486,10 @@ $(document).ready(function () {
     unhighlight: function (element) {
         $(element).removeClass("is-invalid");
     }
-
-    
 });
+
+
+
 function editarUsuario(id, nombre, email, rol) {
     $("#id_usuario").val(id);  
     $("input[name='nombre_completo']").val(nombre);
