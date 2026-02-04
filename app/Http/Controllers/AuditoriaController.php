@@ -17,15 +17,17 @@ class AuditoriaController extends Controller
     public function index()
 {
     try {
-        // Traer todos los usuarios
-        $usuarios = Usuario::orderBy('nombre')->get();
+        // Traer solo usuarios con rol 'auditor'
+        $auditores = Usuario::where('rol', 'auditor')
+            ->orderBy('nombre')
+            ->get();
 
         // Obtener auditorías con paginación y eager loading
         $auditorias = Auditoria::with('usuarioAuditor')
             ->orderBy('created_at', 'desc')
             ->paginate(15);
         
-        return view('auditorias.index', compact('auditorias', 'usuarios'));
+        return view('auditorias.index', compact('auditorias', 'auditores'));
         
     } catch (\Exception $e) {
         Log::error('Error al cargar auditorías: ' . $e->getMessage());
