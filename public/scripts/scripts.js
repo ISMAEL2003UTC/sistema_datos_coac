@@ -474,7 +474,7 @@ $("#formSujetos").validate({
                 url: "/verificar-email-sujeto",
                 type: "get",
                 data: {
-                    email: function () { return $("input[name='email']").val(); },
+                    email: function () { return $("input[name='email']").val().trim(); },
                     sujeto_id: function () { return $("#sujeto_id").val(); }
                 }
             }
