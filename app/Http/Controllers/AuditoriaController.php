@@ -15,13 +15,18 @@ class AuditoriaController extends Controller
      * Display a listing of the resource.
      */
     public function index()
-    {
-        $usuarios = Usuario::where('rol', 'auditor')
+{
+    // Solo usuarios con rol auditor y estado activo
+    $usuarios = Usuario::where('rol', 'auditor')
                         ->where('estado', 'activo')
                         ->orderBy('nombre', 'asc')
                         ->get();
-    return view('tu_vista', compact('auditorias')); 
-    }
+
+
+    // Pasamos ambas variables a la vista
+    return view('tu_vista', compact('auditorias', 'usuarios'));
+}
+
 
     /**
      * Store a newly created resource in storage.
