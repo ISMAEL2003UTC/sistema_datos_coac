@@ -119,6 +119,30 @@
                         name="email"
                         placeholder="Ingrese un correo electrónico válido">
                 </div>
+                <div class="form-group">
+                <label>Cédula *</label>
+                    <input type="text"
+                        name="cedula"
+                        placeholder="Ingrese su número de cédula"
+                        maxlength="10"
+                        pattern="[0-9]{10}"
+                        required>
+                </div>
+
+                <div class="form-group">
+                    <label>Provincia *</label>
+                    <input type="text" name="provincia"
+                    placeholder="Ej: Cotopaxi"
+                    required>
+                </div>
+
+                <div class="form-group">
+                    <label>Cantón *</label>
+                    <input type="text"
+                        name="canton"
+                        placeholder="Ej: Latacunga"
+                        required>
+                </div>
 
                 <div class="form-group">
                     <label>Rol *</label>
@@ -139,9 +163,11 @@
                 <table>
                     <thead>
                         <tr>
-                            <th>ID</th>
                             <th>Nombres y apellidos</th>
+                            <th>Cédula</th>
                             <th>Email</th>
+                            <th>Provincia</th>
+                            <th>Cantón</th>
                             <th>Rol</th>
                             <th>Estado</th>
                             <th>Acciones</th>
@@ -150,10 +176,13 @@
                     <tbody>
                     @foreach ($usuarios as $usuario)
                         <tr>
-                            <td>{{ $usuario->id }}</td>
                             <td>{{ $usuario->nombre_completo }}</td>
+                            <td>{{ $usuario->cedula }}</td>
                             <td>{{ $usuario->email }}</td>
+                            <td>{{ $usuario->provincia }}</td>
+                            <td>{{ $usuario->canton }}</td>
                             <td>{{ $usuario->rol_texto }}</td>
+
 
                             <td>
                                 @if($usuario->estado === 'activo')
