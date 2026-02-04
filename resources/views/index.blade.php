@@ -1658,18 +1658,18 @@ Swal.fire({
             <div class="form-group">
                 <label>Auditor Responsable *</label>
                 <select name="usuario_id" id="usuario_auditor_id" class="form-control" required>
-                    <option value="">Seleccione un auditor</option>
+    <option value="">Seleccione un auditor</option>
 
-                    {{-- Recorremos los usuarios si existen --}}
-                    @forelse($usuarios ?? [] as $usuario)
-                        <option value="{{ $usuario->id }}"
-                            {{ old('usuario_id') == $usuario->id ? 'selected' : '' }}>
-                            {{ $usuario->nombre }} {{ $usuario->apellido ?? '' }}
-                        </option>
-                    @empty
-                        <option value="" disabled>No hay usuarios disponibles</option>
-                    @endforelse
-                </select>
+    @forelse($usuarios as $usuario)
+        <option value="{{ $usuario->id }}"
+            {{ old('usuario_id') == $usuario->id ? 'selected' : '' }}>
+            {{ $usuario->nombre }} {{ $usuario->apellido ?? '' }}
+        </option>
+    @empty
+        <option value="" disabled>No hay usuarios disponibles</option>
+    @endforelse
+</select>
+
 
                 {{-- Mostrar error de validación si existe --}}
                 @error('usuario_id')

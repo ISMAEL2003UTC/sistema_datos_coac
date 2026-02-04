@@ -22,10 +22,13 @@ class AuditoriaController extends Controller
                         ->orderBy('nombre', 'asc')
                         ->get();
 
+    // Traer auditorías si las necesitas en la vista
+    $auditorias = Auditoria::orderBy('created_at', 'desc')->get();
 
     // Pasamos ambas variables a la vista
     return view('tu_vista', compact('auditorias', 'usuarios'));
 }
+
 
 
     /**
