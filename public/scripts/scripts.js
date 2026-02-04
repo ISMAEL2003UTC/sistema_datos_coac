@@ -76,6 +76,38 @@ function editarUsuario(id, nombre, email, rol) {
 
 // ========== FUNCIONES PARA SUJETOS ==========
 
+// EDITAR SUJETO
+function editarSujeto(id, cedula, nombre, apellido, email, telefono, direccion, ciudad, tipo) {
+
+    Swal.fire({
+        icon: 'info',
+        title: 'Editar Sujeto de datos',
+        text: 'El formulario ha entrado en modo edición',
+        timer: 1500
+    });
+
+    const form = $("#formSujetos");
+
+    // 🔹 Limpiar validaciones anteriores
+    form.validate().resetForm();
+    form.find(".is-invalid").removeClass("is-invalid");
+
+    // 🔹 Cargar datos
+    $("#sujeto_id").val(id);
+    $("input[name='cedula']").val(cedula);
+    $("input[name='nombre']").val(nombre);
+    $("input[name='apellido']").val(apellido);
+    $("input[name='email']").val(email);
+    $("input[name='telefono']").val(telefono);
+    $("input[name='direccion']").val(direccion);
+    $("input[name='ciudad']").val(ciudad);
+    $("select[name='tipo']").val(tipo);
+
+    // 🔹 Cambiar a modo edición
+    $("#form_sujeto_method").val("PUT");
+    form.attr("action", `/sujetos/${id}`);
+    form.find("button[type='submit']").text("Actualizar Sujeto");
+}
 
 
 // ========== FUNCIONES PARA PRODUCTOS FINANCIEROS ==========
@@ -395,9 +427,7 @@ function editarUsuario(id, nombre, email, rol) {
 }
 
 
-// ==============================
-// MÉTODOS PERSONALIZADOS
-// ==============================
+    // Métodos adicionales
 $.validator.addMethod("soloLetras", function(value, element) {
     return this.optional(element) || /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/.test(value);
 }, "Solo se permiten letras");
@@ -406,15 +436,13 @@ $.validator.addMethod("soloNumeros", function(value, element) {
     return this.optional(element) || /^\d+$/.test(value);
 }, "Solo se permiten números");
 
+// Método para cédula (exactamente 10 dígitos)
 $.validator.addMethod("cedulaEC", function (value) {
     value = value.replace(/\D/g, '');
     return value.length === 10;
 }, "La cédula debe tener exactamente 10 dígitos");
 
-
-// ==============================
-// VALIDACIÓN DEL FORMULARIO
-// ==============================
+// VALIDACIÓN SUJETOS
 $("#formSujetos").validate({
     rules: {
         cedula: {
@@ -424,12 +452,8 @@ $("#formSujetos").validate({
                 url: "/verificar-cedula-sujeto",
                 type: "get",
                 data: {
-                    cedula: function() {
-                        return $("input[name='cedula']").val();
-                    },
-                    sujeto_id: function() {
-                        return $("#sujeto_id").val();
-                    }
+                    cedula: function () { return $("input[name='cedula']").val(); },
+                    sujeto_id: function () { return $("#sujeto_id").val(); }
                 }
             }
         },
@@ -450,12 +474,8 @@ $("#formSujetos").validate({
                 url: "/verificar-email-sujeto",
                 type: "get",
                 data: {
-                    email: function() {
-                        return $("input[name='email']").val();
-                    },
-                    sujeto_id: function() {
-                        return $("#sujeto_id").val();
-                    }
+                    email: function () { return $("input[name='email']").val(); },
+                    sujeto_id: function () { return $("#sujeto_id").val(); }
                 }
             }
         },
@@ -522,44 +542,25 @@ $("#formSujetos").validate({
 
     errorElement: "div",
     errorClass: "invalid-feedback",
-
-    highlight: function(element) {
+    highlight: function (element) {
         $(element).addClass("is-invalid");
     },
-    unhighlight: function(element) {
+    unhighlight: function (element) {
         $(element).removeClass("is-invalid");
     }
 });
 
-
-// ==============================
-// EDITAR SUJETO (SEGURO)
-// ==============================
-function editarSujeto(data) {
-
-    Swal.fire({
-        icon: 'info',
-        title: 'Editar Sujeto de datos',
-        text: 'El formulario ha entrado en modo edición',
-        timer: 2000
-    });
-
-    const form = document.getElementById('formSujetos');
-
-    form.querySelector('input[name="cedula"]').value = data.cedula;
-    form.querySelector('input[name="nombre"]').value = data.nombre;
-    form.querySelector('input[name="apellido"]').value = data.apellido;
-    form.querySelector('input[name="email"]').value = data.email;
-    form.querySelector('input[name="telefono"]').value = data.telefono;
-    form.querySelector('input[name="direccion"]').value = data.direccion;
-    form.querySelector('input[name="ciudad"]').value = data.ciudad;
-    form.querySelector('select[name="tipo"]').value = data.tipo;
-
-    document.getElementById('sujeto_id').value = data.id;
-    document.getElementById('form_sujeto_method').value = 'PUT';
-
-    form.action = `/sujetos/${data.id}`;
-    form.querySelector('button[type="submit"]').innerText = 'Actualizar Sujeto';
+// Función para editar sujeto
+function editarSujeto(id, cedula, nombre, apellido, email, telefono, direccion, ciudad, tipo) {
+    $("#sujeto_id").val(id);
+    $("input[name='cedula']").val(cedula);
+    $("input[name='nombre']").val(nombre);
+    $("input[name='apellido']").val(apellido);
+    $("input[name='email']").val(email);
+    $("input[name='telefono']").val(telefono);
+    $("input[name='direccion']").val(direccion);
+    $("input[name='ciudad']").val(ciudad);
+    $("select[name='tipo']").val(tipo);
 }
 
 
