@@ -550,18 +550,6 @@ $("#formSujetos").validate({
     }
 });
 
-// Función para editar sujeto
-function editarSujeto(id, cedula, nombre, apellido, email, telefono, direccion, ciudad, tipo) {
-    $("#sujeto_id").val(id);
-    $("input[name='cedula']").val(cedula);
-    $("input[name='nombre']").val(nombre);
-    $("input[name='apellido']").val(apellido);
-    $("input[name='email']").val(email);
-    $("input[name='telefono']").val(telefono);
-    $("input[name='direccion']").val(direccion);
-    $("input[name='ciudad']").val(ciudad);
-    $("select[name='tipo']").val(tipo);
-}
 
 
 
