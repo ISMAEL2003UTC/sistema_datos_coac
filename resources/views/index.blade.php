@@ -1661,7 +1661,7 @@ Swal.fire({
     <option value="">Seleccione un auditor</option>
     @forelse($usuarios as $usuario)
         <option value="{{ $usuario->id }}" {{ old('auditor_id') == $usuario->id ? 'selected' : '' }}>
-            {{ $usuario->nombre }} {{ $usuario->apellido ?? '' }}
+            {{ $usuario->nombre }} {{ $usuario->apellido }}
         </option>
     @empty
         <option value="" disabled>No hay usuarios disponibles</option>
