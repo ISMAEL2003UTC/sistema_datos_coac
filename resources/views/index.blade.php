@@ -1675,9 +1675,7 @@ Swal.fire({
                     <option value="">Seleccionar...</option>
                     <option value="interna">Interna</option>
                     <option value="externa">Externa</option>
-                    <option value="cumplimiento">Cumplimiento</option>
-                    <option value="certificacion">Certificación</option>
-                    <option value="seguimiento">Seguimiento</option>
+                    
                 </select>
             </div>
 
