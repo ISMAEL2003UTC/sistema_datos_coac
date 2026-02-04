@@ -74,7 +74,7 @@ class AuditoriaController extends Controller
             ]);
             
             // Validar que el usuario tenga rol de auditor
-            $auditor = User::find($validated['auditor_id']);
+            $auditor = Usuario::find($validated['auditor_id']);
             if ($auditor->rol !== 'auditor') {
                 throw ValidationException::withMessages([
                     'auditor_id' => 'El usuario seleccionado no tiene rol de auditor.',

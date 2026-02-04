@@ -11,7 +11,7 @@ class Auditoria extends Model
     protected $fillable = [
         'codigo',  
         'tipo',
-        'auditor',
+        'auditor_id',
         'fecha_inicio',
         'fecha_fin',
         'estado',
@@ -43,4 +43,9 @@ class Auditoria extends Model
             }
         });
     }
+    public function usuarioAuditor()
+    {
+        return $this->belongsTo(Usuario::class, 'auditor_id');
+    }
+
 }
