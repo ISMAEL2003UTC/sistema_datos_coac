@@ -173,7 +173,7 @@
                     <td>{{ $usuario->email }}</td>
                     <td>{{ $usuario->ciudad }}</td>
                     <td>{{ $usuario->direccion }}</td>
-                    <td>{{ $usuario->rol }}</td>
+                    <td>{{ $usuario->rol_texto }}</td>
                     <td>
                         @if($usuario->estado === 'activo')
                             <span class="badge badge-success">Activo</span>
@@ -182,22 +182,18 @@
                         @endif
                     </td>
                     <td>
-                        <button class="btn btn-secondary"
-                                onclick="editarUsuario('{{ $usuario->id }}', '{{ $usuario->nombre }}', '{{ $usuario->apellido }}', '{{ $usuario->email }}', '{{ $usuario->cedula }}', '{{ $usuario->ciudad }}', '{{ $usuario->direccion }}', '{{ $usuario->rol }}')">
-                            Editar
-                        </button>
+                        @if($usuario->rol !== 'admin')
+                            <button class="btn btn-secondary"
+                                    onclick="editarUsuario('{{ $usuario->id }}', '{{ $usuario->nombre }}', '{{ $usuario->apellido }}', '{{ $usuario->email }}', '{{ $usuario->cedula }}', '{{ $usuario->ciudad }}', '{{ $usuario->direccion }}', '{{ $usuario->rol }}')">
+                                Editar
+                            </button>
 
-                        <form action="{{ route('usuarios.estado', $usuario->id) }}" method="POST" style="display:inline;">
-                            @csrf
-                            @method('PUT')
-                            <button type="submit" class="btn btn-warning">Cambiar estado</button>
-                        </form>
-
-                        <form action="{{ route('usuarios.destroy', $usuario->id) }}" method="POST" style="display:inline;">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="btn btn-danger">Eliminar</button>
-                        </form>
+                            <form action="{{ route('usuarios.estado', $usuario->id) }}" method="POST" style="display:inline;">
+                                @csrf
+                                @method('PUT')
+                                <button type="submit" class="btn btn-warning">Cambiar estado</button>
+                            </form>
+                        @endif
                     </td>
                 </tr>
                 @endforeach
@@ -206,6 +202,7 @@
     </div>
 </div>
 @endif
+
 
         <!-- SUJETOS DE DATOS -------------------------------------------------------------------------------->
          <!-- ========================================= -->
