@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Auditoria;
-use App\Models\User;
+use App\Models\Usuario;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -45,7 +45,7 @@ class AuditoriaController extends Controller
             // Validación de datos
             $validated = $request->validate([
                 'tipo_aud' => 'required|in:interna,externa',
-                'auditor_id' => 'required|exists:users,id',
+                'auditor_id' => 'required|exists:usuarios,id',
                 'fecha_inicio' => 'required|date|date_format:Y-m-d',
                 'hora_inicio' => 'required|date_format:H:i',
                 'fecha_fin' => 'required|date|date_format:Y-m-d|after:fecha_inicio',
@@ -76,7 +76,7 @@ class AuditoriaController extends Controller
             ]);
             
             // Validar que el usuario tenga rol de auditor
-            $auditor = User::find($validated['auditor_id']);
+            $auditor = Usuario::find($validated['auditor_id']);
             if ($auditor->rol !== 'auditor') {
                 throw ValidationException::withMessages([
                     'auditor_id' => 'El usuario seleccionado no tiene rol de auditor.',
