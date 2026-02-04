@@ -1678,18 +1678,19 @@ Swal.fire({
                     
                 </select>
             </div>
-
             <div class="form-group">
-    <label>Auditor Responsable *</label>
-    <select name="auditor_id" required>
-        <option value="">Seleccionar auditor...</option>
-        @foreach($auditores as $auditor)
-            <option value="{{ $auditor->id }}">
-                {{ $auditor->nombre }} {{ $auditor->apellido }}
-            </option>
-        @endforeach
-    </select>
-</div>
+                <label>Auditor Responsable *</label>
+                <select name="auditor_id" required>
+                    <option value="">Seleccionar auditor...</option>
+                    @foreach($auditores as $auditor)
+                        <option value="{{ $auditor->id }}">
+                            {{ $auditor->nombre }} {{ $auditor->apellido }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+
+            
 
         </div>
 
