@@ -18,9 +18,10 @@ class AuditoriaController extends Controller
 {
     // Solo usuarios activos con rol 'auditor'
     $usuarios = Usuario::whereRaw('LOWER(TRIM(rol)) = ?', ['auditor'])
-                    ->where('estado', 'activo')
-                    ->orderBy('nombre', 'asc')
-                    ->get();
+                   ->whereRaw('LOWER(TRIM(estado)) = ?', ['activo'])
+                   ->orderBy('nombre', 'asc')
+                   ->get();
+
 
 
     // Traer auditorías si las necesitas
