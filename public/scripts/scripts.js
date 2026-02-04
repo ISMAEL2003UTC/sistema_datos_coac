@@ -382,24 +382,18 @@ $(document).ready(function () {
     }, "Solo se permiten números");
 
  // VALIDACIÓN USUARIOS
+// VALIDACIÓN USUARIOS
 $("#formUsuarios").validate({
     rules: {
-        nombre_completo: {
+        nombre: {
             required: true,
             minlength: 3,
-            soloLetras: true,
-            remote: {
-                url: "/verificar-nombre",
-                type: "get",
-                data: {
-                    nombre_completo: function () {
-                        return $("#nombre_completo").val();
-                    },
-                    id: function () {
-                        return $("#id_usuario").val(); // 👈 para edición
-                    }
-                }
-            }
+            soloLetras: true
+        },
+        apellido: {
+            required: true,
+            minlength: 3,
+            soloLetras: true
         },
         email: {
             required: true,
@@ -409,10 +403,10 @@ $("#formUsuarios").validate({
                 type: "get",
                 data: {
                     email: function () {
-                        return $("input[name='email']").val();
+                        return $("#email").val();
                     },
                     id: function () {
-                        return $("#id_usuario").val();
+                        return $("#usuario_id").val();
                     }
                 }
             }
@@ -427,35 +421,37 @@ $("#formUsuarios").validate({
                 type: "get",
                 data: {
                     cedula: function () {
-                        return $("input[name='cedula']").val();
+                        return $("#cedula").val();
                     },
                     id: function () {
-                        return $("#id_usuario").val();
+                        return $("#usuario_id").val();
                     }
                 }
             }
         },
-        provincia: {
+        ciudad: {
             required: true,
             minlength: 3,
             soloLetras: true
         },
-
-        canton: {
+        direccion: {
             required: true,
-            minlength: 3,
-            soloLetras: true
+            minlength: 5
         },
         rol: {
             required: true
         }
     },
     messages: {
-        nombre_completo: {
+        nombre: {
             required: "El nombre es obligatorio",
             minlength: "Debe tener al menos 3 caracteres",
-            soloLetras: "Solo se permiten letras",
-            remote: "Este nombre ya está registrado"
+            soloLetras: "Solo se permiten letras"
+        },
+        apellido: {
+            required: "El apellido es obligatorio",
+            minlength: "Debe tener al menos 3 caracteres",
+            soloLetras: "Solo se permiten letras"
         },
         email: {
             required: "El correo es obligatorio",
@@ -469,17 +465,14 @@ $("#formUsuarios").validate({
             maxlength: "La cédula debe tener 10 dígitos",
             remote: "Esta cédula ya está registrada"
         },
-
-        provincia: {
-            required: "La provincia es obligatoria",
+        ciudad: {
+            required: "La ciudad es obligatoria",
             minlength: "Debe tener al menos 3 caracteres",
             soloLetras: "Solo se permiten letras"
         },
-
-        canton: {
-            required: "El cantón es obligatorio",
-            minlength: "Debe tener al menos 3 caracteres",
-            soloLetras: "Solo se permiten letras"
+        direccion: {
+            required: "La dirección es obligatoria",
+            minlength: "Debe tener al menos 5 caracteres"
         },
         rol: {
             required: "El rol es obligatorio"
@@ -495,17 +488,17 @@ $("#formUsuarios").validate({
     }
 });
 
+// Método personalizado para permitir solo letras
+$.validator.addMethod("soloLetras", function(value, element) {
+    return this.optional(element) || /^[a-zA-Z\s]+$/.test(value);
+}, "Solo se permiten letras");
 
 
-function editarUsuario(id, nombre, email, rol) {
-    $("#id_usuario").val(id);  
-    $("input[name='nombre_completo']").val(nombre);
-    $("input[name='email']").val(email);
-    $("select[name='rol']").val(rol);
-}
 
 
-    // Métodos adicionales
+
+
+// Métodos adicionales para sujetos
 $.validator.addMethod("soloLetras", function(value, element) {
     return this.optional(element) || /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/.test(value);
 }, "Solo se permiten letras");
