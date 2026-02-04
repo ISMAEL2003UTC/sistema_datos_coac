@@ -33,11 +33,15 @@ class Usuario extends Authenticatable
     public function getRolTextoAttribute()
     {
         return match ($this->rol) {
-            'admin'    => 'Administrador',
-            'dpo'      => 'Oficial de Protección de Datos',
-            'auditor'  => 'Auditor',
-            'operador' => 'Operador',
-            default    => ucfirst($this->rol),
+            'admin'                   => 'Administrador',
+            'dpo'                     => 'Oficial de Protección de Datos',
+            'auditor'                 => 'Auditor',
+            'operador'                => 'Operador',
+            'auditor_interno'         => 'Auditor Interno',
+            'gestor_consentimientos'  => 'Gestor de Consentimientos',
+            'gestor_incidentes'       => 'Gestor de Incidentes',
+            'titular'                 => 'Titular',
+            default                   => ucfirst($this->rol),
         };
     }
 }

@@ -86,6 +86,26 @@
         <button onclick="showSection('miembros')">Miembros</button>
         <button onclick="showSection('productos')">Productos</button>
         <button onclick="showSection('consentimientos')">Consentimientos</button>
+
+    {{-- AUDITOR INTERNO --}}
+    @elseif(auth()->user()->rol === 'auditor_interno')
+        <button class="active" onclick="showSection('auditorias')">Auditorías</button>
+        <button onclick="showSection('reportes')">Reportes</button>
+
+    {{-- GESTOR DE CONSENTIMIENTOS --}}
+    @elseif(auth()->user()->rol === 'gestor_consentimientos')
+        <button class="active" onclick="showSection('sujetos')">Sujetos</button>
+        <button onclick="showSection('consentimientos')">Consentimientos</button>
+        <button onclick="showSection('reportes')">Reportes</button>
+
+    {{-- GESTOR DE INCIDENTES --}}
+    @elseif(auth()->user()->rol === 'gestor_incidentes')
+        <button class="active" onclick="showSection('incidentes')">Incidentes</button>
+        <button onclick="showSection('reportes')">Reportes</button>
+
+    {{-- TITULAR --}}
+    @elseif(auth()->user()->rol === 'titular')
+        <button class="active" onclick="showSection('reportes')">Reportes</button>
     @endif
         </div>
 
@@ -140,8 +160,11 @@
                 <select name="rol" id="rol">
                     <option value="">Seleccionar...</option>
                     <option value="dpo">Oficial de Protección de Datos</option>
-                    <option value="auditor">Auditor</option>
                     <option value="operador">Operador</option>
+                    <option value="auditor_interno">Auditor interno</option>
+                    <option value="gestor_consentimientos">Gestor de consentimientos</option>
+                    <option value="gestor_incidentes">Gestor de incidentes</option>
+                    <option value="titular">Titular </option>
                 </select>
             </div>
         </div>
