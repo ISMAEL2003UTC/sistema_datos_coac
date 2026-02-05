@@ -3,14 +3,12 @@
 namespace App\Mail;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Contracts\Queue\ShouldQueue; // <- esto
 use Illuminate\Mail\Mailable;
-use Illuminate\Mail\Mailables\Content;
-use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 use App\Models\Usuario;
 
-class VerificarCorreoUsuario extends Mailable
+class VerificarCorreoUsuario extends Mailable implements ShouldQueue // <- aquí
 {
     use Queueable, SerializesModels;
 
@@ -22,15 +20,14 @@ class VerificarCorreoUsuario extends Mailable
     }
 
     public function build()
-{
-    $url = url("/usuarios/verificar/{$this->usuario->email_verificacion_token}");
+    {
+        $url = url("/usuarios/verificar/{$this->usuario->email_verificacion_token}");
 
-    return $this->subject('Verificación de correo electrónico')
-                ->view('emails.verificar_correo')
-                ->with([
-                    'usuario' => $this->usuario,
-                    'url' => $url
-                ]);
-}
-
+        return $this->subject('Verificación de correo electrónico')
+                    ->view('emails.verificar_correo')
+                    ->with([
+                        'usuario' => $this->usuario,
+                        'url' => $url
+                    ]);
+    }
 }

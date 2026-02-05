@@ -98,12 +98,18 @@ class UsuarioController extends Controller
         'password'  => Hash::make(Str::random(8)), // password temporal
     ]);
 
-    // Enviar correo de verificación
-    Mail::to($usuario->email)->send(new VerificarCorreoUsuario($usuario));
+    try {
+        // Enviar correo en segundo plano (cola)
+        Mail::to($usuario->email)->queue(new VerificarCorreoUsuario($usuario));
+    } catch (\Exception $e) {
+        // Registrar el error, pero no bloquear la creación del usuario
+        \Log::error('Error enviando correo de verificación: '.$e->getMessage());
+    }
 
     return redirect()->back()
         ->with('success', 'Usuario registrado correctamente. Por favor verifica tu correo para activarlo.');
 }
+
 
 
     public function update(Request $request, Usuario $usuario)
