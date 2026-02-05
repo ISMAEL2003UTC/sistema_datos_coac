@@ -94,6 +94,7 @@ class UsuarioController extends Controller
         'rol'       => $request->rol,
         'estado'    => 'inactivo',          // INACTIVO hasta verificar correo
         'email_verificado' => false,
+        'verificado' => false,
         'email_verificacion_token' => $token,
         'password'  => Hash::make(Str::random(8)), // password temporal
     ]);
@@ -188,6 +189,7 @@ class UsuarioController extends Controller
         $id = $request->id;
 
         $existe = Usuario::where('cedula', $cedula)
+            ->where('verificado', true)
             ->when($id, fn ($q) => $q->where('id', '!=', $id))
             ->exists();
 
@@ -198,6 +200,7 @@ class UsuarioController extends Controller
         $usuario = Usuario::where('email_verificacion_token', $token)->firstOrFail();
 
         $usuario->email_verificado = true;
+        $usuario->verificado = true;
         $usuario->estado = 'activo';
         $usuario->email_verificacion_token = null;
         $usuario->save();
