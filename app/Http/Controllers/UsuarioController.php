@@ -202,8 +202,11 @@ class UsuarioController extends Controller
         $usuario->email_verificacion_token = null;
         $usuario->save();
 
-        return redirect('/')->with('success', 'Correo verificado correctamente. Cuenta activada.');
-    }
+// Solo devolvemos un mensaje, sin redirección
+    return response()->json([
+        'success' => true,
+        'message' => 'Correo verificado correctamente. Cuenta activada.'
+    ]);    }
     public function buscarCedulaExterna($cedula)
     {
         // Validación básica
