@@ -102,3 +102,6 @@ Route::get('/verificar-nombre', [UsuarioController::class, 'verificarNombre']);
 Route::get('/verificar-cedula', [UsuarioController::class, 'verificarCedula']);
 // ruta para verificar el token de verificacion de correo
 Route::get('/verificar-correo/{token}', [UsuarioController::class, 'verificarCorreo']);
+// Ruta para autocompletar nombre y apellido desde la cédula
+Route::get('/api/cedula-externa/{cedula}', [SujetoDatoController::class, 'buscarCedulaExterna'])
+    ->name('api.cedula-externa');

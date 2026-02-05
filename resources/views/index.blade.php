@@ -245,15 +245,15 @@
         <div class="form-row">
             <div class="form-group">
                 <label>Cédula*</label>
-                <input type="text" name="cedula" required maxlength="10" pattern="\d{10}" title="Debe tener 10 dígitos">
+                <input type="text" id="cedulaInput" name="cedula" required maxlength="10" pattern="\d{10}" title="Debe tener 10 dígitos">
             </div>
             <div class="form-group">
                 <label>Nombre *</label>
-                <input type="text" name="nombre" required>
+                <input type="text" id="nombreInput" name="nombre" required>
             </div>
             <div class="form-group">
                 <label>Apellido *</label>
-                <input type="text" name="apellido" required>
+                <input type="text" id="apellidoInput" name="apellido" required>
             </div>
         </div>
 
@@ -321,21 +321,19 @@
                     <td><span class="badge badge-info">{{ ucfirst($sujeto->tipo) }}</span></td>
                     <td>
                         <button class="btn btn-secondary"
-                             onclick="editarSujeto(
-                            {{ $sujeto->id }},
-                            '{{ $sujeto->cedula }}',
-                            '{{ $sujeto->nombre }}',
-                            '{{ $sujeto->apellido }}',
-                            '{{ $sujeto->email }}',
-                            '{{ $sujeto->telefono }}',
-                            '{{ $sujeto->direccion }}',
-                            '{{ $sujeto->ciudad }}',
-                            '{{ $sujeto->tipo }}'
-                        )">
+                            onclick="editarSujeto(
+                                {{ $sujeto->id }},
+                                '{{ $sujeto->cedula }}',
+                                '{{ $sujeto->nombre }}',
+                                '{{ $sujeto->apellido }}',
+                                '{{ $sujeto->email }}',
+                                '{{ $sujeto->telefono }}',
+                                '{{ $sujeto->direccion }}',
+                                '{{ $sujeto->ciudad }}',
+                                '{{ $sujeto->tipo }}'
+                            )">
                             Editar
                         </button>
-
-                        
                     </td>
                 </tr>
                 @endforeach
@@ -343,7 +341,35 @@
         </table>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const cedulaInput = document.getElementById('cedulaInput');
+    const nombreInput = document.getElementById('nombreInput');
+    const apellidoInput = document.getElementById('apellidoInput');
+
+    cedulaInput.addEventListener('blur', async () => {
+        const cedula = cedulaInput.value.trim();
+        if(cedula.length === 10 && !isNaN(cedula)) {
+            try {
+                const response = await fetch(`/api/cedula-externa/${cedula}`);
+                if(!response.ok) throw new Error('Error en la consulta externa');
+                const data = await response.json();
+                if(data && data.nombres && data.apellidos) {
+                    nombreInput.value = data.nombres;
+                    apellidoInput.value = data.apellidos;
+                }
+            } catch (error) {
+                console.error(error);
+                nombreInput.value = '';
+                apellidoInput.value = '';
+            }
+        }
+    });
+});
+</script>
 @endif
+
     
         
         <!-- MIEMBROS COAC -->
