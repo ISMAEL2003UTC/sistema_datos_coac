@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Verificación de correo.</title>
+    <title>Verificación de correo</title>
 </head>
 <body>
     <h1>Hola {{ $usuario->nombre }} {{ $usuario->apellido }}</h1>
