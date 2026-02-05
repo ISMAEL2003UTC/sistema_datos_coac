@@ -11,7 +11,7 @@ return [
     |
     */
 
-    'default' => env('MAIL_MAILER', 'smtp'),
+    'default' => env('MAIL_MAILER', 'sendgrid'),
 
     /*
     |--------------------------------------------------------------------------
@@ -34,6 +34,10 @@ return [
             'timeout' => null,
             'auth_mode' => null,
             'local_domain' => env('MAIL_EHLO_DOMAIN', parse_url(env('APP_URL', 'http://localhost'), PHP_URL_HOST)),
+        ],
+
+        'sendgrid' => [
+            'transport' => 'sendgrid', // Laravel usará la API Key del .env
         ],
 
         'ses' => [
@@ -92,8 +96,8 @@ return [
     */
 
     'from' => [
-        'address' => env('MAIL_FROM_ADDRESS', 'giovanny.agama6161@utc.edu.ec'),
-        'name' => env('MAIL_FROM_NAME', 'Sistema COAC'),
+        'address' => env('MAIL_FROM_ADDRESS', 'firemaurofire@gmail.com'),
+        'name' => env('MAIL_FROM_NAME', 'COAC'),
     ],
 
 ];
