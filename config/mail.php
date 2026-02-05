@@ -92,7 +92,7 @@ return [
     */
 
     'from' => [
-        'address' => env('MAIL_FROM_ADDRESS', 'giovanny.agama6161@utc.edu.ec'),
+        'address' => env('MAIL_FROM_ADDRESS', 'puntodeventasolucionesmc@gmail.com'),
         'name' => env('MAIL_FROM_NAME', 'Sistema COAC'),
     ],
 
