@@ -11,28 +11,30 @@ use Symfony\Component\HttpFoundation\Response;
 
 class OneSession
 {
-    /**
-     * Handle an incoming request.
-     *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
-     */
     public function handle(Request $request, Closure $next): Response
     {
+        // Si el usuario está logueado
         if (Auth::check()) {
+            $currentUserId = Auth::id();
             $currentSessionId = Session::getId();
+            $currentUserAgent = $request->header('User-Agent');
 
-            // Buscar otras sesiones activas del mismo usuario
+            // Buscar otras sesiones activas de este usuario en otros dispositivos
             $otherSessions = DB::table('sessions')
-                ->where('user_id', Auth::id())
+                ->where('user_id', $currentUserId)
                 ->where('id', '<>', $currentSessionId)
+                ->where('user_agent', '<>', $currentUserAgent) // Ignora la misma pestaña
                 ->count();
 
             if ($otherSessions > 0) {
-                // Cerrar sesión actual si hay otra activa
-                Auth::logout();
-                Session::flush();
+                // Opción 1: Cerrar la sesión anterior (como WhatsApp)
+                DB::table('sessions')
+                    ->where('user_id', $currentUserId)
+                    ->where('id', '<>', $currentSessionId)
+                    ->delete();
 
-                return redirect('/login')->with('error', 'Tu sesión fue cerrada porque iniciaste sesión en otro dispositivo.');
+                // Regenerar ID de sesión para seguridad
+                Session::regenerate();
             }
         }
 
