@@ -443,6 +443,9 @@ $("#formUsuarios").validate({
                 }
             }
         },
+        provincia: {     
+            required: true
+        },
         ciudad: {
             required: true,
             minlength: 3,
@@ -478,6 +481,9 @@ $("#formUsuarios").validate({
             minlength: "La cédula debe tener 10 dígitos",
             maxlength: "La cédula debe tener 10 dígitos",
             remote: "Esta cédula ya está registrada"
+        },
+        provincia: {
+            required: "La provincia es obligatoria"
         },
         ciudad: {
             required: "La ciudad es obligatoria",
