@@ -118,7 +118,8 @@
     <form id="formUsuarios" method="POST" action="{{ url('/usuarios') }}">
         @csrf
         <input type="hidden" name="_method" id="form_method" value="POST">
-        <input type="hidden" name="id" id="usuario_id">
+        <input type="hidden" name="id_usuario" id="usuario_id">
+
 
         <div class="form-row">
             <div class="form-group">

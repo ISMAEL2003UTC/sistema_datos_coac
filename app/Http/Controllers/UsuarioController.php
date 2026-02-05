@@ -105,8 +105,9 @@ class UsuarioController extends Controller
         $request->validate([
             'nombre'    => 'required|string|max:100',
             'apellido'  => 'required|string|max:100',
-            'email'     => 'required|email|unique:usuarios,email,' . $usuario->id,
-            'cedula'    => 'required|digits:10|unique:usuarios,cedula,' . $usuario->id,
+            'email'  => 'required|email|unique:usuarios,email,' . $usuario->id . ',id',
+            'cedula' => 'required|digits:10|unique:usuarios,cedula,' . $usuario->id . ',id',
+
             'ciudad'    => 'nullable|string|max:100',
             'direccion' => 'nullable|string|max:255',
             'rol'       => 'required|string|max:50'
@@ -134,17 +135,23 @@ class UsuarioController extends Controller
     }
 
     // Validación remota AJAX
-    public function verificarEmail(Request $request)
-    {
-        $email = $request->email;
-        $id = $request->id_usuario;
+   public function verificarEmail(Request $request)
+{
+    $email = $request->email;
+    $id = $request->id_usuario;
 
-        $existe = Usuario::where('email', $email)
-            ->when($id, fn($q) => $q->where('id', '!=', $id))
-            ->exists();
+    $query = Usuario::where('email', $email);
 
-        return response()->json(!$existe);
+    if (!empty($id)) {
+        $query->where('id', '!=', (int)$id);
     }
+
+    $existe = $query->exists();
+
+    return response()->json(!$existe);
+}
+
+
 
     
 

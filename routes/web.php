@@ -25,7 +25,8 @@ Route::post('/logout', function () {
 Route::get('/', [UsuarioController::class, 'index'])->name('index');
 Route::post('/usuarios', [UsuarioController::class, 'store'])->name('usuarios.store');
 Route::delete('/usuarios/{id}', [UsuarioController::class, 'destroy'])->name('usuarios.destroy');
-Route::put('/usuarios/{id}', [UsuarioController::class, 'update'])->name('usuarios.update');
+Route::put('/usuarios/{usuario}', [UsuarioController::class, 'update'])->name('usuarios.update');
+
 Route::put('/usuarios/{id}/estado', [UsuarioController::class, 'cambiarEstado'])->name('usuarios.estado');
 
 // rutas sujetos de datos ---------------------------------
