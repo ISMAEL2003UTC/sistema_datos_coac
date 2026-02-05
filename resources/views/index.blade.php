@@ -120,23 +120,7 @@
         <input type="hidden" name="_method" id="form_method" value="POST">
         <input type="hidden" name="id_usuario" id="usuario_id">
 
-
         <div class="form-row">
-            <div class="form-group">
-                <label>Nombre *</label>
-                <input type="text" name="nombre" id="nombre" placeholder="Ingrese su nombre">
-            </div>
-
-            <div class="form-group">
-                <label>Apellido *</label>
-                <input type="text" name="apellido" id="apellido" placeholder="Ingrese su apellido">
-            </div>
-
-            <div class="form-group">
-                <label>Email *</label>
-                <input type="email" name="email" id="email" placeholder="Ingrese un correo electrónico válido">
-            </div>
-
             <div class="form-group">
                 <label>Cédula *</label>
                 <input type="text" name="cedula" id="cedula"
@@ -144,6 +128,21 @@
                        maxlength="10"
                        pattern="[0-9]{10}"
                        required>
+            </div>
+
+            <div class="form-group">
+                <label>Nombres *</label>
+                <input type="text" name="nombre" id="nombre" placeholder="Nombre se llenará automáticamente" readonly>
+            </div>
+
+            <div class="form-group">
+                <label>Apellidos *</label>
+                <input type="text" name="apellido" id="apellido" placeholder="Apellido se llenará automáticamente" readonly>
+            </div>
+
+            <div class="form-group">
+                <label>Email *</label>
+                <input type="email" name="email" id="email" placeholder="Ingrese un correo electrónico válido">
             </div>
 
             <div class="form-group">
@@ -165,7 +164,7 @@
                     <option value="auditor_interno">Auditor interno</option>
                     <option value="gestor_consentimientos">Gestor de consentimientos</option>
                     <option value="gestor_incidentes">Gestor de incidentes</option>
-                    <option value="titular">Titular </option>
+                    <option value="titular">Titular</option>
                 </select>
             </div>
         </div>
@@ -228,8 +227,7 @@
 @endif
 
 
-        <!-- SUJETOS DE DATOS -------------------------------------------------------------------------------->
-         <!-- ========================================= -->
+
 <!-- SUJETOS DE DATOS -------------------------------------------------------------------------------->
 <!-- ========================================= -->
 @if(auth()->user()->rol === 'admin' || auth()->user()->rol === 'dpo')
