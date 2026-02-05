@@ -248,11 +248,11 @@
                 <input type="text" id="cedulaInput" name="cedula" required maxlength="10" pattern="\d{10}" title="Debe tener 10 dígitos">
             </div>
             <div class="form-group">
-                <label>Nombre *</label>
+                <label>Nombres *</label>
                 <input type="text" id="nombreInput" name="nombre" required>
             </div>
             <div class="form-group">
-                <label>Apellido *</label>
+                <label>Apellidos *</label>
                 <input type="text" id="apellidoInput" name="apellido" required>
             </div>
         </div>
@@ -350,23 +350,36 @@ document.addEventListener('DOMContentLoaded', function () {
 
     cedulaInput.addEventListener('blur', async () => {
         const cedula = cedulaInput.value.trim();
-        if(cedula.length === 10 && !isNaN(cedula)) {
-            try {
-                const response = await fetch(`/api/cedula-externa/${cedula}`);
-                if(!response.ok) throw new Error('Error en la consulta externa');
-                const data = await response.json();
-                if(data && data.nombres && data.apellidos) {
-                    nombreInput.value = data.nombres;
-                    apellidoInput.value = data.apellidos;
-                }
-            } catch (error) {
-                console.error(error);
+
+        // 🔹 Si la cédula no tiene 10 dígitos, limpiar los campos
+        if(cedula.length !== 10 || isNaN(cedula)) {
+            nombreInput.value = '';
+            apellidoInput.value = '';
+            return;
+        }
+
+        try {
+            const response = await fetch(`/api/cedula-externa/${cedula}`);
+            if(!response.ok) throw new Error('Error en la consulta externa');
+
+            const data = await response.json();
+
+            if(data && data.nombres && data.apellidos) {
+                nombreInput.value = data.nombres;
+                apellidoInput.value = data.apellidos;
+            } else {
+                // 🔹 Si no hay datos, limpiar
                 nombreInput.value = '';
                 apellidoInput.value = '';
             }
+        } catch (error) {
+            console.error(error);
+            nombreInput.value = '';
+            apellidoInput.value = '';
         }
     });
 });
+
 </script>
 @endif
 

@@ -573,7 +573,7 @@ $("#formSujetos").validate({
         },
         direccion: {
             required: true,
-            minlength: 5
+            minlength: 2
         },
         tipo: {
             required: true
