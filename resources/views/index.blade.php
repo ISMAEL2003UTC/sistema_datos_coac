@@ -454,164 +454,158 @@ document.addEventListener('DOMContentLoaded', function () {
         <!-- MIEMBROS COAC -->
         <!-- MIEMBROS COAC -->
         <div id="miembros" class="content-section">
-            <h2 class="section-title">Gestión de Miembros de la Cooperativa</h2>
+    <h2 class="section-title">Gestión de Miembros de la Cooperativa</h2>
 
-            @if(session('success'))
-                <div class="alert alert-success">
-                    {{ session('success') }}
-                </div>
-            @endif
+    @if(session('success'))
+        <div class="alert alert-success">
+            {{ session('success') }}
+        </div>
+    @endif
 
-            <!-- FORMULARIO -->
-            <form id="formMiembros" method="POST" action="{{ route('miembros.store') }}">
-                @csrf
-                <input type="hidden" name="_method" id="form_miembro_method" value="POST">
-                <input type="hidden" name="id" id="miembro_id">
+    <!-- FORMULARIO -->
+    <form id="formMiembros" method="POST" action="{{ route('miembros.store') }}">
+        @csrf
+        <input type="hidden" name="_method" id="form_miembro_method" value="POST">
+        <input type="hidden" name="id" id="miembro_id">
 
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Cédula *</label>
-                        <input type="text" name="cedula" id="miembro_cedula" value="{{ old('cedula') }}" required>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Cédula *</label>
+                <input type="text" name="cedula" id="miembro_cedula" maxlength="10" pattern="\d{10}" required>
+            </div>
 
-                        @error('cedula')
-                            <div class="text-error" style="margin-top:6px;">{{ $message }}</div>
-                        @enderror
-                    </div>
+            <div class="form-group">
+                <label>Nombres *</label>
+                <input type="text" name="nombres" id="miembro_nombres" readonly required>
+            </div>
 
-                    <div class="form-group">
-                        <label>Nombres *</label>
-                        <input type="text" name="nombres" id="miembro_nombres" value="{{ old('nombres') }}" required>
-
-                        @error('nombres')
-                            <div class="text-error" style="margin-top:6px;">{{ $message }}</div>
-                        @enderror
-                    </div>
-
-                    <div class="form-group">
-                        <label>Apellidos *</label>
-                        <input type="text" name="apellidos" id="miembro_apellidos" value="{{ old('apellidos') }}" required>
-
-                        @error('apellidos')
-                            <div class="text-error" style="margin-top:6px;">{{ $message }}</div>
-                        @enderror
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Fecha y Hora de Ingreso *</label>
-                        <input
-                            type="datetime-local"
-                            name="fecha_ingreso"
-                            id="miembro_fecha_ingreso"
-                            min="1920-01-01T00:00"
-                            max="{{ now()->format('Y-m-d\TH:i') }}"
-                            value="{{ old('fecha_ingreso', now()->format('Y-m-d\TH:i')) }}"
-                            required>
-
-                        @error('fecha_ingreso')
-                            <div class="text-error" style="margin-top:6px;">{{ $message }}</div>
-                        @enderror
-                    </div>
-
-                    <div class="form-group">
-                        <label>Estado *</label>
-                        <select name="categoria" id="miembro_categoria" required>
-                            <option value="">Seleccionar...</option>
-                            <option value="activo" {{ old('categoria')=='activo'?'selected':'' }}>Activo</option>
-                            <option value="inactivo" {{ old('categoria')=='inactivo'?'selected':'' }}>Inactivo</option>
-                            <option value="honorario" {{ old('categoria')=='honorario'?'selected':'' }}>Honorario</option>
-                        </select>
-
-                        @error('categoria')
-                            <div class="text-error" style="margin-top:6px;">{{ $message }}</div>
-                        @enderror
-                    </div>
-
-                    <div class="form-group">
-                        <label>Aportación Inicial (máx. 10.000)</label>
-                        <input
-                            type="number"
-                            name="aportacion"
-                            id="miembro_aportacion"
-                            step="0.01"
-                            min="0"
-                            max="10000"
-                            value="{{ old('aportacion', 0) }}">
-
-                        @error('aportacion')
-                            <div class="text-error" style="margin-top:6px;">{{ $message }}</div>
-                        @enderror
-                    </div>
-                </div>
-
-                <button type="submit" class="btn btn-primary" id="btnMiembroSubmit">
-                    Registrar Miembro
-                </button>
-                <button type="button" class="btn btn-secondary" onclick="resetFormularioMiembros()">
-                    Cancelar
-                </button>
-            </form>
-
-            <!-- TABLA -->
-            <div class="table-container">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>N° Socio</th>
-                            <th>Cédula</th>
-                            <th>Nombre</th>
-                            <th>Fecha/Hora Ingreso</th>
-                            <th>Categoría</th>
-                            <th>Estado</th>
-                            <th>Acciones</th>
-                        </tr>
-                    </thead>
-
-                    <tbody>
-                        @foreach($miembros as $miembro)
-                        <tr>
-                            <td>{{ $miembro->numero_socio }}</td>
-                            <td>{{ $miembro->cedula }}</td>
-                            <td>{{ $miembro->nombre_completo }}</td>
-                            <td>{{ \Carbon\Carbon::parse($miembro->fecha_ingreso)->format('d/m/Y H:i') }}</td>
-                            <td>{{ ucfirst($miembro->categoria) }}</td>
-                            <td>
-                                @if($miembro->estado === 'vigente')
-                                    <span class="badge badge-success">Vigente</span>
-                                @else
-                                    <span class="badge badge-danger">Inactivo</span>
-                                @endif
-                            </td>
-                            <td>
-                                <button
-                                    type="button"
-                                    class="btn btn-secondary btn-editar-miembro"
-                                    data-id="{{ $miembro->id }}"
-                                    data-cedula="{{ $miembro->cedula }}"
-                                    data-nombre="{{ $miembro->nombre_completo }}"
-                                    data-fecha="{{ \Carbon\Carbon::parse($miembro->fecha_ingreso)->format('Y-m-d\TH:i') }}"
-                                    data-categoria="{{ $miembro->categoria }}"
-                                    data-aportacion="{{ $miembro->aportacion ?? 0 }}">
-                                    Editar
-                                </button>
-
-                                <form action="{{ route('miembros.estado', $miembro->id) }}"
-                                    method="POST"
-                                    style="display:inline;">
-                                    @csrf
-                                    @method('PUT')
-                                    <button type="submit" class="btn btn-warning">
-                                        Cambiar estado
-                                    </button>
-                                </form>
-                            </td>
-                        </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+            <div class="form-group">
+                <label>Apellidos *</label>
+                <input type="text" name="apellidos" id="miembro_apellidos" readonly required>
             </div>
         </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label>Fecha y Hora de Ingreso *</label>
+                <input type="datetime-local"
+                       name="fecha_ingreso"
+                       id="miembro_fecha_ingreso"
+                       min="1920-01-01T00:00"
+                       max="{{ now()->format('Y-m-d\TH:i') }}"
+                       value="{{ old('fecha_ingreso', now()->format('Y-m-d\TH:i')) }}"
+                       required>
+            </div>
+
+            <div class="form-group">
+                <label>Estado *</label>
+                <select name="categoria" id="miembro_categoria" required>
+                    <option value="">Seleccionar...</option>
+                    <option value="activo">Activo</option>
+                    <option value="inactivo">Inactivo</option>
+                    <option value="honorario">Honorario</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Aportación Inicial (máx. 10.000)</label>
+                <input type="number" name="aportacion" id="miembro_aportacion" step="0.01" min="0" max="10000" value="0">
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary" id="btnMiembroSubmit">Registrar Miembro</button>
+        <button type="button" class="btn btn-secondary" onclick="resetFormularioMiembros()">Cancelar</button>
+    </form>
+
+    <!-- TABLA -->
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>N° Socio</th>
+                    <th>Cédula</th>
+                    <th>Nombre</th>
+                    <th>Fecha/Hora Ingreso</th>
+                    <th>Categoría</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach($miembros as $miembro)
+                <tr>
+                    <td>{{ $miembro->numero_socio }}</td>
+                    <td>{{ $miembro->cedula }}</td>
+                    <td>{{ $miembro->nombre_completo }}</td>
+                    <td>{{ \Carbon\Carbon::parse($miembro->fecha_ingreso)->format('d/m/Y H:i') }}</td>
+                    <td>{{ ucfirst($miembro->categoria) }}</td>
+                    <td>
+                        @if($miembro->estado === 'vigente')
+                            <span class="badge badge-success">Vigente</span>
+                        @else
+                            <span class="badge badge-danger">Inactivo</span>
+                        @endif
+                    </td>
+                    <td>
+                        <button type="button" class="btn btn-secondary btn-editar-miembro"
+                                data-id="{{ $miembro->id }}"
+                                data-cedula="{{ $miembro->cedula }}"
+                                data-nombre="{{ $miembro->nombre_completo }}"
+                                data-fecha="{{ \Carbon\Carbon::parse($miembro->fecha_ingreso)->format('Y-m-d\TH:i') }}"
+                                data-categoria="{{ $miembro->categoria }}"
+                                data-aportacion="{{ $miembro->aportacion ?? 0 }}">
+                            Editar
+                        </button>
+
+                        <form action="{{ route('miembros.estado', $miembro->id) }}" method="POST" style="display:inline;">
+                            @csrf
+                            @method('PUT')
+                            <button type="submit" class="btn btn-warning">Cambiar estado</button>
+                        </form>
+                    </td>
+                </tr>
+                @endforeach
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const cedulaInput = document.getElementById('miembro_cedula');
+    const nombreInput = document.getElementById('miembro_nombres');
+    const apellidoInput = document.getElementById('miembro_apellidos');
+
+    cedulaInput.addEventListener('blur', async () => {
+        const cedula = cedulaInput.value.trim();
+
+        if(cedula.length !== 10 || isNaN(cedula)) {
+            nombreInput.value = '';
+            apellidoInput.value = '';
+            return;
+        }
+
+        try {
+            const response = await fetch(`/api/cedula-externa/${cedula}`);
+            if(!response.ok) throw new Error('Error en la consulta externa');
+
+            const data = await response.json();
+            if(data && data.nombres && data.apellidos) {
+                nombreInput.value = data.nombres;
+                apellidoInput.value = data.apellidos;
+            } else {
+                nombreInput.value = '';
+                apellidoInput.value = '';
+            }
+        } catch (error) {
+            console.error(error);
+            nombreInput.value = '';
+            apellidoInput.value = '';
+        }
+    });
+});
+</script>
+
 
 
        <!-- PRODUCTOS FINANCIEROS ------------------------------------------------------>
