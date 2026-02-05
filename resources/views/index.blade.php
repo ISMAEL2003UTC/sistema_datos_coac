@@ -1047,6 +1047,7 @@
             </div>
         </div>
         
+
 <!-- SOLICITUDES DSAR ---------------------------------------------------------------------------->
 <div id="dsar" class="content-section">
     <h2 class="section-title">Solicitudes de Derechos (DSAR)</h2>
@@ -1054,9 +1055,12 @@
         Gestión de solicitudes de Acceso, Rectificación, Cancelación y Oposición
     </p>
 
+    @php
+        $hoy = now()->toDateString(); // YYYY-MM-DD
+    @endphp
 
     {{-- FORMULARIO --}}
-    <form id="formDSAR" method="POST" action= "/dsar">
+    <form id="formDSAR" method="POST" action="/dsar">
         @csrf
         <input type="hidden" name="_method" id="form_dsar_method" value="POST">
         <input type="hidden" id="dsar_id">
@@ -1064,27 +1068,26 @@
         <div class="form-row">
             <div class="form-group">
                 <label>Número de Solicitud *</label>
-                <input type="text" name="numero_solicitud" id="dsar_numero" >
+                <input type="text" name="numero_solicitud" id="dsar_numero" required>
             </div>
 
             <div class="form-group">
                 <label for="dsar_cedula">Sujeto de Datos *</label>
 
+                {{-- ✅ CÉDULA + NOMBRE + APELLIDO --}}
                 <select name="cedula" id="dsar_cedula" class="select-sujeto" required>
                     <option value="">Seleccione un Sujeto de Datos</option>
                     @foreach ($sujetos as $s)
                         <option value="{{ $s->cedula }}">
-                            {{ $s->cedula }} — {{ $s->nombre_completo }}
+                            {{ $s->cedula }} — {{ $s->nombre }} {{ $s->apellido }}
                         </option>
                     @endforeach
                 </select>
             </div>
 
-
-
             <div class="form-group">
                 <label>Tipo de Solicitud *</label>
-                <select name="tipo" id="dsar_tipo" >
+                <select name="tipo" id="dsar_tipo" required>
                     <option value="">Seleccionar...</option>
                     <option value="acceso">Acceso</option>
                     <option value="rectificacion">Rectificación</option>
@@ -1097,23 +1100,40 @@
 
         <div class="form-group">
             <label>Descripción *</label>
-            <textarea name="descripcion" id="dsar_descripcion" rows="4" ></textarea>
+            <textarea name="descripcion" id="dsar_descripcion" rows="4" required></textarea>
         </div>
 
         <div class="form-row">
             <div class="form-group">
                 <label>Fecha de Solicitud *</label>
-                <input type="date" name="fecha_solicitud" id="dsar_fecha_solicitud" >
+
+                {{-- ✅ SOLO HOY --}}
+                <input
+                    type="date"
+                    name="fecha_solicitud"
+                    id="dsar_fecha_solicitud"
+                    value="{{ $hoy }}"
+                    min="{{ $hoy }}"
+                    max="{{ $hoy }}"
+                    required
+                >
             </div>
 
             <div class="form-group">
                 <label>Plazo de Respuesta</label>
-                <input type="date" name="fecha_limite" id="dsar_fecha_limite">
+
+                {{-- ✅ DESDE HOY EN ADELANTE --}}
+                <input
+                    type="date"
+                    name="fecha_limite"
+                    id="dsar_fecha_limite"
+                    min="{{ $hoy }}"
+                >
             </div>
 
             <div class="form-group">
                 <label>Estado *</label>
-                <select name="estado" id="dsar_estado" >
+                <select name="estado" id="dsar_estado" required>
                     <option value="pendiente">Pendiente</option>
                     <option value="proceso">En Proceso</option>
                     <option value="completada">Completada</option>
@@ -1148,13 +1168,20 @@
             </thead>
 
             <tbody>
-            @forelse($dsars  as $d)
+            @forelse($dsars as $d)
                 <tr>
                     <td>{{ $d->numero_solicitud }}</td>
-                    <td>{{ $d->sujeto?->cedula ?? 'N/A' }}</td>
+
+                    {{-- ✅ NOMBRE APELLIDO — CÉDULA --}}
+                    <td>
+                        {{ $d->sujeto?->nombre ?? '' }} {{ $d->sujeto?->apellido ?? '' }}
+                        {{ $d->sujeto?->cedula ? ' — '.$d->sujeto->cedula : 'N/A' }}
+                    </td>
+
                     <td>{{ ucfirst($d->tipo) }}</td>
                     <td>{{ $d->fecha_solicitud }}</td>
                     <td>{{ $d->fecha_limite ?? 'N/A' }}</td>
+
                     <td>
                         <span class="badge badge-warning">
                             {{ ucfirst($d->estado) }}
@@ -1173,22 +1200,8 @@
                             data-fecha="{{ $d->fecha_solicitud }}"
                             data-limite="{{ $d->fecha_limite }}"
                             data-estado="{{ $d->estado }}">
-                        Editar
-                    </button>
-
-
-                        {{-- ELIMINAR --}}
-                        <form method="POST"
-                              action="{{ route('dsar.destroy', $d->id) }}"
-                              onsubmit="return confirm('¿Eliminar solicitud?')">
-                            @csrf
-                            @method('DELETE')
-                            <button type="button" class="btn btn-danger"
-                                onclick="confirmarEliminarDSAR(this)">
-                                Eliminar
-                            </button>
-
-                        </form>
+                            Editar
+                        </button>
 
                         {{-- CAMBIAR ESTADO --}}
                         <form method="POST"
@@ -1227,6 +1240,8 @@
         </table>
     </div>
 </div>
+
+
 <!-- INCIDENTES ------------------------------------------------------------------------------------->
 <div id="incidentes" class="content-section">
     <h2 class="section-title">Registro de Incidentes de Seguridad</h2>

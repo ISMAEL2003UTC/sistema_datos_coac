@@ -65,7 +65,7 @@ Route::get('/auditorias/{id}', [AuditoriaController::class, 'show'])->name('audi
 // rutas de solicitudes dsar ---------------------------------
 Route::post('/dsar', [SolicitudDsarController::class, 'store'])->name('dsar.store');
 Route::put('/dsar/{id}', [SolicitudDsarController::class, 'update'])->name('dsar.update');
-Route::delete('/dsar/{id}', [SolicitudDsarController::class, 'destroy'])->name('dsar.destroy');
+
 Route::put('/dsar/{id}/estado', [SolicitudDsarController::class, 'cambiarEstado'])->name('dsar.estado');
 // Rutas para miembros
 // CRUD miembros
