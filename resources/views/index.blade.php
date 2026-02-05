@@ -1361,6 +1361,21 @@ document.addEventListener('DOMContentLoaded', function () {
     </div>
 
     {{-- FORMULARIO --}}
+    @php
+        $tipoLabels = [
+            'destruccion' => 'destrucción de datos personales',
+            'perdida' => 'pérdida de datos personales',
+            'alteracion' => 'alteración de datos personales',
+            'divulgacion' => 'divulgación no autorizada de datos personales',
+            'acceso_no_autorizado' => 'acceso no autorizado a datos personales',
+        ];
+        $estadoLabels = [
+            'abierto' => 'detección y registro del incidente',
+            'investigacion' => 'evaluación del alcance y del riesgo',
+            'controlado' => 'aplicación de medidas técnicas y organizativas',
+            'resuelto' => 'cierre documentado del incidente',
+        ];
+    @endphp
     <form id="formIncidentes" method="POST" action="{{ route('incidentes.store') }}">
         @csrf
         <input type="hidden" name="_method" id="form_incidente_method" value="POST">
@@ -1387,8 +1402,8 @@ document.addEventListener('DOMContentLoaded', function () {
                     id="fecha"
                     value="{{ old('fecha') }}"
                     required
-                    min="{{ now()->startOfMonth()->format('Y-m-d\T00:00') }}"
-                    max="{{ now()->subDay()->format('Y-m-d\T23:59') }}"
+                    min="{{ now()->subDay()->format('Y-m-d\T00:00') }}"
+                    max="{{ now()->format('Y-m-d\T23:59') }}"
                     class="{{ $errors->has('fecha') ? 'input-error' : '' }}">
 
                 @error('fecha')
@@ -1431,11 +1446,11 @@ document.addEventListener('DOMContentLoaded', function () {
                         id="tipo"
                         class="{{ $errors->has('tipo') ? 'input-error' : '' }}">
                     <option value="">Seleccionar...</option>
-                    <option value="fuga" {{ old('tipo')=='fuga'?'selected':'' }}>Fuga de Información</option>
-                    <option value="acceso" {{ old('tipo')=='acceso'?'selected':'' }}>Acceso No Autorizado</option>
-                    <option value="perdida" {{ old('tipo')=='perdida'?'selected':'' }}>Pérdida de Datos</option>
-                    <option value="ransomware" {{ old('tipo')=='ransomware'?'selected':'' }}>Ransomware</option>
-                    <option value="otro" {{ old('tipo')=='otro'?'selected':'' }}>Otro</option>
+                    <option value="destruccion" {{ old('tipo')=='destruccion'?'selected':'' }}>destrucción de datos personales</option>
+                    <option value="perdida" {{ old('tipo')=='perdida'?'selected':'' }}>pérdida de datos personales</option>
+                    <option value="alteracion" {{ old('tipo')=='alteracion'?'selected':'' }}>alteración de datos personales</option>
+                    <option value="divulgacion" {{ old('tipo')=='divulgacion'?'selected':'' }}>divulgación no autorizada de datos personales</option>
+                    <option value="acceso_no_autorizado" {{ old('tipo')=='acceso_no_autorizado'?'selected':'' }}>acceso no autorizado a datos personales</option>
                 </select>
                 @error('tipo')
                     <small class="text-error">Seleccione el tipo de incidente</small>
@@ -1443,12 +1458,16 @@ document.addEventListener('DOMContentLoaded', function () {
             </div>
 
             <div class="form-group">
-                <label>Sujetos Afectados</label>
+                <label>Sujetos Afectados *</label>
                 <input type="number"
                        name="sujetos_afectados"
                        id="sujetos_afectados"
-                       min="0"
-                       value="{{ old('sujetos_afectados', 0) }}">
+                       min="1"
+                       required
+                       value="{{ old('sujetos_afectados') }}">
+                @error('sujetos_afectados')
+                    <small class="text-error">{{ $message }}</small>
+                @enderror
             </div>
 
             <div class="form-group">
@@ -1456,10 +1475,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 <select name="estado"
                         id="estado"
                         class="{{ $errors->has('estado') ? 'input-error' : '' }}">
-                    <option value="abierto" {{ old('estado')=='abierto'?'selected':'' }}>Abierto</option>
-                    <option value="investigacion" {{ old('estado')=='investigacion'?'selected':'' }}>En Investigación</option>
-                    <option value="contenido" {{ old('estado')=='contenido'?'selected':'' }}>Contenido</option>
-                    <option value="resuelto" {{ old('estado')=='resuelto'?'selected':'' }}>Resuelto</option>
+                    <option value="abierto" {{ old('estado')=='abierto'?'selected':'' }}>detección y registro del incidente</option>
+                    <option value="investigacion" {{ old('estado')=='investigacion'?'selected':'' }}>evaluación del alcance y del riesgo</option>
+                    <option value="controlado" {{ old('estado')=='controlado'?'selected':'' }}>aplicación de medidas técnicas y organizativas</option>
+                    <option value="resuelto" {{ old('estado')=='resuelto'?'selected':'' }}>cierre documentado del incidente</option>
                 </select>
                 @error('estado')
                     <small class="text-error">Seleccione un estado</small>
@@ -1492,7 +1511,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 <tr>
                     <td>{{ $incidente->codigo }}</td>
                     <td>{{ \Carbon\Carbon::parse($incidente->fecha)->format('d/m/Y H:i') }}</td>
-                    <td>{{ $incidente->tipo }}</td>
+                    <td>{{ $tipoLabels[$incidente->tipo] ?? ucfirst($incidente->tipo) }}</td>
                     <td>
                         <span class="badge 
                             @if($incidente->severidad=='baja') badge-success
@@ -1507,9 +1526,9 @@ document.addEventListener('DOMContentLoaded', function () {
                         <span class="badge 
                             @if($incidente->estado=='abierto') badge-info
                             @elseif($incidente->estado=='investigacion') badge-warning
-                            @elseif($incidente->estado=='contenido') badge-secondary
+                            @elseif($incidente->estado=='controlado') badge-secondary
                             @else badge-success @endif">
-                            {{ ucfirst($incidente->estado) }}
+                            {{ $estadoLabels[$incidente->estado] ?? ucfirst($incidente->estado) }}
                         </span>
                     </td>
                     <td>
@@ -1557,6 +1576,99 @@ function editarIncidente(id, codigo, fecha, severidad, descripcion, tipo, afecta
     document.getElementById('form_incidente_method').value = 'PUT';
     document.getElementById('formIncidentes').action = '/incidentes/' + id;
 }
+
+// Validación cliente: fecha dentro del rango y hora entre 08:00 y 21:00
+document.addEventListener('DOMContentLoaded', function(){
+    const form = document.getElementById('formIncidentes');
+    const fechaInput = document.getElementById('fecha');
+
+    if (!form || !fechaInput) return;
+
+    function parseDateTimeLocal(value){
+        // value expected 'YYYY-MM-DDTHH:MM' or 'YYYY-MM-DDTHH:MM:SS'
+        const parts = value.split('T');
+        if (parts.length !== 2) return null;
+        const d = parts[0].split('-');
+        const t = parts[1].split(':');
+        if (d.length < 3 || t.length < 2) return null;
+        return new Date(parseInt(d[0],10), parseInt(d[1],10)-1, parseInt(d[2],10), parseInt(t[0],10), parseInt(t[1],10));
+    }
+
+    form.addEventListener('submit', function(e){
+        const val = fechaInput.value;
+        if (!val) return; // required handled by browser
+
+        const selected = parseDateTimeLocal(val);
+        if (!selected) return; // let server handle
+
+        // range from input.min to input.max (both provided by server)
+        const minStr = fechaInput.getAttribute('min');
+        const maxStr = fechaInput.getAttribute('max');
+        const minDate = parseDateTimeLocal(minStr) || null;
+        const maxDate = parseDateTimeLocal(maxStr) || null;
+
+        if (minDate && selected < minDate) {
+            e.preventDefault();
+            Swal.fire({icon:'error', title:'Fecha inválida', text:`La fecha mínima permitida es ${minDate.toLocaleString()}`});
+            fechaInput.classList.add('input-error');
+            return;
+        }
+
+        if (maxDate && selected > maxDate) {
+            e.preventDefault();
+            Swal.fire({icon:'error', title:'Fecha inválida', text:`La fecha máxima permitida es ${maxDate.toLocaleString()}`});
+            fechaInput.classList.add('input-error');
+            return;
+        }
+
+        // validar hora 08:00 - 21:00 (permitir 21:00 exacto)
+        const hour = selected.getHours();
+        const minute = selected.getMinutes();
+
+        if (hour < 9) {
+            e.preventDefault();
+            Swal.fire({icon:'error', title:'Hora inválida', text:'La hora debe ser a partir de las 09:00'});
+            fechaInput.classList.add('input-error');
+            return;
+        }
+
+        if (hour > 21 || (hour === 21 && minute > 0)) {
+            e.preventDefault();
+            Swal.fire({icon:'error', title:'Hora inválida', text:'La hora no puede ser posterior a las 21:00'});
+            fechaInput.classList.add('input-error');
+            return;
+        }
+
+        fechaInput.classList.remove('input-error');
+    });
+
+    // Corregir/limitar automáticamente la hora cuando el usuario cambia el campo
+    fechaInput.addEventListener('change', function(){
+        const val = this.value;
+        if (!val) return;
+        const dt = parseDateTimeLocal(val);
+        if (!dt) return;
+
+        const h = dt.getHours();
+        const m = dt.getMinutes();
+
+        // Si antes de 09:00, ajustar a 09:00
+        if (h < 9) {
+            dt.setHours(9, 0, 0, 0);
+            this.value = dt.toISOString().slice(0,16);
+            Swal.fire({icon:'warning', title:'Hora ajustada', text:'La hora mínima permitida es 09:00. Se ajustó automáticamente.'});
+            return;
+        }
+
+        // Si después de 21:00, ajustar a 21:00 exacto
+        if (h > 21 || (h === 21 && m > 0)) {
+            dt.setHours(21, 0, 0, 0);
+            this.value = dt.toISOString().slice(0,16);
+            Swal.fire({icon:'warning', title:'Hora ajustada', text:'La hora máxima permitida es 21:00. Se ajustó automáticamente.'});
+            return;
+        }
+    });
+});
 
 // Genera y muestra el siguiente código de incidente si el formulario está en modo creación
 function generarSiguienteCodigoIncidente() {

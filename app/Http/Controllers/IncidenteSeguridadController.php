@@ -34,26 +34,42 @@ class IncidenteSeguridadController extends Controller
             'fecha' => [
                 'required',
                 function ($attribute, $value, $fail) {
-                    $fecha = \Carbon\Carbon::parse($value);
-
-                    $inicio = now()->startOfMonth();      // 1 del mes actual
-                    $hoy = now()->startOfDay();           // hoy a las 00:00
-
-                    if ($fecha->lt($inicio) || $fecha->gte($hoy)) {
-                        $fail('La fecha del incidente debe estar entre el 1 del mes actual y el día anterior.');
+                    try {
+                        $fecha = \Carbon\Carbon::parse($value);
+                    } catch (\Exception $e) {
+                        return $fail('Formato de fecha/hora inválido.');
                     }
 
+                    // Rango permitido: ayer y hoy (2 días). Ej: hoy=2026-02-05 -> 2026-02-04 y 2026-02-05
+                    $inicio = now()->subDay()->startOfDay();
+                    $limiteSuperior = now()->endOfDay();
+
+                    if ($fecha->lt($inicio) || $fecha->gt($limiteSuperior)) {
+                        return $fail('La fecha del incidente debe ser ayer o hoy (' . $inicio->format('d/m/Y') . ' - ' . $limiteSuperior->format('d/m/Y') . ').');
+                    }
+
+                    // Validar hora: permitido entre 08:00 y 21:00 (inclusive 08:00 y 21:00 exacto)
+                    $hour = (int) $fecha->format('H');
+                    $minute = (int) $fecha->format('i');
+
+                    if ($hour < 9) {
+                        return $fail('La hora del incidente debe ser a partir de las 09:00.');
+                    }
+
+                    if ($hour > 21 || ($hour === 21 && $minute > 0)) {
+                        return $fail('La hora del incidente no puede ser posterior a las 21:00.');
+                    }
                 }
             ],
 
             'severidad' => 'required|string|max:30',
             'descripcion' => 'required|string',
             'tipo' => 'required|string|max:50',
-            'sujetos_afectados' => 'nullable|integer|min:0',
+            'sujetos_afectados' => 'required|integer|min:1',
             'estado' => 'required|string|max:30',
         ]);
 
-        $validated['sujetos_afectados'] = $validated['sujetos_afectados'] ?? 0;
+        // `sujetos_afectados` es requerido y debe ser >= 1 (validado arriba)
 
         $ultimo = IncidenteSeguridad::orderBy('id', 'desc')->first();
 
@@ -92,23 +108,40 @@ class IncidenteSeguridadController extends Controller
             'fecha' => [
                 'required',
                 function ($attribute, $value, $fail) {
-                    $fecha = \Carbon\Carbon::parse($value);
-                    $inicio = now()->startOfMonth();      // 1 del mes actual
-                    $hoy = now()->startOfDay();           // hoy a las 00:00
+                    try {
+                        $fecha = \Carbon\Carbon::parse($value);
+                    } catch (\Exception $e) {
+                        return $fail('Formato de fecha/hora inválido.');
+                    }
 
-                    if ($fecha->lt($inicio) || $fecha->gte($hoy)) {
-                        $fail('La fecha del incidente debe estar entre el 1 del mes actual y el día anterior.');
+                    // Rango permitido: ayer y hoy (2 días)
+                    $inicio = now()->subDay()->startOfDay();
+                    $limiteSuperior = now()->endOfDay();
+
+                    if ($fecha->lt($inicio) || $fecha->gt($limiteSuperior)) {
+                        return $fail('La fecha del incidente debe ser ayer o hoy (' . $inicio->format('d/m/Y') . ' - ' . $limiteSuperior->format('d/m/Y') . ').');
+                    }
+
+                    $hour = (int) $fecha->format('H');
+                    $minute = (int) $fecha->format('i');
+
+                    if ($hour < 9) {
+                        return $fail('La hora del incidente debe ser a partir de las 09:00.');
+                    }
+
+                    if ($hour > 21 || ($hour === 21 && $minute > 0)) {
+                        return $fail('La hora del incidente no puede ser posterior a las 21:00.');
                     }
                 }
             ],
             'severidad' => 'required|string|max:30',
             'descripcion' => 'required|string',
             'tipo' => 'required|string|max:50',
-            'sujetos_afectados' => 'nullable|integer|min:0',
+            'sujetos_afectados' => 'required|integer|min:1',
             'estado' => 'required|string|max:30',
         ]);
 
-        $validated['sujetos_afectados'] = $validated['sujetos_afectados'] ?? 0;
+        // `sujetos_afectados` es requerido y debe ser >= 1 (validado arriba)
 
         $incidente->update($validated);
 
