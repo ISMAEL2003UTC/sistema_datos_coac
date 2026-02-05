@@ -74,6 +74,7 @@ class UsuarioController extends Controller
             'apellido'  => 'required|string|max:100',
             'email'     => 'required|email|unique:usuarios,email',
             'cedula'    => 'required|digits:10|unique:usuarios,cedula',
+            'provincia' => 'nullable|string|max:100',
             'ciudad'    => 'nullable|string|max:100',
             'direccion' => 'nullable|string|max:255',
             'rol'       => 'required|string|max:50'
@@ -84,6 +85,7 @@ class UsuarioController extends Controller
         'apellido'  => $request->apellido,
         'email'     => $request->email,
         'cedula'    => $request->cedula,
+        'provincia' => $request->provincia,
         'ciudad'    => $request->ciudad,
         'direccion' => $request->direccion,
         'rol'       => $request->rol,
@@ -107,7 +109,7 @@ class UsuarioController extends Controller
             'apellido'  => 'required|string|max:100',
             'email'  => 'required|email|unique:usuarios,email,' . $usuario->id . ',id',
             'cedula' => 'required|digits:10|unique:usuarios,cedula,' . $usuario->id . ',id',
-
+            'provincia' => 'nullable|string|max:100',
             'ciudad'    => 'nullable|string|max:100',
             'direccion' => 'nullable|string|max:255',
             'rol'       => 'required|string|max:50'
@@ -118,6 +120,7 @@ class UsuarioController extends Controller
             'apellido'  => $request->apellido,
             'email'     => $request->email,
             'cedula'    => $request->cedula,
+            'provincia' => $request->provincia,
             'ciudad'    => $request->ciudad,
             'direccion' => $request->direccion,
             'rol'       => $request->rol,

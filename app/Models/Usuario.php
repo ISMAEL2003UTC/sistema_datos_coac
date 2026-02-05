@@ -15,6 +15,7 @@ class Usuario extends Authenticatable
         'nombre',
         'apellido',
         'cedula',
+        'provincia',
         'ciudad',
         'direccion',
         'email',

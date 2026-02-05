@@ -144,6 +144,10 @@
                 <label>Email *</label>
                 <input type="email" name="email" id="email" placeholder="Ingrese un correo electrónico">
             </div>
+            <div class="form-group">
+                <label>Provincia</label>
+                <input type="text" name="provincia" id="provincia" placeholder="Ej: Pichincha">
+            </div>
 
             <div class="form-group">
                 <label>Ciudad</label>
@@ -180,6 +184,7 @@
                     <th>Apellido</th>
                     <th>Cédula</th>
                     <th>Email</th>
+                    <th>Provincia</th>
                     <th>Ciudad</th>
                     <th>Dirección</th>
                     <th>Rol</th>
@@ -194,6 +199,7 @@
                     <td>{{ $usuario->apellido }}</td>
                     <td>{{ $usuario->cedula }}</td>
                     <td>{{ $usuario->email }}</td>
+                    <td>{{ $usuario->provincia }}</td>
                     <td>{{ $usuario->ciudad }}</td>
                     <td>{{ $usuario->direccion }}</td>
                     <td>{{ $usuario->rol_texto }}</td>
