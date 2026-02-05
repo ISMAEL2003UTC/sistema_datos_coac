@@ -59,25 +59,35 @@ function resetFormularioUsuarios() {
 // EDITAR USUARIO
 // EDITAR USUARIO
 function editarUsuario(id, nombre, apellido, email, cedula, ciudad, direccion, rol) {
+
     Swal.fire({
         icon: 'info',
         title: 'Editar usuario',
         text: 'El formulario ha entrado en modo edición',
-        timer: 2000
+        timer: 1500,
+        showConfirmButton: false
     });
 
-    $('#usuario_id').val(id);
-    $('#nombre').val(nombre);
-    $('#apellido').val(apellido);
-    $('#email').val(email);
-    $('#cedula').val(cedula);
-    $('#ciudad').val(ciudad);
-    $('#direccion').val(direccion);
-    $('#rol').val(rol);
+    // Setear valores
+    document.getElementById('usuario_id').value = id;
+    document.getElementById('nombre').value = nombre;
+    document.getElementById('apellido').value = apellido;
+    document.getElementById('email').value = email;
+    document.getElementById('cedula').value = cedula;
+    document.getElementById('ciudad').value = ciudad;
+    document.getElementById('direccion').value = direccion;
+    document.getElementById('rol').value = rol;
 
-    $('#form_method').val('PUT');
-    $('#formUsuarios').attr('action', '/usuarios/' + id);
-    $('#formUsuarios button[type="submit"]').text('Actualizar Usuario');
+    // Cambiar método y action
+    document.getElementById('form_method').value = 'PUT';
+    document.getElementById('formUsuarios').action = `/usuarios/${id}`;
+
+    // Cambiar texto del botón
+    document.querySelector('#formUsuarios button[type="submit"]').innerText = 'Actualizar Usuario';
+    setTimeout(() => {
+    $("#email").valid();
+    $("#cedula").valid();
+}, 300);
 }
 
 
@@ -405,7 +415,7 @@ $("#formUsuarios").validate({
                     email: function () {
                         return $("#email").val();
                     },
-                    id: function () {
+                    id_usuario: function () {
                         return $("#usuario_id").val();
                     }
                 }

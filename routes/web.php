@@ -25,7 +25,8 @@ Route::post('/logout', function () {
 Route::get('/', [UsuarioController::class, 'index'])->name('index');
 Route::post('/usuarios', [UsuarioController::class, 'store'])->name('usuarios.store');
 Route::delete('/usuarios/{id}', [UsuarioController::class, 'destroy'])->name('usuarios.destroy');
-Route::put('/usuarios/{id}', [UsuarioController::class, 'update'])->name('usuarios.update');
+Route::put('/usuarios/{usuario}', [UsuarioController::class, 'update'])->name('usuarios.update');
+
 Route::put('/usuarios/{id}/estado', [UsuarioController::class, 'cambiarEstado'])->name('usuarios.estado');
 
 // rutas sujetos de datos ---------------------------------
@@ -65,7 +66,7 @@ Route::get('/auditorias/{id}', [AuditoriaController::class, 'show'])->name('audi
 // rutas de solicitudes dsar ---------------------------------
 Route::post('/dsar', [SolicitudDsarController::class, 'store'])->name('dsar.store');
 Route::put('/dsar/{id}', [SolicitudDsarController::class, 'update'])->name('dsar.update');
-Route::delete('/dsar/{id}', [SolicitudDsarController::class, 'destroy'])->name('dsar.destroy');
+
 Route::put('/dsar/{id}/estado', [SolicitudDsarController::class, 'cambiarEstado'])->name('dsar.estado');
 // Rutas para miembros
 // CRUD miembros

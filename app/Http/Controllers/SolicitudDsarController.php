@@ -10,13 +10,29 @@ class SolicitudDsarController extends Controller
 {
     public function index()
     {
-        $solicitudes = SolicitudDsar::with('sujeto')->orderBy('id','desc')->get();
+        // ✅ Para el select (cédula + nombre + apellido)
+        $sujetos = SujetoDato::orderBy('apellido')->orderBy('nombre')->get();
 
-        return view('index', compact('solicitudes'));
+        // ✅ Para la tabla DSAR
+        $dsars = SolicitudDsar::with('sujeto')->orderBy('id','desc')->get();
+
+        return view('index', compact('sujetos', 'dsars'));
     }
 
     public function store(Request $request)
     {
+        $request->validate([
+            'numero_solicitud' => ['required', 'string', 'max:255'],
+            'cedula'           => ['required', 'string', 'max:20'],
+            'tipo'             => ['required', 'in:acceso,rectificacion,cancelacion,oposicion,portabilidad'],
+            'descripcion'      => ['required', 'string'],
+            // ✅ Solo HOY
+            'fecha_solicitud'  => ['required', 'date', 'in:' . now()->toDateString()],
+            // ✅ Desde HOY en adelante
+            'fecha_limite'     => ['nullable', 'date', 'after_or_equal:today'],
+            'estado'           => ['required', 'in:pendiente,proceso,completada,rechazada'],
+        ]);
+
         $sujeto = SujetoDato::where('cedula', $request->cedula)->first();
 
         if (!$sujeto) {
@@ -34,20 +50,31 @@ class SolicitudDsarController extends Controller
         ]);
 
         return redirect()->route('index')->with('swal', [
-        'icon' => 'success',
-        'title' => 'Solicitud DSAR',
-        'text' => 'La solicitud se guardó correctamente'
-    ]);
-
+            'icon'  => 'success',
+            'title' => 'Solicitud DSAR',
+            'text'  => 'La solicitud se guardó correctamente'
+        ]);
     }
 
     public function update(Request $request, $id)
     {
         $dsar = SolicitudDsar::findOrFail($id);
 
+        $request->validate([
+            'numero_solicitud' => ['required', 'string', 'max:255'],
+            'cedula'           => ['required', 'string', 'max:20'],
+            'tipo'             => ['required', 'in:acceso,rectificacion,cancelacion,oposicion,portabilidad'],
+            'descripcion'      => ['required', 'string'],
+            // ✅ Solo HOY
+            'fecha_solicitud'  => ['required', 'date', 'in:' . now()->toDateString()],
+            // ✅ Desde HOY en adelante
+            'fecha_limite'     => ['nullable', 'date', 'after_or_equal:today'],
+            'estado'           => ['required', 'in:pendiente,proceso,completada,rechazada'],
+        ]);
+
         $sujeto = SujetoDato::where('cedula', $request->cedula)->first();
         if (!$sujeto) {
-            return back()->withErrors(['cedula' => 'La cédula no existe']);
+            return back()->withErrors(['cedula' => 'La cédula no existe'])->withInput();
         }
 
         $dsar->update([
@@ -60,22 +87,29 @@ class SolicitudDsarController extends Controller
             'estado'           => $request->estado,
         ]);
 
-        return redirect()->back();
+        return redirect()->back()->with('swal', [
+            'icon'  => 'success',
+            'title' => 'Actualización',
+            'text'  => 'La solicitud se actualizó correctamente'
+        ]);
     }
 
-    public function destroy($id)
-    {
-        SolicitudDsar::findOrFail($id)->delete();
-        return redirect()->back();
-    }
+
 
     public function cambiarEstado(Request $request, $id)
     {
+        $request->validate([
+            'estado' => ['required', 'in:pendiente,proceso,completada,rechazada'],
+        ]);
+
         $dsar = SolicitudDsar::findOrFail($id);
         $dsar->estado = $request->estado;
         $dsar->save();
 
-        return redirect()->back();
+        return redirect()->back()->with('swal', [
+            'icon'  => 'success',
+            'title' => 'Estado actualizado',
+            'text'  => 'El estado se cambió correctamente'
+        ]);
     }
 }
-
