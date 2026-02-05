@@ -26,7 +26,7 @@ return [
 
         'sendgrid' => [
             'transport' => 'sendgrid',
-            'api_key' => env('SENDGRID_API_KEY'), // usa la API Key en vez de SMTP
+            'api_key' => env('SENDGRID_API_KEY'),
         ],
 
         'log' => [
@@ -39,15 +39,6 @@ return [
         ],
 
     ],
-
-    /*
-    |--------------------------------------------------------------------------
-    | Global "From" Address
-    |--------------------------------------------------------------------------
-    |
-    | Correo y nombre que se usarán por defecto en todos los emails.
-    |
-    */
 
     'from' => [
         'address' => env('MAIL_FROM_ADDRESS', 'firemaurofire@gmail.com'),
