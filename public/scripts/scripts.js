@@ -446,7 +446,7 @@ $("#formUsuarios").validate({
         },
         direccion: {
             required: true,
-            minlength: 5
+            minlength: 2
         },
         rol: {
             required: true
