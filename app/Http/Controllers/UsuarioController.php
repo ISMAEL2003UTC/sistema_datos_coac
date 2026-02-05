@@ -25,7 +25,7 @@ class UsuarioController extends Controller
 {
     public function index()
     {
-        $usuarios = Usuario::orderBy('id')->get();
+        $usuarios = Usuario::where('verificado', true)->orderBy('id')->get();
         $sujetos = SujetoDato::orderBy('id')->get();
         $miembros = MiembroCoac::orderBy('id')->get();
         $productos = ProductoFinanciero::orderBy('id')->get();
