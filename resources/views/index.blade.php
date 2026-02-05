@@ -132,17 +132,17 @@
 
             <div class="form-group">
                 <label>Nombres *</label>
-                <input type="text" name="nombre" id="nombre" placeholder="Nombre se llenará automáticamente" readonly>
+                <input type="text" name="nombre" id="nombre" placeholder="Nombres" readonly>
             </div>
 
             <div class="form-group">
                 <label>Apellidos *</label>
-                <input type="text" name="apellido" id="apellido" placeholder="Apellido se llenará automáticamente" readonly>
+                <input type="text" name="apellido" id="apellido" placeholder="Apellidos" readonly>
             </div>
 
             <div class="form-group">
                 <label>Email *</label>
-                <input type="email" name="email" id="email" placeholder="Ingrese un correo electrónico válido">
+                <input type="email" name="email" id="email" placeholder="Ingrese un correo electrónico">
             </div>
 
             <div class="form-group">
