@@ -249,11 +249,11 @@
             </div>
             <div class="form-group">
                 <label>Nombres *</label>
-                <input type="text" id="nombreInput" name="nombre" required>
+                <input type="text" id="nombreInput" name="nombre" required readonly>
             </div>
             <div class="form-group">
                 <label>Apellidos *</label>
-                <input type="text" id="apellidoInput" name="apellido" required>
+                <input type="text" id="apellidoInput" name="apellido" required readonly>
             </div>
         </div>
 
@@ -351,7 +351,6 @@ document.addEventListener('DOMContentLoaded', function () {
     cedulaInput.addEventListener('blur', async () => {
         const cedula = cedulaInput.value.trim();
 
-        // 🔹 Si la cédula no tiene 10 dígitos, limpiar los campos
         if(cedula.length !== 10 || isNaN(cedula)) {
             nombreInput.value = '';
             apellidoInput.value = '';
@@ -368,7 +367,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 nombreInput.value = data.nombres;
                 apellidoInput.value = data.apellidos;
             } else {
-                // 🔹 Si no hay datos, limpiar
                 nombreInput.value = '';
                 apellidoInput.value = '';
             }
