@@ -11,7 +11,7 @@ return [
     |
     */
 
-    'default' => env('MAIL_MAILER', 'smtp'),
+    'default' => env('MAIL_MAILER', 'sendgrid'), // cambiar a sendgrid
 
     /*
     |--------------------------------------------------------------------------
@@ -24,16 +24,9 @@ return [
 
     'mailers' => [
 
-        'smtp' => [
-            'transport' => 'smtp',
-            'host' => env('MAIL_HOST', 'smtp.sendgrid.net'),
-            'port' => env('MAIL_PORT', 587),
-            'encryption' => env('MAIL_ENCRYPTION', 'tls'),
-            'username' => env('MAIL_USERNAME', 'apikey'), // siempre 'apikey' para SendGrid
-            'password' => env('MAIL_PASSWORD'),           // tu SendGrid API Key
-            'timeout' => null,
-            'auth_mode' => null,
-            'local_domain' => env('MAIL_EHLO_DOMAIN', parse_url(env('APP_URL', 'http://localhost'), PHP_URL_HOST)),
+        'sendgrid' => [
+            'transport' => 'sendgrid',
+            'api_key' => env('SENDGRID_API_KEY'), // usa la API Key en vez de SMTP
         ],
 
         'log' => [
