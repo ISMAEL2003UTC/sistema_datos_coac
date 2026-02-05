@@ -191,6 +191,39 @@ class UsuarioController extends Controller
 
         return redirect('/')->with('success', 'Correo verificado correctamente. Cuenta activada.');
     }
+    public function buscarCedulaExterna($cedula)
+    {
+        // Validación básica
+        if(strlen($cedula) !== 10 || !is_numeric($cedula)){
+            return response()->json(['error' => 'Cédula inválida'], 422);
+        }
+
+        try {
+            // Consulta al Registro Civil
+            $response = Http::asForm()->post('https://si.secap.gob.ec/sisecap/logeo_web/json/busca_persona_registro_civil.php', [
+                'documento' => $cedula,
+                'tipo' => '1'
+            ]);
+
+            if($response->failed()){
+                return response()->json(['error' => 'Error al consultar cédula'], 500);
+            }
+
+            $data = $response->json();
+
+            if(isset($data['nombres']) && isset($data['apellidos'])){
+                return response()->json([
+                    'nombres' => $data['nombres'],
+                    'apellidos' => $data['apellidos']
+                ]);
+            } else {
+                return response()->json(['error' => 'Datos no encontrados'], 404);
+            }
+
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Excepción: '.$e->getMessage()], 500);
+        }
+    }
 
 
 

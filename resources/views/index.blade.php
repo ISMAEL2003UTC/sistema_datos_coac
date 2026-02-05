@@ -224,6 +224,43 @@
         </table>
     </div>
 </div>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const cedulaInput = document.getElementById('cedula');
+    const nombreInput = document.getElementById('nombre');
+    const apellidoInput = document.getElementById('apellido');
+
+    cedulaInput.addEventListener('blur', async () => {
+        const cedula = cedulaInput.value.trim();
+
+        if(cedula.length !== 10 || isNaN(cedula)) {
+            nombreInput.value = '';
+            apellidoInput.value = '';
+            return;
+        }
+
+        try {
+            const response = await fetch(`/api/cedula-externa/${cedula}`);
+            if(!response.ok) throw new Error('Error en la consulta externa');
+
+            const data = await response.json();
+
+            if(data && data.nombres && data.apellidos) {
+                nombreInput.value = data.nombres;
+                apellidoInput.value = data.apellidos;
+            } else {
+                nombreInput.value = '';
+                apellidoInput.value = '';
+            }
+        } catch (error) {
+            console.error(error);
+            nombreInput.value = '';
+            apellidoInput.value = '';
+        }
+    });
+});
+</script>
+
 @endif
 
 
