@@ -21,7 +21,7 @@ class VerificarCorreoUsuario extends Mailable implements ShouldQueue // <- aquí
 
     public function build()
     {
-        $url = url("/usuarios/verificar/{$this->usuario->email_verificacion_token}");
+    $url = url('/verificar-correo/' . $this->usuario->email_verificacion_token);
 
         return $this->subject('Verificación de correo electrónico')
                     ->view('emails.verificar_correo')
