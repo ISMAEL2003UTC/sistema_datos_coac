@@ -68,19 +68,22 @@ class UsuarioController extends Controller
     }
 
     public function store(Request $request)
-    {
-        $request->validate([
-            'nombre'    => 'required|string|max:100',
-            'apellido'  => 'required|string|max:100',
-            'email'     => 'required|email|unique:usuarios,email',
-            'cedula'    => 'required|digits:10|unique:usuarios,cedula',
-            'provincia' => 'nullable|string|max:100',
-            'ciudad'    => 'nullable|string|max:100',
-            'direccion' => 'nullable|string|max:255',
-            'rol'       => 'required|string|max:50'
-        ]);
+{
+    $request->validate([
+        'nombre'    => 'required|string|max:100',
+        'apellido'  => 'required|string|max:100',
+        'email'     => 'required|email|unique:usuarios,email',
+        'cedula'    => 'required|digits:10|unique:usuarios,cedula',
+        'provincia' => 'nullable|string|max:100',
+        'ciudad'    => 'nullable|string|max:100',
+        'direccion' => 'nullable|string|max:255',
+        'rol'       => 'required|string|max:50'
+    ]);
 
-        $usuario = Usuario::create([
+    // Generar token de verificación
+    $token = Str::random(64);
+
+    $usuario = Usuario::create([
         'nombre'    => $request->nombre,
         'apellido'  => $request->apellido,
         'email'     => $request->email,
@@ -89,18 +92,19 @@ class UsuarioController extends Controller
         'ciudad'    => $request->ciudad,
         'direccion' => $request->direccion,
         'rol'       => $request->rol,
-        'estado'    => 'activo', // El usuario queda INACTIVO hasta verificar el correo
-        //'email_verificado'=> false,
-        //'email_verificacion_token' => Str::uuid(),
-        'password'  => Hash::make('123456')
+        'estado'    => 'inactivo',          // INACTIVO hasta verificar correo
+        'email_verificado' => false,
+        'email_verificacion_token' => $token,
+        'password'  => Hash::make(Str::random(8)), // password temporal
     ]);
 
-    //Mail::to($usuario->email)->send(new VerificarCorreoUsuario($usuario));
+    // Enviar correo de verificación
+    Mail::to($usuario->email)->send(new VerificarCorreoUsuario($usuario));
 
     return redirect()->back()
-        ->with('success', 'Usuario registrado correctamente.');
+        ->with('success', 'Usuario registrado correctamente. Por favor verifica tu correo para activarlo.');
+}
 
-    }
 
     public function update(Request $request, Usuario $usuario)
     {

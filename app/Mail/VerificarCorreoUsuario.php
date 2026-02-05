@@ -22,8 +22,15 @@ class VerificarCorreoUsuario extends Mailable
     }
 
     public function build()
-    {
-        return $this->subject('Verificación de correo electrónico')
-            ->view('emails.verificar_correo');
-    }
+{
+    $url = url("/usuarios/verificar/{$this->usuario->email_verificacion_token}");
+
+    return $this->subject('Verificación de correo electrónico')
+                ->view('emails.verificar_correo')
+                ->with([
+                    'usuario' => $this->usuario,
+                    'url' => $url
+                ]);
+}
+
 }

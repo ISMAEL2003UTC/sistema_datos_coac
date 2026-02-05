@@ -1,9 +1,10 @@
 <?php
 
 namespace App\Models;
+
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 class Usuario extends Authenticatable
 {
@@ -30,6 +31,10 @@ class Usuario extends Authenticatable
         'password'
     ];
 
+    protected $casts = [
+        'email_verificado' => 'boolean', // Convierte automáticamente a true/false
+    ];
+
     /**
      * Retorna el nombre del rol en texto legible
      */
@@ -46,5 +51,22 @@ class Usuario extends Authenticatable
             'titular'                 => 'Titular',
             default                   => ucfirst($this->rol),
         };
+    }
+
+    /**
+     * Eventos del modelo
+     */
+    protected static function booted()
+    {
+        static::creating(function ($usuario) {
+            // Genera un token único si no existe
+            if (!$usuario->email_verificacion_token) {
+                $usuario->email_verificacion_token = Str::uuid();
+            }
+
+            // Usuario nuevo siempre inactivo hasta verificar correo
+            $usuario->estado = 'inactivo';
+            $usuario->email_verificado = false;
+        });
     }
 }
