@@ -58,7 +58,7 @@ function resetFormularioUsuarios() {
 
 // EDITAR USUARIO
 // EDITAR USUARIO
-function editarUsuario(id, nombre, apellido, email, cedula, ciudad, direccion, rol) {
+function editarUsuario(id, nombre, apellido, email, cedula, provincia, ciudad, direccion, rol) {
 
     Swal.fire({
         icon: 'info',
@@ -74,6 +74,7 @@ function editarUsuario(id, nombre, apellido, email, cedula, ciudad, direccion, r
     document.getElementById('apellido').value = apellido;
     document.getElementById('email').value = email;
     document.getElementById('cedula').value = cedula;
+    document.getElementById('provincia').value = provincia; // <-- aquí se agrega
     document.getElementById('ciudad').value = ciudad;
     document.getElementById('direccion').value = direccion;
     document.getElementById('rol').value = rol;
@@ -84,11 +85,14 @@ function editarUsuario(id, nombre, apellido, email, cedula, ciudad, direccion, r
 
     // Cambiar texto del botón
     document.querySelector('#formUsuarios button[type="submit"]').innerText = 'Actualizar Usuario';
+
+    // Validaciones
     setTimeout(() => {
-    $("#email").valid();
-    $("#cedula").valid();
-}, 300);
+        $("#email").valid();
+        $("#cedula").valid();
+    }, 300);
 }
+
 
 
 // ========== FUNCIONES PARA SUJETOS ==========
