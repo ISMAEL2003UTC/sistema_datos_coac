@@ -187,17 +187,27 @@
             </div>
 
             <div class="form-group">
-                <label>Rol *</label>
-                <select name="rol" id="rol">
-                    <option value="">Seleccionar...</option>
-                    <option value="dpo">Oficial de Protección de Datos</option>
-                    <option value="operador">Operador</option>
-                    <option value="auditor_interno">Auditor interno</option>
-                    <option value="gestor_consentimientos">Gestor de consentimientos</option>
-                    <option value="gestor_incidentes">Gestor de incidentes</option>
-                    <option value="titular">Titular</option>
-                </select>
-            </div>
+    <label>Rol *</label>
+    <select name="rol" id="rol">
+        <option value="">Seleccionar...</option>
+        <option value="dpo">Oficial de Protección de Datos</option>
+        <option value="operador">Operador</option>
+
+        {{-- Mostrar "Auditor interno" solo si no existe ya --}}
+        @if(!$usuarios->where('rol', 'auditor_interno')->count())
+            <option value="auditor_interno">Auditor interno</option>
+        @endif
+
+        <option value="gestor_consentimientos">Gestor de consentimientos</option>
+        <option value="gestor_incidentes">Gestor de incidentes</option>
+
+        {{-- Mostrar "Titular" solo si no existe ya --}}
+        @if(!$usuarios->where('rol', 'titular')->count())
+            <option value="titular">Titular</option>
+        @endif
+    </select>
+</div>
+
         </div>
 
         <button type="submit" class="btn btn-primary">Agregar Usuario</button>
