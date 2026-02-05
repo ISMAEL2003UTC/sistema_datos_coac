@@ -250,9 +250,20 @@
                     <td>
                         @if($usuario->rol !== 'admin')
                             <button class="btn btn-secondary"
-                                    onclick="editarUsuario('{{ $usuario->id }}', '{{ $usuario->nombre }}', '{{ $usuario->apellido }}', '{{ $usuario->email }}', '{{ $usuario->cedula }}', '{{ $usuario->ciudad }}', '{{ $usuario->direccion }}', '{{ $usuario->rol }}')">
+                                onclick="editarUsuario(
+                                    '{{ $usuario->id }}',
+                                    '{{ $usuario->nombre }}',
+                                    '{{ $usuario->apellido }}',
+                                    '{{ $usuario->email }}',
+                                    '{{ $usuario->cedula }}',
+                                    '{{ $usuario->provincia }}',
+                                    '{{ $usuario->ciudad }}',
+                                    '{{ $usuario->direccion }}',
+                                    '{{ $usuario->rol }}'
+                                )">
                                 Editar
                             </button>
+
 
                             <form action="{{ route('usuarios.estado', $usuario->id) }}" method="POST" style="display:inline;">
                                 @csrf
