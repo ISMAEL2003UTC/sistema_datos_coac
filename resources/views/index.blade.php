@@ -57,6 +57,8 @@
 
     
     <div class="container">
+        <br>
+        <br>
         <div class="header">
             <h1> Sistema de Gestión de Datos Personales</h1>
             <p>Cooperativa de Ahorro y Crédito - Protección de Datos</p>
