@@ -1027,7 +1027,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         <select name="sujeto_id" id="consentimiento_sujeto_id" required>
                             <option value="">Seleccionar...</option>
                             @foreach($sujetos as $sujeto)
-                                <option value="{{ $sujeto->id }}">{{ $sujeto->cedula }} - {{ $sujeto->nombre_completo }}</option>
+                                <option value="{{ $sujeto->id }}">{{ $sujeto->cedula }} - {{ $sujeto->nombre }}</option>
                             @endforeach
                         </select>
                         <span class="text-error" id="error-sujeto_id"></span>
@@ -1098,7 +1098,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         @forelse($consentimientos as $consentimiento)
                         <tr>
                             <td>{{ $consentimiento->id }}</td>
-                            <td>{{ $consentimiento->sujeto->cedula }} - {{ $consentimiento->sujeto->nombre_completo }}</td>
+                            <td>{{ $consentimiento->sujeto->cedula }} - {{ $consentimiento->sujeto->nombre }}</td>
                             <td>
                                 @if($consentimiento->proposito === 'productos')
                                     <span class="badge badge-info">Oferta de Productos</span>
