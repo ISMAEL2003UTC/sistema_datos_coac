@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use App\Models\Usuario;
 
 class LoginController extends Controller
@@ -37,14 +38,37 @@ class LoginController extends Controller
             ]);
         }
 
+        // 🔐 Login
         Auth::login($usuario);
+
+        // 🔥 Matar TODAS las sesiones anteriores
+        DB::table('sessions')
+            ->where('user_id', $usuario->id)
+            ->delete();
+
+        // 🔄 Regenerar sesión
+        $request->session()->regenerate();
+
+        // 💾 Guardar la sesión válida
+        $usuario->session_id = $request->session()->getId();
+        $usuario->save();
 
         return redirect('/');
     }
 
-    public function logout()
+    public function logout(Request $request)
     {
+        $usuario = Auth::user();
+
+        if ($usuario) {
+            $usuario->session_id = null;
+            $usuario->save();
+        }
+
         Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
         return redirect('/login');
     }
 }

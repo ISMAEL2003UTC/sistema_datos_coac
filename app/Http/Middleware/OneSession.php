@@ -3,39 +3,33 @@
 namespace App\Http\Middleware;
 
 use Closure;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
-use Symfony\Component\HttpFoundation\Response;
 
 class OneSession
 {
-    public function handle(Request $request, Closure $next): Response
+    public function handle($request, Closure $next)
     {
-        // Si el usuario está logueado
         if (Auth::check()) {
-            $currentUserId = Auth::id();
+
+            $user = Auth::user();
             $currentSessionId = Session::getId();
-            $currentUserAgent = $request->header('User-Agent');
 
-            // Buscar otras sesiones activas de este usuario en otros dispositivos
-            $otherSessions = DB::table('sessions')
-                ->where('user_id', $currentUserId)
-                ->where('id', '<>', $currentSessionId)
-                ->where('user_agent', '<>', $currentUserAgent) // Ignora la misma pestaña
-                ->count();
+            // Si hay una sesión distinta a la guardada
+            if ($user->session_id && $user->session_id !== $currentSessionId) {
 
-            if ($otherSessions > 0) {
-                // Opción 1: Cerrar la sesión anterior (como WhatsApp)
+                // 🔥 matar todas las sesiones anteriores
                 DB::table('sessions')
-                    ->where('user_id', $currentUserId)
-                    ->where('id', '<>', $currentSessionId)
+                    ->where('user_id', $user->id)
                     ->delete();
 
-                // Regenerar ID de sesión para seguridad
                 Session::regenerate();
             }
+
+            // Guardar la sesión válida
+            $user->session_id = Session::getId();
+            $user->save();
         }
 
         return $next($request);
