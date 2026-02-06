@@ -2265,84 +2265,139 @@ new Chart(document.getElementById('incidentesChart'), {
 </script>
 @endif
 <script>
-/**
- * Control de una sola pestaña activa (tipo WhatsApp Web)
- * Usa BroadcastChannel (Chrome, Firefox, Edge)
- */
+(() => {
+    const channelName = 'coac_single_tab';
+    const localStorageKey = 'coac_active_tab';
+    const TAB_TAKEOVER_DELAY = 2000; // ms para tomar control si nadie responde
 
-const channel = new BroadcastChannel('coac_single_tab');
-let isMainTab = false;
-let modalShown = false;
+    let isMainTab = false;
+    let modalShown = false;
 
-// Avisar que esta pestaña existe
-channel.postMessage({ type: 'PING' });
+    // Función para mostrar modal de aviso
+    function showTabModal() {
+        if (modalShown) return;
+        modalShown = true;
 
-channel.onmessage = (event) => {
+        const modal = document.createElement('div');
+        modal.style = `
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,.45);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        `;
 
-    // Si otra pestaña ya está activa
-    if (event.data.type === 'ACTIVE_TAB' && !isMainTab) {
-        showTabModal();
+        modal.innerHTML = `
+            <div style="background:#fff;padding:25px;border-radius:10px;max-width:420px;width:90%;text-align:center">
+                <p style="font-size:16px;margin-bottom:10px;">
+                    <strong>La aplicación está abierta en otra pestaña.</strong>
+                </p>
+                <p style="font-size:14px;margin-bottom:20px;">
+                    Haz clic en <b>“Usar aquí”</b> para continuar en esta pestaña.
+                </p>
+                <button id="closeTab" style="padding:8px 14px;">Cerrar</button>
+                <button id="useHere" style="padding:8px 14px;margin-left:10px;background:#16a34a;color:#fff;border:none;border-radius:5px;">
+                    Usar aquí
+                </button>
+            </div>
+        `;
+
+        document.body.appendChild(modal);
+
+        document.getElementById('closeTab').onclick = () => {
+            window.close();
+        };
+
+        document.getElementById('useHere').onclick = () => {
+            console.log('[TabControl] TAKE_OVER enviado por modal');
+            broadcastTakeOver();
+            isMainTab = true;
+            modal.remove();
+            modalShown = false;
+        };
     }
 
-    // Si otra pestaña tomó el control
-    if (event.data.type === 'TAKE_OVER') {
-        if (isMainTab) {
-            alert('Esta sesión fue abierta en otra pestaña.');
-            location.reload();
+    // BroadcastChannel fallback check
+    const hasBroadcastChannel = typeof BroadcastChannel === 'function';
+
+    // BroadcastChannel setup
+    let channel = null;
+    if (hasBroadcastChannel) {
+        channel = new BroadcastChannel(channelName);
+        console.log('[TabControl] BroadcastChannel activo:', channelName);
+
+        channel.onmessage = (event) => {
+            console.log('[TabControl] Mensaje recibido:', event.data);
+
+            switch(event.data.type) {
+                case 'PING':
+                    if (isMainTab) {
+                        console.log('[TabControl] Respondiendo ACTIVE_TAB a PING');
+                        channel.postMessage({ type: 'ACTIVE_TAB' });
+                    }
+                    break;
+                case 'ACTIVE_TAB':
+                    if (!isMainTab) {
+                        showTabModal();
+                    }
+                    break;
+                case 'TAKE_OVER':
+                    if (isMainTab) {
+                        alert('Esta sesión fue abierta en otra pestaña.');
+                        location.reload();
+                    }
+                    isMainTab = false;
+                    break;
+            }
+        };
+
+        // Avisar que esta pestaña existe
+        channel.postMessage({ type: 'PING' });
+    } else {
+        console.warn('[TabControl] BroadcastChannel NO soportado, usando fallback con localStorage');
+
+        window.addEventListener('storage', (event) => {
+            if (event.key === localStorageKey) {
+                console.log('[TabControl-Fallback] Cambio detectado en localStorage:', event.newValue);
+                if (event.newValue !== sessionStorage.getItem('tabId')) {
+                    showTabModal();
+                    isMainTab = false;
+                }
+            }
+        });
+    }
+
+    // Generar un ID único para esta pestaña
+    const tabId = Date.now() + '-' + Math.random();
+    sessionStorage.setItem('tabId', tabId);
+
+    // Función para declarar pestaña principal
+    function declareMainTab() {
+        isMainTab = true;
+        console.log('[TabControl] Esta pestaña es la principal:', tabId);
+        if (hasBroadcastChannel) {
+            channel.postMessage({ type: 'ACTIVE_TAB' });
+        } else {
+            localStorage.setItem(localStorageKey, tabId);
         }
-        isMainTab = false;
     }
-};
 
-// Si nadie responde, esta pestaña se vuelve la principal
-setTimeout(() => {
-    if (!isMainTab && !modalShown) {
-        isMainTab = true;
-        channel.postMessage({ type: 'ACTIVE_TAB' });
+    // Función para enviar TAKE_OVER (cuando usuario elige usar esta pestaña)
+    function broadcastTakeOver() {
+        if (hasBroadcastChannel) {
+            channel.postMessage({ type: 'TAKE_OVER' });
+        }
+        localStorage.setItem(localStorageKey, tabId); // también actualizar fallback
     }
-}, 300);
 
-// Modal tipo WhatsApp
-function showTabModal() {
-    if (modalShown) return;
-    modalShown = true;
+    // Timeout para elegir pestaña principal si nadie responde
+    setTimeout(() => {
+        if (!isMainTab && !modalShown) {
+            declareMainTab();
+        }
+    }, TAB_TAKEOVER_DELAY);
 
-    const modal = document.createElement('div');
-    modal.style = `
-        position: fixed;
-        inset: 0;
-        background: rgba(0,0,0,.45);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: 9999;
-    `;
-
-    modal.innerHTML = `
-        <div style="background:#fff;padding:25px;border-radius:10px;max-width:420px;width:90%;text-align:center">
-            <p style="font-size:16px;margin-bottom:10px;">
-                <strong>La aplicación está abierta en otra pestaña.</strong>
-            </p>
-            <p style="font-size:14px;margin-bottom:20px;">
-                Haz clic en <b>“Usar aquí”</b> para continuar en esta pestaña.
-            </p>
-            <button id="closeTab" style="padding:8px 14px;">Cerrar</button>
-            <button id="useHere" style="padding:8px 14px;margin-left:10px;background:#16a34a;color:#fff;border:none;border-radius:5px;">
-                Usar aquí
-            </button>
-        </div>
-    `;
-
-    document.body.appendChild(modal);
-
-    document.getElementById('closeTab').onclick = () => {
-        window.close();
-    };
-
-    document.getElementById('useHere').onclick = () => {
-        channel.postMessage({ type: 'TAKE_OVER' });
-        isMainTab = true;
-        modal.remove();
-    };
-}
+})();
 </script>
