@@ -2292,7 +2292,7 @@ new Chart(document.getElementById('incidentesChart'), {
         modal.innerHTML = `
             <div style="background:#fff;padding:25px;border-radius:10px;max-width:420px;width:90%;text-align:center">
                 <p style="font-size:16px;margin-bottom:10px;">
-                    <strong>Sistema COAC está abierta en otra pestaña.</strong>
+                    <strong>El Sistema COAC está abierto en otra pestaña.</strong>
                 </p>
                 <p style="font-size:14px;margin-bottom:20px;">
                     Haz clic en <b>“Usar aquí”</b> para continuar en esta pestaña.
