@@ -7,6 +7,7 @@
     
     
     
+    
 
     <link rel="stylesheet" href="{{ asset('styles/styles.css') }}">
     <!-- jQuery  -->
@@ -38,16 +39,22 @@
     color: #dc2626;
     font-size: 12px;
 }
+.logout-button {
+    position: absolute; /* Posición fija respecto al body */
+    top: 20px;          /* 20px desde arriba */
+    right: 20px;        /* 20px desde la derecha */
+}
 
 </style>
 <body>
     <!-- Botón de logout -->
     <form action="{{ route('logout') }}" method="POST" class="logout-button">
-        @csrf
-        <button type="submit" class="btn btn-danger">
-            <i class="fa-solid fa-right-from-bracket"></i> Cerrar sesión
-        </button>
-    </form>
+    @csrf
+    <button type="submit" class="btn btn-danger">
+        <i class="fa-solid fa-right-from-bracket"></i> Cerrar sesión
+    </button>
+</form>
+
     
     <div class="container">
         <div class="header">
