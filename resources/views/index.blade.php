@@ -2306,8 +2306,21 @@ new Chart(document.getElementById('incidentesChart'), {
 
         document.body.appendChild(modal);
 
+        // ✅ Cerrar sesión al hacer click en "Cerrar"
         document.getElementById('closeTab').onclick = () => {
-            window.close();
+            fetch('/logout', {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({})
+            }).then(() => {
+                window.location.href = '/login';
+            }).catch(() => {
+                alert('Error al cerrar sesión');
+            });
         };
 
         document.getElementById('useHere').onclick = () => {
@@ -2319,48 +2332,31 @@ new Chart(document.getElementById('incidentesChart'), {
         };
     }
 
-    // BroadcastChannel fallback check
+    // ------------------- Resto del script (BroadcastChannel y tab control) -------------------
     const hasBroadcastChannel = typeof BroadcastChannel === 'function';
-
-    // BroadcastChannel setup
     let channel = null;
     if (hasBroadcastChannel) {
         channel = new BroadcastChannel(channelName);
         console.log('[TabControl] BroadcastChannel activo:', channelName);
 
         channel.onmessage = (event) => {
-            console.log('[TabControl] Mensaje recibido:', event.data);
-
             switch(event.data.type) {
                 case 'PING':
-                    if (isMainTab) {
-                        console.log('[TabControl] Respondiendo ACTIVE_TAB a PING');
-                        channel.postMessage({ type: 'ACTIVE_TAB' });
-                    }
+                    if (isMainTab) channel.postMessage({ type: 'ACTIVE_TAB' });
                     break;
                 case 'ACTIVE_TAB':
-                    if (!isMainTab) {
-                        showTabModal();
-                    }
+                    if (!isMainTab) showTabModal();
                     break;
                 case 'TAKE_OVER':
-                    if (isMainTab) {
-                        alert('Esta sesión fue abierta en otra pestaña.');
-                        location.reload();
-                    }
+                    if (isMainTab) { alert('Esta sesión fue abierta en otra pestaña.'); location.reload(); }
                     isMainTab = false;
                     break;
             }
         };
-
-        // Avisar que esta pestaña existe
         channel.postMessage({ type: 'PING' });
     } else {
-        console.warn('[TabControl] BroadcastChannel NO soportado, usando fallback con localStorage');
-
         window.addEventListener('storage', (event) => {
             if (event.key === localStorageKey) {
-                console.log('[TabControl-Fallback] Cambio detectado en localStorage:', event.newValue);
                 if (event.newValue !== sessionStorage.getItem('tabId')) {
                     showTabModal();
                     isMainTab = false;
@@ -2369,35 +2365,22 @@ new Chart(document.getElementById('incidentesChart'), {
         });
     }
 
-    // Generar un ID único para esta pestaña
     const tabId = Date.now() + '-' + Math.random();
     sessionStorage.setItem('tabId', tabId);
 
-    // Función para declarar pestaña principal
     function declareMainTab() {
         isMainTab = true;
-        console.log('[TabControl] Esta pestaña es la principal:', tabId);
-        if (hasBroadcastChannel) {
-            channel.postMessage({ type: 'ACTIVE_TAB' });
-        } else {
-            localStorage.setItem(localStorageKey, tabId);
-        }
+        if (hasBroadcastChannel) channel.postMessage({ type: 'ACTIVE_TAB' });
+        else localStorage.setItem(localStorageKey, tabId);
     }
 
-    // Función para enviar TAKE_OVER (cuando usuario elige usar esta pestaña)
     function broadcastTakeOver() {
-        if (hasBroadcastChannel) {
-            channel.postMessage({ type: 'TAKE_OVER' });
-        }
-        localStorage.setItem(localStorageKey, tabId); // también actualizar fallback
+        if (hasBroadcastChannel) channel.postMessage({ type: 'TAKE_OVER' });
+        localStorage.setItem(localStorageKey, tabId);
     }
 
-    // Timeout para elegir pestaña principal si nadie responde
     setTimeout(() => {
-        if (!isMainTab && !modalShown) {
-            declareMainTab();
-        }
+        if (!isMainTab && !modalShown) declareMainTab();
     }, TAB_TAKEOVER_DELAY);
-
 })();
 </script>
