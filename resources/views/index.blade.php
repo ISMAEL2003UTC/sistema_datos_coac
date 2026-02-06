@@ -2280,18 +2280,20 @@ new Chart(document.getElementById('incidentesChart'), {
 (() => {
     const channelName = 'coac_single_tab';
     const localStorageKey = 'coac_active_tab';
-    const TAB_TAKEOVER_DELAY = 2000; // ms para tomar control si nadie responde
+    const TAB_TAKEOVER_DELAY = 2000;
 
     let isMainTab = false;
     let modalShown = false;
 
-    // Función para mostrar modal de aviso
+    // =========================
+    // Modal
+    // =========================
     function showTabModal() {
         if (modalShown) return;
         modalShown = true;
 
         const modal = document.createElement('div');
-        modal.style = `
+        modal.style.cssText = `
             position: fixed;
             inset: 0;
             background: rgba(0,0,0,.45);
@@ -2309,7 +2311,8 @@ new Chart(document.getElementById('incidentesChart'), {
                 <p style="font-size:14px;margin-bottom:20px;">
                     Haz clic en <b>“Usar aquí”</b> para continuar en esta pestaña.
                 </p>
-                <button id="useHere" style="padding:8px 14px;margin-left:10px;background:#16a34a;color:#fff;border:none;border-radius:5px;">
+                <button id="useHere"
+                    style="padding:8px 16px;background:#16a34a;color:#fff;border:none;border-radius:5px;cursor:pointer;">
                     Usar aquí
                 </button>
             </div>
@@ -2317,12 +2320,8 @@ new Chart(document.getElementById('incidentesChart'), {
 
         document.body.appendChild(modal);
 
-        document.getElementById('closeTab').onclick = () => {
-            window.close();
-        };
-
         document.getElementById('useHere').onclick = () => {
-            console.log('[TabControl] TAKE_OVER enviado por modal');
+            console.log('[TabControl] TAKE_OVER enviado');
             broadcastTakeOver();
             isMainTab = true;
             modal.remove();
@@ -2330,33 +2329,36 @@ new Chart(document.getElementById('incidentesChart'), {
         };
     }
 
-    // BroadcastChannel fallback check
+    // =========================
+    // BroadcastChannel
+    // =========================
     const hasBroadcastChannel = typeof BroadcastChannel === 'function';
-
-    // BroadcastChannel setup
     let channel = null;
+
     if (hasBroadcastChannel) {
         channel = new BroadcastChannel(channelName);
         console.log('[TabControl] BroadcastChannel activo:', channelName);
 
         channel.onmessage = (event) => {
-            console.log('[TabControl] Mensaje recibido:', event.data);
+            const { type } = event.data || {};
+            console.log('[TabControl] Mensaje recibido:', type);
 
-            switch(event.data.type) {
+            switch (type) {
                 case 'PING':
                     if (isMainTab) {
-                        console.log('[TabControl] Respondiendo ACTIVE_TAB a PING');
                         channel.postMessage({ type: 'ACTIVE_TAB' });
                     }
                     break;
+
                 case 'ACTIVE_TAB':
                     if (!isMainTab) {
                         showTabModal();
                     }
                     break;
+
                 case 'TAKE_OVER':
                     if (isMainTab) {
-                        alert('Esta sesión fue abierta en otra pestaña.');
+                        alert('Esta sesión fue tomada por otra pestaña.');
                         location.reload();
                     }
                     isMainTab = false;
@@ -2364,14 +2366,13 @@ new Chart(document.getElementById('incidentesChart'), {
             }
         };
 
-        // Avisar que esta pestaña existe
         channel.postMessage({ type: 'PING' });
     } else {
-        console.warn('[TabControl] BroadcastChannel NO soportado, usando fallback con localStorage');
-
+        // =========================
+        // Fallback localStorage
+        // =========================
         window.addEventListener('storage', (event) => {
             if (event.key === localStorageKey) {
-                console.log('[TabControl-Fallback] Cambio detectado en localStorage:', event.newValue);
                 if (event.newValue !== sessionStorage.getItem('tabId')) {
                     showTabModal();
                     isMainTab = false;
@@ -2380,14 +2381,16 @@ new Chart(document.getElementById('incidentesChart'), {
         });
     }
 
-    // Generar un ID único para esta pestaña
-    const tabId = Date.now() + '-' + Math.random();
+    // =========================
+    // Identidad de pestaña
+    // =========================
+    const tabId = crypto.randomUUID();
     sessionStorage.setItem('tabId', tabId);
 
-    // Función para declarar pestaña principal
     function declareMainTab() {
         isMainTab = true;
-        console.log('[TabControl] Esta pestaña es la principal:', tabId);
+        console.log('[TabControl] Pestaña principal:', tabId);
+
         if (hasBroadcastChannel) {
             channel.postMessage({ type: 'ACTIVE_TAB' });
         } else {
@@ -2395,15 +2398,16 @@ new Chart(document.getElementById('incidentesChart'), {
         }
     }
 
-    // Función para enviar TAKE_OVER (cuando usuario elige usar esta pestaña)
     function broadcastTakeOver() {
         if (hasBroadcastChannel) {
             channel.postMessage({ type: 'TAKE_OVER' });
         }
-        localStorage.setItem(localStorageKey, tabId); // también actualizar fallback
+        localStorage.setItem(localStorageKey, tabId);
     }
 
-    // Timeout para elegir pestaña principal si nadie responde
+    // =========================
+    // Auto-asignación si nadie responde
+    // =========================
     setTimeout(() => {
         if (!isMainTab && !modalShown) {
             declareMainTab();
