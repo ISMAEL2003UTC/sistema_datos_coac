@@ -2264,3 +2264,85 @@ new Chart(document.getElementById('incidentesChart'), {
     });
 </script>
 @endif
+<script>
+/**
+ * Control de una sola pestaña activa (tipo WhatsApp Web)
+ * Usa BroadcastChannel (Chrome, Firefox, Edge)
+ */
+
+const channel = new BroadcastChannel('coac_single_tab');
+let isMainTab = false;
+let modalShown = false;
+
+// Avisar que esta pestaña existe
+channel.postMessage({ type: 'PING' });
+
+channel.onmessage = (event) => {
+
+    // Si otra pestaña ya está activa
+    if (event.data.type === 'ACTIVE_TAB' && !isMainTab) {
+        showTabModal();
+    }
+
+    // Si otra pestaña tomó el control
+    if (event.data.type === 'TAKE_OVER') {
+        if (isMainTab) {
+            alert('Esta sesión fue abierta en otra pestaña.');
+            location.reload();
+        }
+        isMainTab = false;
+    }
+};
+
+// Si nadie responde, esta pestaña se vuelve la principal
+setTimeout(() => {
+    if (!isMainTab && !modalShown) {
+        isMainTab = true;
+        channel.postMessage({ type: 'ACTIVE_TAB' });
+    }
+}, 300);
+
+// Modal tipo WhatsApp
+function showTabModal() {
+    if (modalShown) return;
+    modalShown = true;
+
+    const modal = document.createElement('div');
+    modal.style = `
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,.45);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+    `;
+
+    modal.innerHTML = `
+        <div style="background:#fff;padding:25px;border-radius:10px;max-width:420px;width:90%;text-align:center">
+            <p style="font-size:16px;margin-bottom:10px;">
+                <strong>La aplicación está abierta en otra pestaña.</strong>
+            </p>
+            <p style="font-size:14px;margin-bottom:20px;">
+                Haz clic en <b>“Usar aquí”</b> para continuar en esta pestaña.
+            </p>
+            <button id="closeTab" style="padding:8px 14px;">Cerrar</button>
+            <button id="useHere" style="padding:8px 14px;margin-left:10px;background:#16a34a;color:#fff;border:none;border-radius:5px;">
+                Usar aquí
+            </button>
+        </div>
+    `;
+
+    document.body.appendChild(modal);
+
+    document.getElementById('closeTab').onclick = () => {
+        window.close();
+    };
+
+    document.getElementById('useHere').onclick = () => {
+        channel.postMessage({ type: 'TAKE_OVER' });
+        isMainTab = true;
+        modal.remove();
+    };
+}
+</script>
