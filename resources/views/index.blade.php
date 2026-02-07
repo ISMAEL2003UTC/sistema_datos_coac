@@ -641,388 +641,596 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 
-       <!-- PRODUCTOS FINANCIEROS ------------------------------------------------------>
-        <div id="productos" class="content-section">
-            <h2 class="section-title">Productos Financieros</h2>
-            
-            <form id="formProductos" method="POST" action="{{ route('productos.store') }}">
-                @csrf
-                <input type="hidden" name="_method" id="form_producto_method" value="POST">
-                <input type="hidden" name="id" id="producto_id">
+<!-- PRODUCTOS FINANCIEROS ------------------------------------------------------>
+<div id="productos" class="content-section">
+    <h2 class="section-title">Productos Financieros</h2>
+    
+    <form id="formProductos" method="POST" action="{{ route('productos.store') }}" novalidate>
+        @csrf
+        <input type="hidden" name="_method" id="form_producto_method" value="POST">
+        <input type="hidden" name="id" id="producto_id">
 
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Código Producto *</label>
-                        <div style="position: relative;">
-                            <input type="text" name="codigo" id="producto_codigo" placeholder="Generando código..." readonly 
-                                style="background-color: #f5f5f5; padding-right: 40px;">
-                            <span style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); color: #28a745;">
-                                <i class="fas fa-bolt"></i> Auto
-                            </span>
-                        </div>
-                        <small style="display:block; font-size:12px; color:#666; margin-top:5px;">
-                            <i class="fas fa-info-circle"></i> Se genera automáticamente. No puede ser editado.
-                        </small>
-                    </div>
-                    <div class="form-group">
-                        <label>Nombre del Producto *</label>
-                        <input type="text" name="nombre" id="producto_nombre" placeholder="Ej: Cuenta de Ahorro Juvenil, Crédito Personal Express">
-                        
-                    </div>
-                    <div class="form-group">
-                        <label>Tipo *</label>
-                        <select name="tipo" id="producto_tipo">
-                            <option value="">Seleccionar...</option>
-                            <option value="ahorro">Cuenta de Ahorro</option>
-                            <option value="credito">Crédito</option>
-                            <option value="inversion">Inversión</option>
-                            <option value="seguros">Seguros</option>
-                        </select>
-                    </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Código Producto *</label>
+                <div style="position: relative;">
+                    <input type="text" name="codigo" id="producto_codigo" placeholder="Generando código..." readonly 
+                        style="background-color: #f5f5f5; padding-right: 40px;">
+                    <span style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); color: #28a745;">
+                        <i class="fas fa-bolt"></i> Auto
+                    </span>
                 </div>
-
-                <div class="form-group">
-                    <label>Descripción *</label>
-                    <textarea name="descripcion" id="producto_descripcion" rows="3" placeholder="Describa el producto, sus características principales, público objetivo, etc."></textarea>
-                    <small class="form-text text-muted">Proporcione una descripción clara </small>
-                </div>
-
-                <div class="form-group">
-                    <label>Datos Personales Procesados *</label>
-                    <textarea name="datos_procesados" id="producto_datos" rows="4" placeholder="Ejemplo:
-            - Nombre completo
-            - Cédula de identidad
-            - Fecha de nacimiento
-            - Dirección
-            - Teléfono
-            - Correo electrónico
-
-            Incluya todos los datos personales."></textarea>
-                    <small class="form-text text-muted">Liste los datos personales que se recopilan</small>
-                </div>
-
-                <button type="submit" class="btn btn-primary">
-                    <i class="fas fa-save"></i> Guardar Producto
-                </button>
-                <button type="button" class="btn btn-outline-secondary" onclick="resetFormProductos()" style="margin-left: 10px;">
-                    <i class="fas fa-redo"></i> Limpiar
-                </button>
-            </form>
-            
-            <div class="table-container">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Código</th>
-                            <th>Producto</th>
-                            <th>Tipo</th>
-                            <th>Descripción</th>
-                            <th>Datos Procesados</th>
-                            <th>Estado</th>
-                            <th>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse($productos as $producto)
-                        <tr>
-                            <td><strong>{{ $producto->codigo }}</strong></td>
-                            <td>{{ $producto->nombre }}</td>
-                            <td>
-                                @if($producto->tipo === 'ahorro')
-                                    <span class="badge badge-info">Ahorro</span>
-                                @elseif($producto->tipo === 'credito')
-                                    <span class="badge badge-success">Crédito</span>
-                                @elseif($producto->tipo === 'inversion')
-                                    <span class="badge badge-warning">Inversión</span>
-                                @elseif($producto->tipo === 'seguros')
-                                    <span class="badge badge-primary">Seguros</span>
-                                @endif
-                            </td>
-                            <td>{{ $producto->descripcion ? Str::limit($producto->descripcion, 50) : 'N/A' }}</td>
-                            <td>
-                                @if($producto->datos_procesados)
-                                    <button type="button" class="btn btn-sm btn-info" onclick="Swal.fire({
-                                        title: 'Datos Procesados: {{ $producto->nombre }}',
-                                        html: `<pre style='text-align: left; white-space: pre-wrap;'>{{ $producto->datos_procesados }}</pre>`,
-                                        confirmButtonText: 'Cerrar'
-                                    })">
-                                        Ver Datos
-                                    </button>
-                                @else
-                                    <span class="badge badge-danger">No definidos</span>
-                                @endif
-                            </td>
-                            <td>
-                                @if($producto->estado === 'activo')
-                                    <span class="badge badge-success">Activo</span>
-                                @else
-                                    <span class="badge badge-danger">Inactivo</span>
-                                @endif
-                            </td>
-                            <td>
-                                <button class="btn btn-secondary" style="padding: 8px 15px;"
-                                    onclick="editarProducto(
-                                        {{ $producto->id }},
-                                        '{{ $producto->codigo }}',
-                                        '{{ $producto->nombre }}',
-                                        '{{ $producto->tipo }}',
-                                        `{{ str_replace('"', '&quot;', $producto->descripcion ?? '') }}`,
-                                        `{{ str_replace('"', '&quot;', $producto->datos_procesados ?? '') }}`
-                                    )">
-                                    <i class="fas fa-edit"></i> Editar
-                                </button>
-
-                                <form action="{{ route('productos.estado', $producto->id) }}"
-                                    method="POST"
-                                    style="display:inline;">
-                                    @csrf
-                                    @method('PUT')
-                                    <button type="submit" class="btn btn-warning">
-                                        <i class="fas fa-exchange-alt"></i> Estado
-                                    </button>
-                                </form>
-
-                            </td>
-                        </tr>
-                        @empty
-                        <tr>
-                            <td colspan="7" style="text-align: center;">
-                                <i class="fas fa-box-open" style="font-size: 24px; margin-bottom: 10px; display: block; color: #999;"></i>
-                                No hay productos registrados
-                            </td>
-                        </tr>
-                        @endforelse
-                    </tbody>
-                </table>
+                <small style="display:block; font-size:12px; color:#666; margin-top:5px;">
+                    <i class="fas fa-info-circle"></i> Se genera automáticamente. No puede ser editado.
+                </small>
+            </div>
+            <div class="form-group">
+                <label>Nombre del Producto *</label>
+                <select name="nombre" id="producto_nombre" class="form-select">
+                    <option value="">Seleccionar producto...</option>
+                    <option value="Cuenta de Ahorro Regular">Cuenta de Ahorro Regular</option>
+                    <option value="Cuenta de Ahorro Juvenil">Cuenta de Ahorro Juvenil</option>
+                    <option value="Cuenta de Ahorro Programado">Cuenta de Ahorro Programado</option>
+                    <option value="Cuenta Corriente Personal">Cuenta Corriente Personal</option>
+                    <option value="Cuenta Corriente Empresarial">Cuenta Corriente Empresarial</option>
+                    <option value="Crédito Personal Express">Crédito Personal Express</option>
+                    <option value="Crédito de Consumo">Crédito de Consumo</option>
+                    <option value="Crédito Hipotecario">Crédito Hipotecario</option>
+                    <option value="Crédito Automotriz">Crédito Automotriz</option>
+                    <option value="Crédito Pyme">Crédito Pyme</option>
+                    <option value="Tarjeta de Crédito Clásica">Tarjeta de Crédito Clásica</option>
+                    <option value="Tarjeta de Crédito Gold">Tarjeta de Crédito Gold</option>
+                    <option value="Tarjeta de Crédito Platinum">Tarjeta de Crédito Platinum</option>
+                    <option value="Fondo de Inversión Moderado">Fondo de Inversión Moderado</option>
+                    <option value="Fondo de Inversión Conservador">Fondo de Inversión Conservador</option>
+                    <option value="Fondo de Inversión Agresivo">Fondo de Inversión Agresivo</option>
+                    <option value="Depósito a Plazo Fijo 30 días">Depósito a Plazo Fijo 30 días</option>
+                    <option value="Depósito a Plazo Fijo 90 días">Depósito a Plazo Fijo 90 días</option>
+                    <option value="Depósito a Plazo Fijo 180 días">Depósito a Plazo Fijo 180 días</option>
+                    <option value="Depósito a Plazo Fijo 360 días">Depósito a Plazo Fijo 360 días</option>
+                    <option value="Seguro de Vida Individual">Seguro de Vida Individual</option>
+                    <option value="Seguro de Vida Familiar">Seguro de Vida Familiar</option>
+                    <option value="Seguro de Desgravamen">Seguro de Desgravamen</option>
+                    <option value="Seguro de Bienes">Seguro de Bienes</option>
+                    <option value="Seguro Vehicular">Seguro Vehicular</option>
+                    <option value="Banca Electrónica Básica">Banca Electrónica Básica</option>
+                    <option value="Banca Electrónica Premium">Banca Electrónica Premium</option>
+                    <option value="Pago de Servicios">Pago de Servicios</option>
+                    <option value="Transferencias Interbancarias">Transferencias Interbancarias</option>
+                    <option value="Otro (Especificar en descripción)">Otro (Especificar en descripción)</option>
+                </select>
+                <small style="display:block; font-size:12px; color:#666; margin-top:5px;">
+                    <i class="fas fa-info-circle"></i> Seleccione un producto de la lista
+                </small>
+            </div>
+            <div class="form-group">
+                <label>Tipo *</label>
+                <select name="tipo" id="producto_tipo" class="form-select">
+                    <option value="">Seleccionar...</option>
+                    <option value="ahorro">Cuenta de Ahorro</option>
+                    <option value="credito">Crédito</option>
+                    <option value="inversion">Inversión</option>
+                    <option value="seguros">Seguros</option>
+                    <option value="tarjeta">Tarjeta de Crédito</option>
+                    <option value="deposito">Depósito a Plazo</option>
+                    <option value="servicio">Servicio Bancario</option>
+                </select>
             </div>
         </div>
 
-        <script>
-        class GeneradorCodigos {
-            constructor() {
-                this.prefijo = 'B';
-                this.digitos = 3;
-                this.init();
-            }
-            
-            init() {
-                this.cargarCodigosExistentes();
-                this.configurarEventos();
-                this.generarSiNecesario();
-            }
-            
-            cargarCodigosExistentes() {
-                this.codigos = [];
-                document.querySelectorAll('#productos table tbody tr td:first-child').forEach(td => {
-                    const codigo = td.textContent.trim();
-                    if (codigo) this.codigos.push(codigo);
-                });
-            }
-            
-            getSiguienteCodigo() {
-                let siguienteNumero = 1;
-                
-                // Extraer números de los códigos existentes
-                this.codigos.forEach(codigo => {
-                    const match = codigo.match(new RegExp(`${this.prefijo}(\\d+)`, 'i'));
-                    if (match) {
-                        const num = parseInt(match[1]);
-                        if (num >= siguienteNumero) siguienteNumero = num + 1;
-                    }
-                });
-                
-                // Verificar que no exista (por si hay saltos)
-                let codigoPropuesto;
-                let intentos = 0;
-                
-                do {
-                    codigoPropuesto = this.prefijo + siguienteNumero.toString().padStart(this.digitos, '0');
-                    if (!this.codigos.includes(codigoPropuesto)) break;
-                    siguienteNumero++;
-                    intentos++;
-                } while (intentos < 100);
-                
-                return codigoPropuesto;
-            }
-            
-            generarSiNecesario() {
-                const input = document.getElementById('producto_codigo');
-                const enEdicion = document.getElementById('producto_id').value;
-                
-                if (!enEdicion) {
-                    // Generar nuevo código solo si no estamos editando
-                    this.cargarCodigosExistentes();
-                    const nuevoCodigo = this.getSiguienteCodigo();
-                    input.value = nuevoCodigo;
-                    
-                    // Aplicar estilo de solo lectura
-                    input.setAttribute('readonly', true);
-                    input.style.backgroundColor = '#f5f5f5';
-                    
-                    this.mostrarNotificacion(nuevoCodigo);
-                } else {
-                    // En modo edición, mantener el código existente pero también bloquear
-                    input.setAttribute('readonly', true);
-                    input.style.backgroundColor = '#f5f5f5';
-                }
-            }
-            
-            mostrarNotificacion(codigo) {
-                const notificado = sessionStorage.getItem('codigoAutoNotificado');
-                if (!notificado) {
-                    setTimeout(() => {
-                        const notificacion = document.createElement('div');
-                        notificacion.className = 'alert alert-info fade show';
-                        notificacion.style.cssText = `
-                            position: fixed;
-                            top: 20px;
-                            right: 20px;
-                            z-index: 9999;
-                            max-width: 300px;
-                            animation: slideIn 0.3s ease;
-                        `;
-                        notificacion.innerHTML = `
-                            <strong>📝 Código generado:</strong> ${codigo}<br>
-                            <small>Se genera automáticamente. No es editable.</small>
-                            <button type="button" class="close" onclick="this.parentElement.remove()">
-                                &times;
+        <div class="form-group">
+            <label>Descripción *</label>
+            <textarea name="descripcion" id="producto_descripcion" rows="3" placeholder="Describa el producto, sus características principales, público objetivo, etc."></textarea>
+            <small class="form-text text-muted">Proporcione una descripción clara</small>
+        </div>
+
+        <div class="form-group">
+            <label>Datos Personales Procesados *</label>
+            <textarea name="datos_procesados" id="producto_datos" rows="4" placeholder="Ejemplo:
+        - Nombre completo
+        - Cédula de identidad
+        - Fecha de nacimiento
+        - Dirección
+        - Teléfono
+        - Correo electrónico
+
+        Incluya todos los datos personales."></textarea>
+            <small class="form-text text-muted">Liste los datos personales que se recopilan</small>
+        </div>
+
+        <button type="submit" class="btn btn-primary">
+            <i class="fas fa-save"></i> Guardar Producto
+        </button>
+        <button type="button" class="btn btn-outline-secondary" onclick="resetFormProductos()" style="margin-left: 10px;">
+            <i class="fas fa-redo"></i> Limpiar
+        </button>
+    </form>
+    
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Código</th>
+                    <th>Producto</th>
+                    <th>Tipo</th>
+                    <th>Descripción</th>
+                    <th>Datos Procesados</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse($productos as $producto)
+                <tr>
+                    <td><strong>{{ $producto->codigo }}</strong></td>
+                    <td>{{ $producto->nombre }}</td>
+                    <td>
+                        @if($producto->tipo === 'ahorro')
+                            <span class="badge badge-info">Ahorro</span>
+                        @elseif($producto->tipo === 'credito')
+                            <span class="badge badge-success">Crédito</span>
+                        @elseif($producto->tipo === 'inversion')
+                            <span class="badge badge-warning">Inversión</span>
+                        @elseif($producto->tipo === 'seguros')
+                            <span class="badge badge-primary">Seguros</span>
+                        @elseif($producto->tipo === 'tarjeta')
+                            <span class="badge badge-danger">Tarjeta</span>
+                        @elseif($producto->tipo === 'deposito')
+                            <span class="badge badge-secondary">Depósito</span>
+                        @elseif($producto->tipo === 'servicio')
+                            <span class="badge badge-dark">Servicio</span>
+                        @endif
+                    </td>
+                    <td>{{ $producto->descripcion ? Str::limit($producto->descripcion, 50) : 'N/A' }}</td>
+                    <td>
+                        @if($producto->datos_procesados)
+                            <button type="button" class="btn btn-sm btn-info" onclick="Swal.fire({
+                                title: 'Datos Procesados: {{ $producto->nombre }}',
+                                html: `<pre style='text-align: left; white-space: pre-wrap;'>{{ $producto->datos_procesados }}</pre>`,
+                                confirmButtonText: 'Cerrar'
+                            })">
+                                Ver Datos
                             </button>
-                        `;
-                        document.body.appendChild(notificacion);
-                        
-                        setTimeout(() => notificacion.remove(), 4000);
-                        sessionStorage.setItem('codigoAutoNotificado', 'true');
-                    }, 500);
-                }
-            }
-            
-            configurarEventos() {
-                // Cuando se muestre la sección productos
-                const observer = new MutationObserver(() => {
-                    if (document.getElementById('productos').classList.contains('active')) {
-                        setTimeout(() => this.generarSiNecesario(), 100);
-                    }
-                });
-                
-                observer.observe(document.getElementById('productos'), {
-                    attributes: true,
-                    attributeFilter: ['class']
-                });
-                
-                // Cuando se haga clic en la pestaña
-                document.querySelectorAll('.nav-tabs button').forEach(btn => {
-                    if (btn.getAttribute('onclick')?.includes("'productos'")) {
-                        btn.addEventListener('click', () => {
-                            setTimeout(() => this.generarSiNecesario(), 200);
-                        });
-                    }
-                });
-            }
-        }
+                        @else
+                            <span class="badge badge-danger">No definidos</span>
+                        @endif
+                    </td>
+                    <td>
+                        @if($producto->estado === 'activo')
+                            <span class="badge badge-success">Activo</span>
+                        @else
+                            <span class="badge badge-danger">Inactivo</span>
+                        @endif
+                    </td>
+                    <td>
+                        <button class="btn btn-secondary" style="padding: 8px 15px;"
+                            onclick="editarProducto(
+                                {{ $producto->id }},
+                                '{{ $producto->codigo }}',
+                                '{{ $producto->nombre }}',
+                                '{{ $producto->tipo }}',
+                                `{{ str_replace('"', '&quot;', $producto->descripcion ?? '') }}`,
+                                `{{ str_replace('"', '&quot;', $producto->datos_procesados ?? '') }}`
+                            )">
+                            <i class="fas fa-edit"></i> Editar
+                        </button>
 
-        // Inicializar cuando el DOM esté listo
-        document.addEventListener('DOMContentLoaded', function() {
-            window.generadorCodigos = new GeneradorCodigos();
+                        <form action="{{ route('productos.estado', $producto->id) }}"
+                            method="POST"
+                            style="display:inline;">
+                            @csrf
+                            @method('PUT')
+                            <button type="submit" class="btn btn-warning">
+                                <i class="fas fa-exchange-alt"></i> Estado
+                            </button>
+                        </form>
+
+                    </td>
+                </tr>
+                @empty
+                <tr>
+                    <td colspan="7" style="text-align: center;">
+                        <i class="fas fa-box-open" style="font-size: 24px; margin-bottom: 10px; display: block; color: #999;"></i>
+                        No hay productos registrados
+                    </td>
+                </tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+// PRIMERO: Remover TODOS los atributos de validación al cargar la página
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM cargado - Iniciando limpieza de validación');
+    
+    // Remover atributos de validación del select
+    const selectNombre = document.getElementById('producto_nombre');
+    if (selectNombre) {
+        console.log('Limpiando select producto_nombre');
+        // Remover TODOS los atributos que puedan causar validación
+        selectNombre.removeAttribute('required');
+        selectNombre.removeAttribute('minlength');
+        selectNombre.removeAttribute('maxlength');
+        selectNombre.removeAttribute('pattern');
+        selectNombre.removeAttribute('data-val');
+        selectNombre.removeAttribute('data-val-required');
+        selectNombre.removeAttribute('data-val-length');
+        selectNombre.removeAttribute('data-val-minlength');
+        selectNombre.removeAttribute('data-val-maxlength');
+        
+        // Verificar que no queden atributos
+        console.log('Atributos actuales:', selectNombre.outerHTML);
+    }
+    
+    // También limpiar los textareas
+    ['producto_descripcion', 'producto_datos'].forEach(id => {
+        const field = document.getElementById(id);
+        if (field) {
+            field.removeAttribute('required');
+            field.removeAttribute('minlength');
+            field.removeAttribute('maxlength');
+        }
+    });
+    
+    // Remover validación HTML5 de TODO el formulario
+    const form = document.getElementById('formProductos');
+    if (form) {
+        form.setAttribute('novalidate', 'novalidate');
+        form.noValidate = true;
+        
+        // Eliminar todos los event listeners de submit previos
+        const newForm = form.cloneNode(true);
+        form.parentNode.replaceChild(newForm, form);
+        
+        console.log('Formulario clonado y reemplazado para eliminar event listeners');
+    }
+});
+
+// SEGUNDO: Agregar validación manual COMPLETA
+window.addEventListener('load', function() {
+    console.log('Página completamente cargada - Configurando validación personalizada');
+    
+    const formProductos = document.getElementById('formProductos');
+    if (!formProductos) {
+        console.error('Formulario no encontrado');
+        return;
+    }
+    
+    // PREVENIR CUALQUIER validación HTML5
+    formProductos.addEventListener('invalid', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+    }, true);
+    
+    // Sobreescribir el evento submit
+    formProductos.addEventListener('submit', function(e) {
+        console.log('Submit detectado - Validando manualmente');
+        e.preventDefault();
+        e.stopPropagation();
+        
+        // Obtener valores
+        const productoNombre = document.getElementById('producto_nombre');
+        const productoTipo = document.getElementById('producto_tipo');
+        const productoDescripcion = document.getElementById('producto_descripcion');
+        const productoDatos = document.getElementById('producto_datos');
+        
+        // Limpiar errores previos
+        [productoNombre, productoTipo, productoDescripcion, productoDatos].forEach(field => {
+            field.classList.remove('is-invalid');
+            field.style.borderColor = '';
         });
-
-        // Función para resetear el formulario
-        function resetFormProductos() {
-            if (confirm('¿Limpiar formulario? Se generará un nuevo código automático.')) {
-                document.getElementById('producto_id').value = '';
-                document.getElementById('form_producto_method').value = 'POST';
-                document.getElementById('formProductos').action = "{{ route('productos.store') }}";
-                document.getElementById('producto_nombre').value = '';
-                document.getElementById('producto_tipo').value = '';
-                document.getElementById('producto_descripcion').value = '';
-                document.getElementById('producto_datos').value = '';
-                
-                // Cambiar texto del botón
-                document.querySelector('#formProductos button[type="submit"]').innerHTML = '<i class="fas fa-save"></i> Guardar Producto';
-                
-                // Generar nuevo código
-                window.generadorCodigos.generarSiNecesario();
-                
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Formulario limpio',
-                    text: 'Se ha generado un nuevo código automático',
-                    timer: 1500,
-                    showConfirmButton: false
-                });
-            }
+        
+        // Validar manualmente
+        let errores = [];
+        
+        if (!productoNombre.value) {
+            errores.push('Debe seleccionar un nombre de producto');
+            productoNombre.classList.add('is-invalid');
+            productoNombre.style.borderColor = '#dc3545';
         }
-
-        function editarProducto(id, codigo, nombre, tipo, descripcion, datos) {
-            document.getElementById('producto_id').value = id;
-            document.getElementById('producto_codigo').value = codigo;
-            document.getElementById('producto_nombre').value = nombre;
-            document.getElementById('producto_tipo').value = tipo;
-            document.getElementById('producto_descripcion').value = descripcion;
-            document.getElementById('producto_datos').value = datos;
-            
-            document.getElementById('producto_codigo').setAttribute('readonly', true);
-            document.getElementById('producto_codigo').style.backgroundColor = '#f5f5f5';
-            
-            // Cambiar método
-            document.getElementById('form_producto_method').value = 'PUT';
-            document.getElementById('formProductos').action = '/productos/' + id;
-            
-            // Cambiar texto del botón
-            const btnSubmit = document.querySelector('#formProductos button[type="submit"]');
-            btnSubmit.innerHTML = '<i class="fas fa-sync-alt"></i> Actualizar Producto';
-            btnSubmit.style.backgroundColor = '#28a745';
-            
-            // Mostrar notificación
+        
+        if (!productoTipo.value) {
+            errores.push('Debe seleccionar un tipo de producto');
+            productoTipo.classList.add('is-invalid');
+            productoTipo.style.borderColor = '#dc3545';
+        }
+        
+        if (!productoDescripcion.value || productoDescripcion.value.trim().length < 10) {
+            errores.push('La descripción debe tener al menos 10 caracteres');
+            productoDescripcion.classList.add('is-invalid');
+            productoDescripcion.style.borderColor = '#dc3545';
+        }
+        
+        if (!productoDatos.value || productoDatos.value.trim().length < 2) {
+            errores.push('Los datos procesados deben tener al menos 2 caracteres');
+            productoDatos.classList.add('is-invalid');
+            productoDatos.style.borderColor = '#dc3545';
+        }
+        
+        // Si hay errores, mostrar
+        if (errores.length > 0) {
             Swal.fire({
-                icon: 'info',
-                title: 'Modo edición',
-                text: 'Editando producto: ' + codigo,
-                timer: 2000,
-                showConfirmButton: false
+                icon: 'error',
+                title: 'Error de validación',
+                html: '<div style="text-align: left; margin: 15px;">' + 
+                      errores.map(error => `<div style="margin-bottom: 5px;">• ${error}</div>`).join('') + 
+                      '</div>',
+                confirmButtonText: 'Entendido',
+                width: 600
             });
+            
+            // Enfocar el primer campo con error
+            if (!productoNombre.value) productoNombre.focus();
+            else if (!productoTipo.value) productoTipo.focus();
+            else if (!productoDescripcion.value || productoDescripcion.value.trim().length < 10) productoDescripcion.focus();
+            else productoDatos.focus();
+            
+            return false;
         }
+        
+        // Si pasa validación, enviar
+        console.log('Validación pasada - Enviando formulario');
+        
+        // Mostrar loader
+        Swal.fire({
+            title: 'Procesando...',
+            text: 'Guardando producto',
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+        
+        // Enviar formulario de forma asíncrona
+        const formData = new FormData(formProductos);
+        const action = formProductos.getAttribute('action');
+        const method = document.getElementById('form_producto_method')?.value || 'POST';
+        
+        fetch(action, {
+            method: method,
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || ''
+            }
+        })
+        .then(response => response.text())
+        .then(data => {
+            Swal.close();
+            // Recargar la página para ver los cambios
+            window.location.reload();
+        })
+        .catch(error => {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'No se pudo guardar el producto: ' + error.message
+            });
+        });
+        
+        return false;
+    });
+    
+    // Inicializar generador de códigos
+    window.generadorCodigos = new GeneradorCodigos();
+    
+    // Configurar auto-sugerencia de tipo
+    const productoNombreSelect = document.getElementById('producto_nombre');
+    const productoTipoSelect = document.getElementById('producto_tipo');
+    
+    if (productoNombreSelect && productoTipoSelect) {
+        productoNombreSelect.addEventListener('change', function() {
+            const valor = this.value;
+            
+            if (valor.includes('Ahorro') || valor.includes('Corriente')) {
+                productoTipoSelect.value = 'ahorro';
+            } else if (valor.includes('Crédito')) {
+                productoTipoSelect.value = 'credito';
+            } else if (valor.includes('Tarjeta')) {
+                productoTipoSelect.value = 'tarjeta';
+            } else if (valor.includes('Inversión') || valor.includes('Fondo')) {
+                productoTipoSelect.value = 'inversion';
+            } else if (valor.includes('Seguro')) {
+                productoTipoSelect.value = 'seguros';
+            } else if (valor.includes('Depósito')) {
+                productoTipoSelect.value = 'deposito';
+            } else if (valor.includes('Banca') || valor.includes('Pago') || valor.includes('Transferencia')) {
+                productoTipoSelect.value = 'servicio';
+            }
+            
+            // Limpiar error si existía
+            this.classList.remove('is-invalid');
+            this.style.borderColor = '';
+        });
+    }
+});
 
-        // Añadir CSS para la animación y estilos
-        const estilo = document.createElement('style');
-        estilo.textContent = `
-            @keyframes slideIn {
-                from {
-                    transform: translateX(100%);
-                    opacity: 0;
-                }
-                to {
-                    transform: translateX(0);
-                    opacity: 1;
-                }
+// TERCERO: Mantener las otras funciones pero asegurarnos que no interfieran
+class GeneradorCodigos {
+    constructor() {
+        this.prefijo = 'B';
+        this.digitos = 3;
+        this.init();
+    }
+    
+    init() {
+        this.cargarCodigosExistentes();
+        this.configurarEventos();
+        this.generarSiNecesario();
+    }
+    
+    cargarCodigosExistentes() {
+        this.codigos = [];
+        document.querySelectorAll('#productos table tbody tr td:first-child').forEach(td => {
+            const codigo = td.textContent.trim();
+            if (codigo) this.codigos.push(codigo);
+        });
+    }
+    
+    getSiguienteCodigo() {
+        let siguienteNumero = 1;
+        
+        this.codigos.forEach(codigo => {
+            const match = codigo.match(new RegExp(`${this.prefijo}(\\d+)`, 'i'));
+            if (match) {
+                const num = parseInt(match[1]);
+                if (num >= siguienteNumero) siguienteNumero = num + 1;
             }
-            
-            #producto_codigo[readonly] {
-                background-color: #f5f5f5 !important;
-                cursor: not-allowed;
+        });
+        
+        let codigoPropuesto;
+        let intentos = 0;
+        
+        do {
+            codigoPropuesto = this.prefijo + siguienteNumero.toString().padStart(this.digitos, '0');
+            if (!this.codigos.includes(codigoPropuesto)) break;
+            siguienteNumero++;
+            intentos++;
+        } while (intentos < 100);
+        
+        return codigoPropuesto;
+    }
+    
+    generarSiNecesario() {
+        const input = document.getElementById('producto_codigo');
+        const enEdicion = document.getElementById('producto_id').value;
+        
+        if (!enEdicion) {
+            this.cargarCodigosExistentes();
+            const nuevoCodigo = this.getSiguienteCodigo();
+            input.value = nuevoCodigo;
+            input.setAttribute('readonly', true);
+            input.style.backgroundColor = '#f5f5f5';
+        } else {
+            input.setAttribute('readonly', true);
+            input.style.backgroundColor = '#f5f5f5';
+        }
+    }
+    
+    configurarEventos() {
+        const observer = new MutationObserver(() => {
+            if (document.getElementById('productos').classList.contains('active')) {
+                setTimeout(() => this.generarSiNecesario(), 100);
             }
-            
-            .alert-info {
-                background-color: #d1ecf1;
-                border-color: #bee5eb;
-                color: #0c5460;
-                border-radius: 8px;
-                box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            }
-            
-            .alert-info .close {
-                color: #0c5460;
-                opacity: 0.8;
-                position: absolute;
-                top: 8px;
-                right: 10px;
-                font-size: 20px;
-                background: none;
-                border: none;
-                cursor: pointer;
-            }
-        `;
-        document.head.appendChild(estilo);
-        </script>
+        });
+        
+        observer.observe(document.getElementById('productos'), {
+            attributes: true,
+            attributeFilter: ['class']
+        });
+    }
+}
+
+// Cuarta: Función para editar producto (modificada)
+function editarProducto(id, codigo, nombre, tipo, descripcion, datos) {
+    document.getElementById('producto_id').value = id;
+    document.getElementById('producto_codigo').value = codigo;
+    document.getElementById('producto_nombre').value = nombre;
+    document.getElementById('producto_tipo').value = tipo;
+    document.getElementById('producto_descripcion').value = descripcion;
+    document.getElementById('producto_datos').value = datos;
+    
+    document.getElementById('producto_codigo').setAttribute('readonly', true);
+    document.getElementById('producto_codigo').style.backgroundColor = '#f5f5f5';
+    
+    document.getElementById('form_producto_method').value = 'PUT';
+    document.getElementById('formProductos').action = '/productos/' + id;
+    
+    const btnSubmit = document.querySelector('#formProductos button[type="submit"]');
+    btnSubmit.innerHTML = '<i class="fas fa-sync-alt"></i> Actualizar Producto';
+    btnSubmit.style.backgroundColor = '#28a745';
+    
+    Swal.fire({
+        icon: 'info',
+        title: 'Modo edición',
+        text: 'Editando producto: ' + codigo,
+        timer: 2000,
+        showConfirmButton: false
+    });
+}
+
+// Quinta: Función para resetear
+function resetFormProductos() {
+    if (confirm('¿Limpiar formulario? Se generará un nuevo código automático.')) {
+        document.getElementById('producto_id').value = '';
+        document.getElementById('form_producto_method').value = 'POST';
+        document.getElementById('formProductos').action = "{{ route('productos.store') }}";
+        document.getElementById('producto_nombre').value = '';
+        document.getElementById('producto_tipo').value = '';
+        document.getElementById('producto_descripcion').value = '';
+        document.getElementById('producto_datos').value = '';
+        
+        const btnSubmit = document.querySelector('#formProductos button[type="submit"]');
+        btnSubmit.innerHTML = '<i class="fas fa-save"></i> Guardar Producto';
+        btnSubmit.style.backgroundColor = '';
+        
+        if (window.generadorCodigos) {
+            window.generadorCodigos.generarSiNecesario();
+        }
+        
+        // Limpiar errores visuales
+        document.querySelectorAll('.is-invalid').forEach(el => {
+            el.classList.remove('is-invalid');
+            el.style.borderColor = '';
+        });
+        
+        Swal.fire({
+            icon: 'success',
+            title: 'Formulario limpio',
+            text: 'Se ha generado un nuevo código automático',
+            timer: 1500,
+            showConfirmButton: false
+        });
+    }
+}
+
+// SEXTA: Estilos CSS que PREVIENEN la validación nativa
+const estilo = document.createElement('style');
+estilo.textContent = `
+    /* Deshabilitar COMPLETAMENTE la validación nativa */
+    input:invalid, select:invalid, textarea:invalid {
+        box-shadow: none !important;
+        outline: none !important;
+    }
+    
+    /* Ocultar mensajes de validación nativos */
+    input::-webkit-validation-bubble-message,
+    select::-webkit-validation-bubble-message,
+    textarea::-webkit-validation-bubble-message {
+        display: none !important;
+    }
+    
+    /* Estilos personalizados */
+    .is-invalid {
+        border: 2px solid #dc3545 !important;
+        background-color: #fff5f5 !important;
+    }
+    
+    .form-select {
+        width: 100%;
+        padding: 10px 15px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        font-size: 14px;
+        color: #333;
+        background-color: white;
+    }
+    
+    @keyframes slideIn {
+        from {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+`;
+document.head.appendChild(estilo);
+</script>
         
         <!-- CONSENTIMIENTOS ------------------------------------------------------------------------------------>
         <div id="consentimientos" class="content-section">
