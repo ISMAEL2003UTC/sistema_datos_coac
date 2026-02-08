@@ -32,6 +32,8 @@ class SujetoDatoController extends Controller
             'telefono' => 'nullable|string|max:20',
             'direccion' => 'nullable|string|max:200',
             'ciudad' => 'nullable|string|max:100',
+            'provincia' => 'required|string|max:100',
+
         ], [
             'cedula.unique' => 'La cédula ya existe en el sistema',
             'email.unique' => 'El email ya existe en el sistema'
@@ -46,6 +48,7 @@ class SujetoDatoController extends Controller
             'direccion' => $request->direccion,
             'ciudad' => $request->ciudad,
             'tipo' => $request->tipo,
+            'provincia' => $request->provincia,
         ]);
 
         return redirect('/')->with('success', 'Sujeto registrado correctamente');
@@ -67,6 +70,8 @@ class SujetoDatoController extends Controller
             'telefono' => 'nullable|string|max:20',
             'direccion' => 'nullable|string|max:200',
             'ciudad' => 'nullable|string|max:100',
+            'provincia' => 'required|string|max:100',
+
         ]);
 
         $sujeto->update([
@@ -78,6 +83,7 @@ class SujetoDatoController extends Controller
             'direccion' => $request->direccion,
             'ciudad' => $request->ciudad,
             'tipo' => $request->tipo,
+            'provincia' => $request->provincia,
         ]);
 
         return redirect()->back()->with('success', 'Sujeto actualizado correctamente');

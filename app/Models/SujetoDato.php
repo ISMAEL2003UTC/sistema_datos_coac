@@ -16,6 +16,7 @@ class SujetoDato extends Model
         'telefono',
         'direccion',
         'ciudad',
-        'tipo'
+        'tipo',
+        'provincia'
     ];
 }

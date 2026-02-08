@@ -335,7 +335,7 @@ document.addEventListener('DOMContentLoaded', function () {
 <!-- ========================================= -->
 @if(auth()->user()->rol === 'admin' || auth()->user()->rol === 'dpo')
 <div id="sujetos" class="content-section">
-    <h2 class="section-title">Registro de Sujetos de Datos.</h2>
+    <h2 class="section-title">Registro de Sujetos de Datos</h2>
 
     <!-- FORMULARIO DE SUJETOS -->
     <form id="formSujetos" method="POST" action="{{ route('sujetos.store') }}">
@@ -343,43 +343,76 @@ document.addEventListener('DOMContentLoaded', function () {
         <input type="hidden" name="_method" id="form_sujeto_method" value="POST">
         <input type="hidden" id="sujeto_id" name="sujeto_id">
 
+        <!-- FILA 1 -->
         <div class="form-row">
-            <div class="form-group">
+            <div class="form-group col-md-3">
                 <label>Cédula*</label>
                 <input type="text" id="cedulaInput" name="cedula" required maxlength="10" pattern="\d{10}" title="Debe tener 10 dígitos">
             </div>
-            <div class="form-group">
-                <label>Nombres *</label>
+            <div class="form-group col-md-3">
+                <label>Nombres*</label>
                 <input type="text" id="nombreInput" name="nombre" required readonly>
             </div>
-            <div class="form-group">
-                <label>Apellidos *</label>
+            <div class="form-group col-md-3">
+                <label>Apellidos*</label>
                 <input type="text" id="apellidoInput" name="apellido" required readonly>
             </div>
-        </div>
-
-        <div class="form-row">
-            <div class="form-group">
+            <div class="form-group col-md-3">
                 <label>Email</label>
                 <input type="email" name="email" required>
             </div>
-            <div class="form-group">
+        </div>
+
+        <!-- FILA 2 -->
+        <div class="form-row">
+            <div class="form-group col-md-3">
                 <label>Teléfono</label>
-                <input type="tel" name="telefono" required maxlength="10" pattern="\d{10}" title="Debe tener 10 dígitos">
+                <input type="tel" name="telefono" maxlength="10" pattern="\d{10}" title="Debe tener 10 dígitos">
             </div>
-            <div class="form-group">
+            <div class="form-group col-md-3">
+                <label>Provincia*</label>
+                <select name="provincia" required>
+                    <option value="">Seleccionar...</option>
+                    <option value="Azuay">Azuay</option>
+                    <option value="Bolívar">Bolívar</option>
+                    <option value="Cañar">Cañar</option>
+                    <option value="Carchi">Carchi</option>
+                    <option value="Chimborazo">Chimborazo</option>
+                    <option value="Cotopaxi">Cotopaxi</option>
+                    <option value="El Oro">El Oro</option>
+                    <option value="Esmeraldas">Esmeraldas</option>
+                    <option value="Galápagos">Galápagos</option>
+                    <option value="Guayas">Guayas</option>
+                    <option value="Imbabura">Imbabura</option>
+                    <option value="Loja">Loja</option>
+                    <option value="Los Ríos">Los Ríos</option>
+                    <option value="Manabí">Manabí</option>
+                    <option value="Morona Santiago">Morona Santiago</option>
+                    <option value="Napo">Napo</option>
+                    <option value="Orellana">Orellana</option>
+                    <option value="Pastaza">Pastaza</option>
+                    <option value="Pichincha">Pichincha</option>
+                    <option value="Santa Elena">Santa Elena</option>
+                    <option value="Santo Domingo de los Tsáchilas">Santo Domingo de los Tsáchilas</option>
+                    <option value="Sucumbíos">Sucumbíos</option>
+                    <option value="Tungurahua">Tungurahua</option>
+                    <option value="Zamora Chinchipe">Zamora Chinchipe</option>
+                </select>
+            </div>
+            <div class="form-group col-md-3">
                 <label>Ciudad</label>
                 <input type="text" name="ciudad">
             </div>
-        </div>
-
-        <div class="form-row">
-            <div class="form-group">
+            <div class="form-group col-md-3">
                 <label>Dirección</label>
                 <input type="text" name="direccion">
             </div>
-            <div class="form-group">
-                <label>Tipo de Sujeto *</label>
+        </div>
+
+        <!-- FILA 3 -->
+        <div class="form-row">
+            <div class="form-group col-md-3">
+                <label>Tipo de Sujeto*</label>
                 <select name="tipo" required>
                     <option value="">Seleccionar...</option>
                     <option value="cliente">Cliente</option>
@@ -388,9 +421,10 @@ document.addEventListener('DOMContentLoaded', function () {
                     <option value="tercero">Tercero</option>
                 </select>
             </div>
+            <div class="form-group col-md-9">
+                <button type="submit" class="btn btn-primary" style="margin-top: 30px;">Registrar Sujeto</button>
+            </div>
         </div>
-
-        <button type="submit" class="btn btn-primary">Registrar Sujeto</button>
     </form>
 
     <!-- TABLA DE SUJETOS -->
@@ -405,6 +439,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     <th>Teléfono</th>
                     <th>Ciudad</th>
                     <th>Dirección</th>
+                    <th>Provincia</th>
                     <th>Tipo</th>
                     <th>Acciones</th>
                 </tr>
@@ -419,6 +454,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     <td>{{ $sujeto->telefono }}</td>
                     <td>{{ $sujeto->ciudad }}</td>
                     <td>{{ $sujeto->direccion }}</td>
+                    <td>{{ $sujeto->provincia }}</td>
                     <td><span class="badge badge-info">{{ ucfirst($sujeto->tipo) }}</span></td>
                     <td>
                         <button class="btn btn-secondary"
@@ -431,6 +467,7 @@ document.addEventListener('DOMContentLoaded', function () {
                                 '{{ $sujeto->telefono }}',
                                 '{{ $sujeto->direccion }}',
                                 '{{ $sujeto->ciudad }}',
+                                '{{ $sujeto->provincia }}',
                                 '{{ $sujeto->tipo }}'
                             )">
                             Editar
@@ -442,7 +479,6 @@ document.addEventListener('DOMContentLoaded', function () {
         </table>
     </div>
 </div>
-
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     const cedulaInput = document.getElementById('cedulaInput');
