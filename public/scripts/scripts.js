@@ -32,23 +32,32 @@
 
         
         //PARA EDITAR USUARIO ----------------------------------------------
-        function editarUsuario(id, nombre, email, rol) {
-            Swal.fire({
-                icon: 'info',
-                title: 'Editar usuario',
-                text: 'El formulario ha entrado en modo edición'
-            });
+        // PARA EDITAR USUARIO ----------------------------------------------
+function editarUsuario(id, nombre, apellido, email, cedula, provincia, ciudad, direccion, rol) {
+    Swal.fire({
+        icon: 'info',
+        title: 'Editar usuario',
+        text: 'El formulario ha entrado en modo edición'
+    });
 
-            $('#usuario_id').val(id);
-            $('#nombre_completo').val(nombre);
-            $('input[name="email"]').val(email);
-            $('#rol').val(rol);
+    // Rellenar los campos del formulario
+    $('#usuario_id').val(id);
+    $('#nombre').val(nombre);
+    $('#apellido').val(apellido);
+    $('#cedula').val(cedula);
+    $('#email').val(email);
+    $('#provincia').val(provincia);
+    $('#ciudad').val(ciudad);
+    $('#direccion').val(direccion);
+    $('#rol').val(rol);
 
-            $('#form_method').val('PUT');
-            $('#formUsuarios').attr('action', '/usuarios/' + id);
+    // Cambiar el método del formulario a PUT para edición
+    $('#form_method').val('PUT');
+    $('#formUsuarios').attr('action', '/usuarios/' + id);
 
-            $('button[type="submit"]').text('Actualizar Usuario');
-        }
+    // Cambiar el texto del botón
+    $('button[type="submit"]').text('Actualizar Usuario');
+}
 
 
 
