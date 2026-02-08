@@ -147,6 +147,7 @@
 
     // validaciones usuarioss--------------------------------
     // Validación del formulario
+// Validación del formulario
 $("#formUsuarios").validate({
     rules: {
         nombre: {
@@ -185,6 +186,17 @@ $("#formUsuarios").validate({
                 }
             }
         },
+        provincia: {
+            required: true
+        },
+        ciudad: {
+            required: true,
+            minlength: 2
+        },
+        direccion: {
+            required: true,
+            minlength: 5
+        },
         rol: {
             required: true
         }
@@ -211,6 +223,17 @@ $("#formUsuarios").validate({
             minlength: "Debe tener 10 dígitos",
             maxlength: "Debe tener 10 dígitos",
             remote: "Esta cédula ya está registrada"
+        },
+        provincia: {
+            required: "La provincia es obligatoria"
+        },
+        ciudad: {
+            required: "La ciudad es obligatoria",
+            minlength: "Debe tener al menos 2 caracteres"
+        },
+        direccion: {
+            required: "La dirección es obligatoria",
+            minlength: "Debe tener al menos 5 caracteres"
         },
         rol: {
             required: "El rol es obligatorio"
