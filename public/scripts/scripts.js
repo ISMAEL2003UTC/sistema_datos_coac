@@ -187,6 +187,7 @@
 
     // validaciones sujetoss ---------------------------------------
     // validaciones sujetos ---------------------------------------
+// validaciones sujetos ---------------------------------------
 $("#formSujetos").validate({
     rules: {
         cedula: {
@@ -195,16 +196,15 @@ $("#formSujetos").validate({
             maxlength: 10,
             soloNumeros: true,
             remote: {
-                url: "/sujetos/verificar-cedula",
-                type: "post",
+                url: "/verificar-cedula-sujeto", // ruta correcta en tu controlador
+                type: "get",
                 data: {
                     cedula: function() {
                         return $("#cedulaInput").val();
                     },
                     sujeto_id: function() {
                         return $("#sujeto_id").val();
-                    },
-                    _token: $("input[name='_token']").val()
+                    }
                 }
             }
         },
@@ -222,16 +222,15 @@ $("#formSujetos").validate({
             required: true,
             email: true,
             remote: {
-                url: "/sujetos/verificar-email",
-                type: "post",
+                url: "/verificar-email-sujeto", // ruta correcta en tu controlador
+                type: "get",
                 data: {
                     email: function() {
                         return $("input[name='email']").val();
                     },
                     sujeto_id: function() {
                         return $("#sujeto_id").val();
-                    },
-                    _token: $("input[name='_token']").val()
+                    }
                 }
             }
         },
@@ -309,6 +308,7 @@ $("#formSujetos").validate({
         $(element).removeClass("is-invalid");
     }
 });
+
 
 });
     // productos finacieros
