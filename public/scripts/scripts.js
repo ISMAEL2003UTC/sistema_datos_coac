@@ -186,7 +186,8 @@
     });
 
     // validaciones sujetoss ---------------------------------------
-    $("#formSujetos").validate({
+    // validaciones sujetos ---------------------------------------
+$("#formSujetos").validate({
     rules: {
         cedula: {
             required: true,
@@ -194,16 +195,16 @@
             maxlength: 10,
             soloNumeros: true,
             remote: {
-                url: "/sujetos/verificar-cedula", // ruta del controlador
+                url: "/sujetos/verificar-cedula",
                 type: "post",
                 data: {
                     cedula: function() {
                         return $("#cedulaInput").val();
                     },
                     sujeto_id: function() {
-                        return $("#sujeto_id").val(); // para edición
+                        return $("#sujeto_id").val();
                     },
-                    _token: $("input[name='_token']").val() // CSRF token
+                    _token: $("input[name='_token']").val()
                 }
             }
         },
@@ -235,6 +236,7 @@
             }
         },
         telefono: {
+            required: true,
             soloNumeros: true,
             minlength: 7,
             maxlength: 10
@@ -243,10 +245,12 @@
             required: true
         },
         ciudad: {
+            required: true,
             minlength: 2
         },
         direccion: {
-            minlength: 2
+            required: true,
+            minlength: 5
         },
         tipo: {
             required: true
@@ -276,6 +280,7 @@
             remote: "Este correo ya está registrado"
         },
         telefono: {
+            required: "El teléfono es obligatorio",
             soloNumeros: "Solo se permiten números",
             minlength: "Mínimo 7 dígitos",
             maxlength: "Máximo 10 dígitos"
@@ -284,24 +289,27 @@
             required: "Seleccione la provincia"
         },
         ciudad: {
+            required: "La ciudad es obligatoria",
             minlength: "Debe tener al menos 2 caracteres"
         },
         direccion: {
+            required: "La dirección es obligatoria",
             minlength: "Debe tener al menos 5 caracteres"
         },
         tipo: {
             required: "Seleccione el tipo de sujeto"
         }
     },
-        errorElement: "div",
-        errorClass: "invalid-feedback",
-        highlight: function (element) {
-            $(element).addClass("is-invalid");
-        },
-        unhighlight: function (element) {
-            $(element).removeClass("is-invalid");
-        }
-    });
+    errorElement: "div",
+    errorClass: "invalid-feedback",
+    highlight: function (element) {
+        $(element).addClass("is-invalid");
+    },
+    unhighlight: function (element) {
+        $(element).removeClass("is-invalid");
+    }
+});
+
 });
     // productos finacieros
     // ========== RESET FORMULARIO PRODUCTOS ==========
