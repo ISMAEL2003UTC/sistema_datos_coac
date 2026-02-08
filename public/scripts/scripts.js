@@ -192,7 +192,20 @@
             required: true,
             minlength: 10,
             maxlength: 10,
-            soloNumeros: true
+            soloNumeros: true,
+            remote: {
+                url: "/sujetos/verificar-cedula", // ruta del controlador
+                type: "post",
+                data: {
+                    cedula: function() {
+                        return $("#cedulaInput").val();
+                    },
+                    sujeto_id: function() {
+                        return $("#sujeto_id").val(); // para edición
+                    },
+                    _token: $("input[name='_token']").val() // CSRF token
+                }
+            }
         },
         nombre: {
             required: true,
@@ -205,7 +218,21 @@
             soloLetras: true
         },
         email: {
-            email: true
+            required: true,
+            email: true,
+            remote: {
+                url: "/sujetos/verificar-email",
+                type: "post",
+                data: {
+                    email: function() {
+                        return $("input[name='email']").val();
+                    },
+                    sujeto_id: function() {
+                        return $("#sujeto_id").val();
+                    },
+                    _token: $("input[name='_token']").val()
+                }
+            }
         },
         telefono: {
             soloNumeros: true,
@@ -230,7 +257,8 @@
             required: "La cédula es obligatoria",
             minlength: "Debe tener 10 dígitos",
             maxlength: "Debe tener 10 dígitos",
-            soloNumeros: "Solo se permiten números"
+            soloNumeros: "Solo se permiten números",
+            remote: "Esta cédula ya está registrada"
         },
         nombre: {
             required: "El nombre es obligatorio",
@@ -244,7 +272,8 @@
         },
         email: {
             required: "El email es obligatorio",
-            email: "Correo no válido"
+            email: "Correo no válido",
+            remote: "Este correo ya está registrado"
         },
         telefono: {
             soloNumeros: "Solo se permiten números",
@@ -255,11 +284,9 @@
             required: "Seleccione la provincia"
         },
         ciudad: {
-            required: "La ciudad es obligatorio",
             minlength: "Debe tener al menos 2 caracteres"
         },
         direccion: {
-            required: "La dirección es obligatorio",
             minlength: "Debe tener al menos 5 caracteres"
         },
         tipo: {
