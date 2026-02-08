@@ -341,149 +341,143 @@ document.addEventListener('DOMContentLoaded', function () {
         <input type="hidden" id="sujeto_id" name="sujeto_id">
 
         <div class="form-row">
-    <div class="form-group">
-        <label>Cédula *</label>
-        <input type="text" id="cedulaInput" name="cedula"
-               required maxlength="10" pattern="\d{10}">
-    </div>
+            <div class="form-group">
+                <label>Cédula *</label>
+                <input type="text" id="cedulaInput" name="cedula" required maxlength="10" pattern="\d{10}">
+            </div>
 
-    <div class="form-group">
-        <label>Nombres *</label>
-        <input type="text" id="nombreInput" name="nombre" required readonly>
-    </div>
+            <div class="form-group">
+                <label>Nombres *</label>
+                <input type="text" id="nombreInput" name="nombre" required readonly>
+            </div>
 
-    <div class="form-group">
-        <label>Apellidos *</label>
-        <input type="text" id="apellidoInput" name="apellido" required readonly>
-    </div>
+            <div class="form-group">
+                <label>Apellidos *</label>
+                <input type="text" id="apellidoInput" name="apellido" required readonly>
+            </div>
 
-    <div class="form-group">
-        <label>Email</label>
-        <input type="email" name="email" required>
-    </div>
-</div>
-<div class="form-row">
-    <div class="form-group">
-        <label>Teléfono</label>
-        <input type="tel" name="telefono"
-               required maxlength="10" pattern="\d{10}">
-    </div>
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" name="email">
+            </div>
+        </div>
 
-    <div class="form-group">
-        <label>Provincia</label>
-        <select name="provincia" id="provincia">
-            <option value="">Seleccionar...</option>
-            <option value="Azuay">Azuay</option>
-            <option value="Bolívar">Bolívar</option>
-            <option value="Cañar">Cañar</option>
-            <option value="Carchi">Carchi</option>
-            <option value="Chimborazo">Chimborazo</option>
-            <option value="Cotopaxi">Cotopaxi</option>
-            <option value="El Oro">El Oro</option>
-            <option value="Esmeraldas">Esmeraldas</option>
-            <option value="Galápagos">Galápagos</option>
-            <option value="Guayas">Guayas</option>
-            <option value="Imbabura">Imbabura</option>
-            <option value="Loja">Loja</option>
-            <option value="Los Ríos">Los Ríos</option>
-            <option value="Manabí">Manabí</option>
-            <option value="Morona Santiago">Morona Santiago</option>
-            <option value="Napo">Napo</option>
-            <option value="Orellana">Orellana</option>
-            <option value="Pastaza">Pastaza</option>
-            <option value="Pichincha">Pichincha</option>
-            <option value="Santa Elena">Santa Elena</option>
-            <option value="Santo Domingo de los Tsáchilas">Santo Domingo de los Tsáchilas</option>
-            <option value="Sucumbíos">Sucumbíos</option>
-            <option value="Tungurahua">Tungurahua</option>
-            <option value="Zamora Chinchipe">Zamora Chinchipe</option>
-        </select>
-    </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Teléfono</label>
+                <input type="tel" name="telefono" required maxlength="10" pattern="\d{10}">
+            </div>
 
-    <div class="form-group">
-        <label>Ciudad</label>
-        <input type="text" name="ciudad">
-    </div>
+            <div class="form-group">
+                <label>Provincia</label>
+                <select name="provincia" id="provincia">
+                    <option value="">Seleccionar...</option>
+                    <option value="Azuay">Azuay</option>
+                    <option value="Bolívar">Bolívar</option>
+                    <option value="Cañar">Cañar</option>
+                    <option value="Carchi">Carchi</option>
+                    <option value="Chimborazo">Chimborazo</option>
+                    <option value="Cotopaxi">Cotopaxi</option>
+                    <option value="El Oro">El Oro</option>
+                    <option value="Esmeraldas">Esmeraldas</option>
+                    <option value="Galápagos">Galápagos</option>
+                    <option value="Guayas">Guayas</option>
+                    <option value="Imbabura">Imbabura</option>
+                    <option value="Loja">Loja</option>
+                    <option value="Los Ríos">Los Ríos</option>
+                    <option value="Manabí">Manabí</option>
+                    <option value="Morona Santiago">Morona Santiago</option>
+                    <option value="Napo">Napo</option>
+                    <option value="Orellana">Orellana</option>
+                    <option value="Pastaza">Pastaza</option>
+                    <option value="Pichincha">Pichincha</option>
+                    <option value="Santa Elena">Santa Elena</option>
+                    <option value="Santo Domingo de los Tsáchilas">Santo Domingo de los Tsáchilas</option>
+                    <option value="Sucumbíos">Sucumbíos</option>
+                    <option value="Tungurahua">Tungurahua</option>
+                    <option value="Zamora Chinchipe">Zamora Chinchipe</option>
+                </select>
+            </div>
 
-    <div class="form-group">
-        <label>Dirección</label>
-        <input type="text" name="direccion">
-    </div>
-</div>
-<div class="form-row">
-    <div class="form-group">
-        <label>Tipo de Sujeto *</label>
-        <select name="tipo" required>
-            <option value="">Seleccionar...</option>
-            <option value="cliente">Cliente</option>
-            <option value="empleado">Empleado</option>
-            <option value="proveedor">Proveedor</option>
-            <option value="tercero">Tercero</option>
-        </select>
-    </div>
-</div>
+            <div class="form-group">
+                <label>Ciudad</label>
+                <input type="text" name="ciudad">
+            </div>
+
+            <div class="form-group">
+                <label>Dirección</label>
+                <input type="text" name="direccion">
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label>Tipo de Sujeto *</label>
+                <select name="tipo" required>
+                    <option value="">Seleccionar...</option>
+                    <option value="cliente">Cliente</option>
+                    <option value="empleado">Empleado</option>
+                    <option value="proveedor">Proveedor</option>
+                    <option value="tercero">Tercero</option>
+                </select>
+            </div>
+        </div>
+
         <button type="submit" class="btn btn-primary">Registrar Sujeto</button>
     </form>
 
     <!-- TABLA DE SUJETOS -->
-    <div class="table-container">
-        <table>
+    <div class="table-container mt-3">
+        <table class="table table-striped">
             <thead>
-    <tr>
-        <th>Cédula</th>
-        <th>Nombre</th>
-        <th>Apellido</th>
-        <th>Email</th>
-        <th>Teléfono</th>
-        <th>Provincia</th>
-        <th>Ciudad</th>
-        <th>Dirección</th>
-        <th>Tipo</th>
-        <th>Acciones</th>
-    </tr>
-</thead>
-
+                <tr>
+                    <th>Cédula</th>
+                    <th>Nombre</th>
+                    <th>Apellido</th>
+                    <th>Email</th>
+                    <th>Teléfono</th>
+                    <th>Provincia</th>
+                    <th>Ciudad</th>
+                    <th>Dirección</th>
+                    <th>Tipo</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
             <tbody>
-@foreach($sujetos as $sujeto)
-<tr>
-    <td>{{ $sujeto->cedula }}</td>
-    <td>{{ $sujeto->nombre }}</td>
-    <td>{{ $sujeto->apellido }}</td>
-    <td>{{ $sujeto->email }}</td>
-    <td>{{ $sujeto->telefono }}</td>
-    <td>{{ $sujeto->provincia }}</td>
-    <td>{{ $sujeto->ciudad }}</td>
-    <td>{{ $sujeto->direccion }}</td>
-    <td>
-        <span class="badge badge-info">
-            {{ ucfirst($sujeto->tipo) }}
-        </span>
-    </td>
-    <td>
-        <button class="btn btn-secondary"
-            onclick="editarSujeto(
-                {{ $sujeto->id }},
-                '{{ $sujeto->cedula }}',
-                '{{ $sujeto->nombre }}',
-                '{{ $sujeto->apellido }}',
-                '{{ $sujeto->email }}',
-                '{{ $sujeto->telefono }}',
-                '{{ $sujeto->provincia }}',
-                '{{ $sujeto->ciudad }}',
-                '{{ $sujeto->direccion }}',
-                '{{ $sujeto->tipo }}'
-            )">
-            Editar
-        </button>
-    </td>
-</tr>
-@endforeach
-</tbody>
-
+                @foreach($sujetos as $sujeto)
+                <tr>
+                    <td>{{ $sujeto->cedula }}</td>
+                    <td>{{ $sujeto->nombre }}</td>
+                    <td>{{ $sujeto->apellido }}</td>
+                    <td>{{ $sujeto->email }}</td>
+                    <td>{{ $sujeto->telefono }}</td>
+                    <td>{{ $sujeto->provincia }}</td>
+                    <td>{{ $sujeto->ciudad }}</td>
+                    <td>{{ $sujeto->direccion }}</td>
+                    <td><span class="badge badge-info">{{ ucfirst($sujeto->tipo) }}</span></td>
+                    <td>
+                        <button class="btn btn-secondary btn-sm"
+                            onclick="editarSujeto(
+                                {{ $sujeto->id }},
+                                '{{ $sujeto->cedula }}',
+                                '{{ $sujeto->nombre }}',
+                                '{{ $sujeto->apellido }}',
+                                '{{ $sujeto->email }}',
+                                '{{ $sujeto->telefono }}',
+                                '{{ $sujeto->provincia }}',
+                                '{{ $sujeto->ciudad }}',
+                                '{{ $sujeto->direccion }}',
+                                '{{ $sujeto->tipo }}'
+                            )">
+                            Editar
+                        </button>
+                    </td>
+                </tr>
+                @endforeach
+            </tbody>
         </table>
     </div>
 </div>
-
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     const cedulaInput = document.getElementById('cedulaInput');
