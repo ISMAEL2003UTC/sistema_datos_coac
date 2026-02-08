@@ -219,7 +219,7 @@
             minlength: 2
         },
         direccion: {
-            minlength: 5
+            minlength: 2
         },
         tipo: {
             required: true
@@ -254,9 +254,11 @@
             required: "Seleccione la provincia"
         },
         ciudad: {
+            required: "La ciudad es obligatorio",
             minlength: "Debe tener al menos 2 caracteres"
         },
         direccion: {
+            required: "La dirección es obligatorio",
             minlength: "Debe tener al menos 5 caracteres"
         },
         tipo: {
