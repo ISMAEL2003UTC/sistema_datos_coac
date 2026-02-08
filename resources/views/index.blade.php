@@ -365,7 +365,7 @@ document.addEventListener('DOMContentLoaded', function () {
         <div class="form-row">
             <div class="form-group col-md-3">
                 <label>Teléfono</label>
-                <input type="tel" name="telefono" maxlength="10" pattern="\d{10}" title="Debe tener 10 dígitos">
+                <input type="tel" name="telefono" maxlength="10" pattern="\d{10}" title="Debe tener 10 dígitos" required>
             </div>
             <div class="form-group col-md-3">
                 <label>Provincia*</label>
@@ -399,11 +399,11 @@ document.addEventListener('DOMContentLoaded', function () {
             </div>
             <div class="form-group col-md-3">
                 <label>Ciudad</label>
-                <input type="text" name="ciudad">
+                <input type="text" name="ciudad" required>
             </div>
             <div class="form-group col-md-3">
                 <label>Dirección</label>
-                <input type="text" name="direccion">
+                <input type="text" name="direccion" required>
             </div>
         </div>
 
