@@ -146,51 +146,90 @@
     }, "Solo se permiten números");
 
     // validaciones usuarioss--------------------------------
-    $("#formUsuarios").validate({
-        rules: {
-            nombre_completo: {
-                required: true,
-                minlength: 3,
-                soloLetras: true
-            },
-            email: {
-                required: true,
-                email: true
-            },
-            rol: {
-                required: true
+    // Validación del formulario
+$("#formUsuarios").validate({
+    rules: {
+        nombre: {
+            required: true,
+            minlength: 3,
+            soloLetras: true
+        },
+        apellido: {
+            required: true,
+            minlength: 3,
+            soloLetras: true
+        },
+        email: {
+            required: true,
+            email: true,
+            remote: {
+                url: "/verificar-email",
+                type: "get",
+                data: {
+                    email: function() { return $("#email").val(); },
+                    id_usuario: function() { return $("#usuario_id").val(); } // Para editar
+                }
             }
         },
-        messages: {
-            nombre_completo: {
-                required: "El nombre es obligatorio",
-                minlength: "Debe tener al menos 3 caracteres",
-                soloLetras: "Solo se permiten letras"
-            },
-            email: {
-                required: "El correo es obligatorio",
-                email: "Correo no válido"
-            },
-            rol: {
-                required: "El rol es obligatorio"
+        cedula: {
+            required: true,
+            digits: true,
+            minlength: 10,
+            maxlength: 10,
+            remote: {
+                url: "/verificar-cedula",
+                type: "get",
+                data: {
+                    cedula: function() { return $("#cedula").val(); },
+                    id: function() { return $("#usuario_id").val(); } // Para editar
+                }
             }
         },
-        errorElement: "div",
-        errorClass: "invalid-feedback",
-        highlight: function (element) {
-            $(element).addClass("is-invalid");
-        },
-        unhighlight: function (element) {
-            $(element).removeClass("is-invalid");
+        rol: {
+            required: true
         }
-    });
+    },
+    messages: {
+        nombre: {
+            required: "El nombre es obligatorio",
+            minlength: "Debe tener al menos 3 caracteres",
+            soloLetras: "Solo se permiten letras"
+        },
+        apellido: {
+            required: "El apellido es obligatorio",
+            minlength: "Debe tener al menos 3 caracteres",
+            soloLetras: "Solo se permiten letras"
+        },
+        email: {
+            required: "El correo es obligatorio",
+            email: "Correo no válido",
+            remote: "Este correo ya está registrado"
+        },
+        cedula: {
+            required: "La cédula es obligatoria",
+            digits: "Solo se permiten números",
+            minlength: "Debe tener 10 dígitos",
+            maxlength: "Debe tener 10 dígitos",
+            remote: "Esta cédula ya está registrada"
+        },
+        rol: {
+            required: "El rol es obligatorio"
+        }
+    },
+    errorElement: "div",
+    errorClass: "invalid-feedback",
+    highlight: function (element) {
+        $(element).addClass("is-invalid");
+    },
+    unhighlight: function (element) {
+        $(element).removeClass("is-invalid");
+    }
+});
 
-    // validaciones sujetoss ---------------------------------------
-    // validaciones sujetos ---------------------------------------
-// validaciones sujetos ---------------------------------------
+
 $(document).ready(function() {
 
-    // Validación del formulario
+    // Validación del formulario sujetos
     $("#formSujetos").validate({
         rules: {
             cedula: {
