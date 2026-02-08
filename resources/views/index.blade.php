@@ -357,7 +357,7 @@ document.addEventListener('DOMContentLoaded', function () {
             </div>
             <div class="form-group col-md-3">
                 <label>Email</label>
-                <input type="email" name="email" required>
+                <input type="email" id="emailInput" name="email" required>
             </div>
         </div>
 
