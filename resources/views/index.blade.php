@@ -219,10 +219,8 @@
         @endif
     </select>
 </div>
-
-        </div>
-
-        <button type="submit" class="btn btn-primary">Agregar Usuario</button>
+</div>
+    <button type="submit" class="btn btn-primary">Agregar Usuario</button>
     </form>
 
     <div class="table-container">
@@ -421,8 +419,11 @@ document.addEventListener('DOMContentLoaded', function () {
                     <option value="tercero">Tercero</option>
                 </select>
             </div>
-            <div class="form-group col-md-9">
-                <button type="submit" class="btn btn-primary" style="margin-top: 30px;">Registrar Sujeto</button>
+            </div>
+
+            <div class="form-row">
+            <div class="form-group col-12">
+                <button type="submit" class="btn btn-primary">Registrar Sujeto</button>
             </div>
         </div>
     </form>

@@ -187,54 +187,82 @@
 
     // validaciones sujetoss ---------------------------------------
     $("#formSujetos").validate({
-        rules: {
-            cedula: {
-                required: true,
-                minlength: 10,
-                maxlength: 10,
-                soloNumeros: true
-            },
-            nombre: {
-                required: true,
-                minlength: 3,
-                soloLetras: true
-            },
-            email: {
-                email: true
-            },
-            telefono: {
-                soloNumeros: true,
-                minlength: 7,
-                maxlength: 10
-            },
-            tipo: {
-                required: true
-            }
+    rules: {
+        cedula: {
+            required: true,
+            minlength: 10,
+            maxlength: 10,
+            soloNumeros: true
         },
-        messages: {
-            cedula: {
-                required: "La cédula es obligatoria",
-                minlength: "Debe tener 10 dígitos",
-                maxlength: "Debe tener 10 dígitos",
-                soloNumeros: "Solo se permiten números"
-            },
-            nombre: {
-                required: "El nombre es obligatorio",
-                minlength: "Debe tener al menos 3 caracteres",
-                soloLetras: "Solo se permiten letras"
-            },
-            email: {
-                email: "Correo no válido"
-            },
-            telefono: {
-                soloNumeros: "Solo se permiten números",
-                minlength: "Mínimo 7 dígitos",
-                maxlength: "Máximo 10 dígitos"
-            },
-            tipo: {
-                required: "Seleccione el tipo de sujeto"
-            }
+        nombre: {
+            required: true,
+            minlength: 3,
+            soloLetras: true
         },
+        apellido: {
+            required: true,
+            minlength: 3,
+            soloLetras: true
+        },
+        email: {
+            email: true
+        },
+        telefono: {
+            soloNumeros: true,
+            minlength: 7,
+            maxlength: 10
+        },
+        provincia: {
+            required: true
+        },
+        ciudad: {
+            minlength: 2
+        },
+        direccion: {
+            minlength: 5
+        },
+        tipo: {
+            required: true
+        }
+    },
+    messages: {
+        cedula: {
+            required: "La cédula es obligatoria",
+            minlength: "Debe tener 10 dígitos",
+            maxlength: "Debe tener 10 dígitos",
+            soloNumeros: "Solo se permiten números"
+        },
+        nombre: {
+            required: "El nombre es obligatorio",
+            minlength: "Debe tener al menos 3 caracteres",
+            soloLetras: "Solo se permiten letras"
+        },
+        apellido: {
+            required: "El apellido es obligatorio",
+            minlength: "Debe tener al menos 3 caracteres",
+            soloLetras: "Solo se permiten letras"
+        },
+        email: {
+            email: "Correo no válido"
+        },
+        telefono: {
+            soloNumeros: "Solo se permiten números",
+            minlength: "Mínimo 7 dígitos",
+            maxlength: "Máximo 10 dígitos"
+        },
+        provincia: {
+            required: "Seleccione la provincia"
+        },
+        ciudad: {
+            minlength: "Debe tener al menos 2 caracteres"
+        },
+        direccion: {
+            minlength: "Debe tener al menos 5 caracteres"
+        },
+        tipo: {
+            required: "Seleccione el tipo de sujeto"
+        }
+    },
         errorElement: "div",
         errorClass: "invalid-feedback",
         highlight: function (element) {
