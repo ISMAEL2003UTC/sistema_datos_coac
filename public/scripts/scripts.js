@@ -188,129 +188,115 @@
     // validaciones sujetoss ---------------------------------------
     // validaciones sujetos ---------------------------------------
 // validaciones sujetos ---------------------------------------
-$("#formSujetos").validate({
-    rules: {
-        cedula: {
-            required: true,
-            minlength: 10,
-            maxlength: 10,
-            soloNumeros: true,
-            remote: {
-                url: "/verificar-cedula-sujeto", // ruta correcta en tu controlador
-                type: "get",
-                data: {
-                    cedula: function() {
-                        return $("#cedulaInput").val();
-                    },
-                    sujeto_id: function() {
-                        return $("#sujeto_id").val();
+$(document).ready(function() {
+
+    // Validación del formulario
+    $("#formSujetos").validate({
+        rules: {
+            cedula: {
+                required: true,
+                minlength: 10,
+                maxlength: 10,
+                soloNumeros: true,
+                remote: {
+                    url: "/verificar-cedula-sujeto",
+                    type: "get",
+                    data: {
+                        cedula: function() {
+                            return $("#cedulaInput").val();
+                        },
+                        sujeto_id: function() {
+                            return $("#sujeto_id").val();
+                        }
                     }
                 }
-            }
-        },
-        nombre: {
-            required: true,
-            minlength: 3,
-            soloLetras: true
-        },
-        apellido: {
-            required: true,
-            minlength: 3,
-            soloLetras: true
-        },
-        email: {
-            required: true,
-            email: true,
-            remote: {
-                url: "/verificar-email-sujeto", // ruta correcta en tu controlador
-                type: "get",
-                data: {
-                    email: function() {
-                        return $("input[name='email']").val();
-                    },
-                    sujeto_id: function() {
-                        return $("#sujeto_id").val();
+            },
+            nombre: {
+                required: true,
+                minlength: 3,
+                soloLetras: true
+            },
+            apellido: {
+                required: true,
+                minlength: 3,
+                soloLetras: true
+            },
+            email: {
+                required: true,
+                email: true,
+                remote: {
+                    url: "/verificar-email-sujeto",
+                    type: "get",
+                    data: {
+                        email: function() { return $("#emailInput").val(); },
+                        sujeto_id: function() { return $("#sujeto_id").val(); }
                     }
                 }
-            }
+            },
+            telefono: {
+                required: true,
+                soloNumeros: true,
+                minlength: 7,
+                maxlength: 10
+            },
+            provincia: { required: true },
+            ciudad: { required: true, minlength: 2 },
+            direccion: { required: true, minlength: 2 },
+            tipo: { required: true }
         },
-        telefono: {
-            required: true,
-            soloNumeros: true,
-            minlength: 7,
-            maxlength: 10
+        messages: {
+            cedula: {
+                required: "La cédula es obligatoria",
+                minlength: "Debe tener 10 dígitos",
+                maxlength: "Debe tener 10 dígitos",
+                soloNumeros: "Solo se permiten números",
+                remote: "Esta cédula ya está registrada"
+            },
+            nombre: {
+                required: "El nombre es obligatorio",
+                minlength: "Debe tener al menos 3 caracteres",
+                soloLetras: "Solo se permiten letras"
+            },
+            apellido: {
+                required: "El apellido es obligatorio",
+                minlength: "Debe tener al menos 3 caracteres",
+                soloLetras: "Solo se permiten letras"
+            },
+            email: {
+                required: "El email es obligatorio",
+                email: "Correo no válido",
+                remote: "Este correo ya está registrado"
+            },
+            telefono: {
+                required: "El teléfono es obligatorio",
+                soloNumeros: "Solo se permiten números",
+                minlength: "Mínimo 7 dígitos",
+                maxlength: "Máximo 10 dígitos"
+            },
+            provincia: { required: "Seleccione la provincia" },
+            ciudad: {
+                required: "La ciudad es obligatoria",
+                minlength: "Debe tener al menos 2 caracteres"
+            },
+            direccion: {
+                required: "La dirección es obligatoria",
+                minlength: "Debe tener al menos 2 caracteres"
+            },
+            tipo: { required: "Seleccione el tipo de sujeto" }
         },
-        provincia: {
-            required: true
+        errorElement: "div",
+        errorClass: "invalid-feedback",
+        highlight: function(element) {
+            $(element).addClass("is-invalid");
         },
-        ciudad: {
-            required: true,
-            minlength: 2
-        },
-        direccion: {
-            required: true,
-            minlength: 5
-        },
-        tipo: {
-            required: true
+        unhighlight: function(element) {
+            $(element).removeClass("is-invalid");
         }
-    },
-    messages: {
-        cedula: {
-            required: "La cédula es obligatoria",
-            minlength: "Debe tener 10 dígitos",
-            maxlength: "Debe tener 10 dígitos",
-            soloNumeros: "Solo se permiten números",
-            remote: "Esta cédula ya está registrada"
-        },
-        nombre: {
-            required: "El nombre es obligatorio",
-            minlength: "Debe tener al menos 3 caracteres",
-            soloLetras: "Solo se permiten letras"
-        },
-        apellido: {
-            required: "El apellido es obligatorio",
-            minlength: "Debe tener al menos 3 caracteres",
-            soloLetras: "Solo se permiten letras"
-        },
-        email: {
-            required: "El email es obligatorio",
-            email: "Correo no válido",
-            remote: "Este correo ya está registrado"
-        },
-        telefono: {
-            required: "El teléfono es obligatorio",
-            soloNumeros: "Solo se permiten números",
-            minlength: "Mínimo 7 dígitos",
-            maxlength: "Máximo 10 dígitos"
-        },
-        provincia: {
-            required: "Seleccione la provincia"
-        },
-        ciudad: {
-            required: "La ciudad es obligatoria",
-            minlength: "Debe tener al menos 2 caracteres"
-        },
-        direccion: {
-            required: "La dirección es obligatoria",
-            minlength: "Debe tener al menos 5 caracteres"
-        },
-        tipo: {
-            required: "Seleccione el tipo de sujeto"
-        }
-    },
-    errorElement: "div",
-    errorClass: "invalid-feedback",
-    highlight: function (element) {
-        $(element).addClass("is-invalid");
-    },
-    unhighlight: function (element) {
-        $(element).removeClass("is-invalid");
-    }
-});
-
+    });
 
 });
+});
+
     // productos finacieros
     // ========== RESET FORMULARIO PRODUCTOS ==========
 function resetFormularioProductos() {
