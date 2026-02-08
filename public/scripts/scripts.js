@@ -243,6 +243,7 @@
             soloLetras: "Solo se permiten letras"
         },
         email: {
+            required: "El email es obligatorio",
             email: "Correo no válido"
         },
         telefono: {
