@@ -55,29 +55,35 @@
 
 
         //  EDITAR SUJETOS --------------------
-        function editarSujeto(id, cedula, nombre, email, telefono, direccion, tipo) {
-            Swal.fire({
-                icon: 'info',
-                title: 'Editar Sujeto de datos',
-                text: 'El formulario ha entrado en modo edición'
-            });
-            const form = document.getElementById('formSujetos');
+        function editarSujeto(id, cedula, nombre, apellido, email, telefono, provincia, ciudad, direccion, tipo) {
+    Swal.fire({
+        icon: 'info',
+        title: 'Editar Sujeto de Datos',
+        text: 'El formulario ha entrado en modo edición'
+    });
 
-            form.querySelector('input[name="cedula"]').value = cedula;
-            form.querySelector('input[name="nombre"]').value = nombre;
-            form.querySelector('input[name="email"]').value = email;
-            form.querySelector('input[name="telefono"]').value = telefono;
-            form.querySelector('input[name="direccion"]').value = direccion;
-            form.querySelector('select[name="tipo"]').value = tipo;
+    const form = document.getElementById('formSujetos');
 
-            document.getElementById('sujeto_id').value = id;
+    form.querySelector('input[name="cedula"]').value = cedula;
+    form.querySelector('input[name="nombre"]').value = nombre;
+    form.querySelector('input[name="apellido"]').value = apellido;
+    form.querySelector('input[name="email"]').value = email;
+    form.querySelector('input[name="telefono"]').value = telefono;
+    form.querySelector('select[name="provincia"]').value = provincia;
+    form.querySelector('input[name="ciudad"]').value = ciudad;
+    form.querySelector('input[name="direccion"]').value = direccion;
+    form.querySelector('select[name="tipo"]').value = tipo;
 
-            // Cambiar el método a PUT
-            document.getElementById('form_sujeto_method').value = 'PUT';
+    document.getElementById('sujeto_id').value = id;
 
-            form.action = `/sujetos/${id}`;
-            form.querySelector('button[type="submit"]').innerText = 'Actualizar Sujeto';
-        }
+    // Cambiar el método a PUT
+    document.getElementById('form_sujeto_method').value = 'PUT';
+
+    // Actualizar la acción del formulario
+    form.action = `/sujetos/${id}`;
+    form.querySelector('button[type="submit"]').innerText = 'Actualizar Sujeto';
+}
+
 
         // mensaje unico de eliminar para sujetos y usuarios------------------------
             function confirmarEliminacion(boton) {
