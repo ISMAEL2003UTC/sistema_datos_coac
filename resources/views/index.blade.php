@@ -1427,10 +1427,10 @@ document.head.appendChild(estilo);
         
 
 <!-- SOLICITUDES DSAR ---------------------------------------------------------------------------->
-
 @php
     use App\Models\SolicitudDsar;
 
+    // Próximo número tipo S001
     $ultimo = SolicitudDsar::orderBy('id', 'desc')->first();
 
     if ($ultimo && preg_match('/S(\d+)/', $ultimo->numero_solicitud, $matches)) {
@@ -1447,29 +1447,36 @@ document.head.appendChild(estilo);
 
 <div id="dsar" class="content-section">
     <h2 class="section-title">Solicitudes de Derechos (DSAR)</h2>
+    <p style="margin-bottom: 20px; color: #666;">
+        Gestión de solicitudes de Acceso, Rectificación, Cancelación y Oposición
+    </p>
 
-    <form method="POST" action="/dsar">
+    {{-- FORMULARIO --}}
+    <form id="formDSAR" method="POST" action="{{ route('dsar.store') }}">
         @csrf
+        <input type="hidden" name="_method" id="form_dsar_method" value="POST">
 
         <div class="form-row">
             <div class="form-group">
                 <label>Número de Solicitud *</label>
                 <input
                     type="text"
+                    name="numero_solicitud"
+                    id="dsar_numero"
                     value="{{ $siguienteNumero }}"
                     readonly
                     style="background:#f5f5f5;cursor:not-allowed;"
                 >
-                <small style="color:#666;">⚡ Se genera automáticamente</small>
+                <small style="color:#666;">⚡ Auto</small>
             </div>
 
             <div class="form-group">
-                <label>Sujeto de Datos *</label>
-                <select name="cedula" required>
+                <label for="dsar_cedula">Sujeto de Datos *</label>
+                <select name="cedula" id="dsar_cedula" required>
                     <option value="">Seleccione un Sujeto de Datos</option>
-                    @foreach($sujetos as $s)
+                    @foreach ($sujetos as $s)
                         <option value="{{ $s->cedula }}">
-                            {{ $s->cedula }} — {{ $s->nombre }} {{ $s->apellido }}
+                            {{ $s->nombre }} {{ $s->apellido }} — {{ $s->cedula }}
                         </option>
                     @endforeach
                 </select>
@@ -1477,7 +1484,7 @@ document.head.appendChild(estilo);
 
             <div class="form-group">
                 <label>Tipo de Solicitud *</label>
-                <select name="tipo" required>
+                <select name="tipo" id="dsar_tipo" required>
                     <option value="">Seleccionar...</option>
                     <option value="acceso">Acceso</option>
                     <option value="rectificacion">Rectificación</option>
@@ -1490,23 +1497,38 @@ document.head.appendChild(estilo);
 
         <div class="form-group">
             <label>Descripción *</label>
-            <textarea name="descripcion" rows="4" required></textarea>
+            <textarea name="descripcion" id="dsar_descripcion" rows="4" required></textarea>
         </div>
 
         <div class="form-row">
             <div class="form-group">
                 <label>Fecha de Solicitud *</label>
-                <input type="date" name="fecha_solicitud" value="{{ $hoy }}" readonly>
+                <input
+                    type="date"
+                    name="fecha_solicitud"
+                    id="dsar_fecha_solicitud"
+                    value="{{ $hoy }}"
+                    min="{{ $hoy }}"
+                    max="{{ $hoy }}"
+                    readonly
+                    style="background:#f5f5f5;cursor:not-allowed;"
+                >
             </div>
 
             <div class="form-group">
                 <label>Plazo de Respuesta</label>
-                <input type="date" name="fecha_limite" min="{{ $minPlazo }}">
+                <input
+                    type="date"
+                    name="fecha_limite"
+                    id="dsar_fecha_limite"
+                    min="{{ $minPlazo }}"
+                >
+                <small style="color:#666;"></small>
             </div>
 
             <div class="form-group">
                 <label>Estado *</label>
-                <select name="estado">
+                <select name="estado" id="dsar_estado" required>
                     <option value="pendiente">Pendiente</option>
                     <option value="proceso">En Proceso</option>
                     <option value="completada">Completada</option>
@@ -1515,11 +1537,151 @@ document.head.appendChild(estilo);
             </div>
         </div>
 
-        <button type="submit" class="btn btn-primary">
+        <button type="submit" class="btn btn-primary" id="btnDsarGuardar">
             Registrar Solicitud
         </button>
+
+        <button type="button" class="btn btn-secondary" onclick="resetFormularioDSAR()" style="margin-left:10px;">
+            Cancelar Edición
+        </button>
     </form>
+
+    {{-- TABLA --}}
+    <div class="table-container" style="margin-top:25px;">
+        <table>
+            <thead>
+                <tr>
+                    <th>N° Solicitud</th>
+                    <th>Solicitante</th>
+                    <th>Tipo</th>
+                    <th>Fecha</th>
+                    <th>Plazo</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+
+            <tbody>
+            @forelse($dsars as $d)
+                <tr>
+                    <td>{{ $d->numero_solicitud }}</td>
+                    <td>
+                        {{ $d->sujeto?->nombre }} {{ $d->sujeto?->apellido }} — {{ $d->sujeto?->cedula }}
+                    </td>
+                    <td>{{ ucfirst($d->tipo) }}</td>
+                    <td>{{ $d->fecha_solicitud }}</td>
+                    <td>{{ $d->fecha_limite ?? 'N/A' }}</td>
+                    <td>
+                        <span class="badge badge-warning">
+                            {{ ucfirst($d->estado) }}
+                        </span>
+                    </td>
+
+                    <td style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+                        {{-- EDITAR --}}
+                        <button type="button"
+                            class="btn btn-secondary btn-editar-dsar"
+                            data-id="{{ $d->id }}"
+                            data-numero="{{ $d->numero_solicitud }}"
+                            data-cedula="{{ $d->sujeto?->cedula }}"
+                            data-tipo="{{ $d->tipo }}"
+                            data-descripcion="{{ $d->descripcion }}"
+                            data-fecha="{{ $d->fecha_solicitud }}"
+                            data-limite="{{ $d->fecha_limite }}"
+                            data-estado="{{ $d->estado }}">
+                            Editar
+                        </button>
+
+                        {{-- CAMBIAR ESTADO --}}
+                        <form method="POST" action="{{ route('dsar.update', $d->id) }}" style="display:flex; gap:8px;">
+                            @csrf
+                            @method('PUT')
+
+                            <input type="hidden" name="numero_solicitud" value="{{ $d->numero_solicitud }}">
+                            <input type="hidden" name="cedula" value="{{ $d->sujeto?->cedula }}">
+                            <input type="hidden" name="tipo" value="{{ $d->tipo }}">
+                            <input type="hidden" name="descripcion" value="{{ $d->descripcion }}">
+                            <input type="hidden" name="fecha_solicitud" value="{{ $d->fecha_solicitud }}">
+                            <input type="hidden" name="fecha_limite" value="{{ $d->fecha_limite }}">
+
+                            <select name="estado">
+                                <option value="pendiente" {{ $d->estado=='pendiente'?'selected':'' }}>Pendiente</option>
+                                <option value="proceso" {{ $d->estado=='proceso'?'selected':'' }}>En Proceso</option>
+                                <option value="completada" {{ $d->estado=='completada'?'selected':'' }}>Completada</option>
+                                <option value="rechazada" {{ $d->estado=='rechazada'?'selected':'' }}>Rechazada</option>
+                            </select>
+
+                            <button type="submit" class="btn btn-warning">Cambiar</button>
+                        </form>
+                    </td>
+                </tr>
+            @empty
+                <tr>
+                    <td colspan="7" style="text-align:center;">
+                        No hay solicitudes DSAR registradas
+                    </td>
+                </tr>
+            @endforelse
+            </tbody>
+        </table>
+    </div>
 </div>
+
+{{-- JS EDITAR DSAR --}}
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const form = document.getElementById('formDSAR');
+    if (!form) return;
+
+    const methodInput = document.getElementById('form_dsar_method');
+
+    const inputNumero = document.getElementById('dsar_numero');
+    const selectCedula = document.getElementById('dsar_cedula');
+    const selectTipo = document.getElementById('dsar_tipo');
+    const textareaDesc = document.getElementById('dsar_descripcion');
+    const inputFecha = document.getElementById('dsar_fecha_solicitud');
+    const inputLimite = document.getElementById('dsar_fecha_limite');
+    const selectEstado = document.getElementById('dsar_estado');
+
+    const storeAction = form.getAttribute('action');
+
+    document.querySelectorAll('.btn-editar-dsar').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const id = btn.dataset.id;
+
+            form.setAttribute('action', `/dsar/${id}`);
+            methodInput.value = 'PUT';
+
+            inputNumero.value = btn.dataset.numero || '';
+            selectCedula.value = btn.dataset.cedula || '';
+            selectTipo.value = btn.dataset.tipo || '';
+            textareaDesc.value = btn.dataset.descripcion || '';
+            inputFecha.value = btn.dataset.fecha || '';
+            inputLimite.value = btn.dataset.limite || '';
+            selectEstado.value = btn.dataset.estado || 'pendiente';
+
+            const btnGuardar = document.getElementById('btnDsarGuardar');
+            if (btnGuardar) btnGuardar.textContent = 'Actualizar Solicitud';
+
+            form.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+    });
+
+    window.resetFormularioDSAR = function () {
+        form.setAttribute('action', storeAction);
+        methodInput.value = 'POST';
+
+        selectCedula.value = '';
+        selectTipo.value = '';
+        textareaDesc.value = '';
+        inputLimite.value = '';
+        selectEstado.value = 'pendiente';
+
+        const btnGuardar = document.getElementById('btnDsarGuardar');
+        if (btnGuardar) btnGuardar.textContent = 'Registrar Solicitud';
+    }
+});
+</script>
 
 
 

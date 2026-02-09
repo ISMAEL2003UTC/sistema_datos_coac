@@ -11,6 +11,7 @@ use App\Http\Controllers\AuditoriaController;
 use App\Http\Controllers\IncidenteSeguridadController;
 use App\Http\Controllers\MiembroController;
 use App\Http\Controllers\SolicitudDsarController;
+
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Auth\RegisterController;
 //uta para cerrar sesion ---------------------------------
@@ -64,10 +65,12 @@ Route::post('/auditorias', [AuditoriaController::class, 'store'])->name('auditor
 Route::get('/auditoria/ver/{id}', [AuditoriaController::class, 'ver'])->name('auditoria.ver');
 Route::get('/auditorias/{id}', [AuditoriaController::class, 'show'])->name('auditorias.show');
 // rutas de solicitudes dsar ---------------------------------
+
+Route::get('/', [SolicitudDsarController::class, 'index'])->name('index');
+
 Route::post('/dsar', [SolicitudDsarController::class, 'store'])->name('dsar.store');
 Route::put('/dsar/{id}', [SolicitudDsarController::class, 'update'])->name('dsar.update');
 
-Route::put('/dsar/{id}/estado', [SolicitudDsarController::class, 'cambiarEstado'])->name('dsar.estado');
 // Rutas para miembros
 // CRUD miembros
 Route::get('/miembros', [MiembroController::class, 'index'])->name('miembros.index');
