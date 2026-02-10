@@ -1314,7 +1314,7 @@ document.head.appendChild(estilo);
                 <div class="form-row">
                     <div class="form-group">
                         <label>Fecha de Otorgamiento (Hoy) *</label>
-                        <input type="date" name="fecha_otorgamiento" id="consentimiento_fecha_otorgamiento" readonly style="background-color: #f0f0f0; cursor: not-allowed;">
+                        <input type="date" name="fecha_otorgamiento" id="consentimiento_fecha_otorgamiento" value="{{ date('Y-m-d') }}" readonly style="background-color: #f0f0f0; cursor: not-allowed;">
                         <small style="display: block; margin-top: 5px; color: #666;">Esta fecha se establece automáticamente con la fecha actual</small>
                         <span class="text-error" id="error-fecha_otorgamiento"></span>
                     </div>
@@ -1330,8 +1330,8 @@ document.head.appendChild(estilo);
                     </div>
                     <div class="form-group">
                         <label>Fecha de Expiración *</label>
-                        <input type="date" name="fecha_expiracion" id="consentimiento_fecha_expiracion" required>
-                        <small style="display: block; margin-top: 5px; color: #666;">Se calculará automáticamente un año desde la fecha de otorgamiento</small>
+                        <input type="date" name="fecha_expiracion" id="consentimiento_fecha_expiracion" value="{{ date('Y-m-d', strtotime('+1 year')) }}" readonly style="background-color: #f0f0f0; cursor: not-allowed;" required>
+                        <small style="display: block; margin-top: 5px; color: #666;">Se establece automáticamente un año desde la fecha de otorgamiento</small>
                         <span class="text-error" id="error-fecha_expiracion"></span>
                     </div>
                 </div>
