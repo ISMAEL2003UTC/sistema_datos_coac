@@ -44,6 +44,7 @@ class Auditoria extends Model
         });
     }
     
+
     public function usuarioAuditor()
     {
         return $this->belongsTo(Usuario::class, 'auditor_id');
@@ -68,4 +69,5 @@ class Auditoria extends Model
         
         return $query;
     }
+
 }

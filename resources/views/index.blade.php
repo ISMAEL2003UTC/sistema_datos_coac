@@ -2222,6 +2222,11 @@ Swal.fire({
                     <option value="">Seleccionar...</option>
                     <option value="interna" {{ old('tipo_aud') == 'interna' ? 'selected' : '' }}>Interna</option>
                     <option value="externa" {{ old('tipo_aud') == 'externa' ? 'selected' : '' }}>Externa</option>
+                <select name="tipo_aud" required>
+                    <option value="">Seleccionar...</option>
+                    <option value="interna">Interna</option>
+                    <option value="externa">Externa</option>
+                    
                 </select>
             </div>
             <div class="form-group">
@@ -2269,6 +2274,47 @@ Swal.fire({
                     <small class="text-danger">{{ $message }}</small>
                 @enderror
             </div>
+    <option value="">Seleccione un auditor</option>
+    @forelse($usuarios as $usuario)
+        <option value="{{ $usuario->id }}" {{ old('auditor_id') == $usuario->id ? 'selected' : '' }}>
+            {{ $usuario->nombre }} {{ $usuario->apellido }}
+        </option>
+    @empty
+        <option value="" disabled>No hay usuarios disponibles</option>
+    @endforelse
+</select>
+
+
+                {{-- Mostrar error de validación si existe --}}
+                @error('usuario_id')
+                    <small class="text-danger">{{ $message }}</small>
+                @enderror
+            </div>
+
+        </div>
+
+<div class="form-row">
+    <div class="form-group">
+        <label>Fecha de Inicio *</label>
+        <div class="date-display" style="background-color: #f8f9fa; padding: 12px; border-radius: 4px; border: 1px solid #ced4da;">
+            <strong>{{ \Carbon\Carbon::now()->format('d/m/Y') }}</strong>
+            <input type="hidden" name="fecha_inicio" value="{{ date('Y-m-d') }}">
+        </div>
+        <small class="form-text text-muted">La fecha de inicio es automáticamente la fecha actual</small>
+    </div>
+
+<div class="form-group">
+    <label>Fecha de Finalización *</label>
+    <input type="date" 
+           name="fecha_fin" 
+           id="fecha_fin"
+           required
+           min="{{ date('Y-m-d', strtotime('+1 day')) }}"
+           onfocus="this.showPicker()"
+           onchange="validarFechaFin()">
+    <small class="form-text text-muted">Debe ser posterior a la fecha actual (mañana o después)</small>
+    <div id="error-fecha" class="text-danger small mt-1" style="display: none;"></div>
+</div>
 
             <div class="form-group">
                 <label>Estado *</label>
@@ -2282,6 +2328,12 @@ Swal.fire({
                 @error('estado_aud')
                     <small class="text-danger">{{ $message }}</small>
                 @enderror
+                    <option value="planificada">Planificada</option>
+                    <option value="proceso">En Proceso</option>
+                    <option value="completada">Completada</option>
+                    <option value="revisada">Revisada</option>
+                    <option value="cancelada">Cancelada</option>
+                </select>
             </div>
         </div>
 
@@ -2291,6 +2343,8 @@ Swal.fire({
             @error('alcance')
                 <small class="text-danger">{{ $message }}</small>
             @enderror
+
+            <textarea name="alcance" rows="3" placeholder="Describa el alcance de la auditoría..."></textarea>
         </div>
 
         <div class="form-group">
@@ -2299,6 +2353,8 @@ Swal.fire({
             @error('hallazgos')
                 <small class="text-danger">{{ $message }}</small>
             @enderror
+
+            <textarea name="hallazgos" rows="4" placeholder="Registre los hallazgos encontrados..."></textarea>
         </div>
 
         <button type="submit" class="btn btn-primary">
@@ -2320,6 +2376,7 @@ Swal.fire({
             <thead>
                 <tr>
                     <th>Código</th>
+                    <th>Código (Auto)</th>
                     <th>Tipo</th>
                     <th>Auditor</th>
                     <th>Fecha Inicio</th>
@@ -2346,6 +2403,25 @@ Swal.fire({
                     <td>
                         @if($auditoria->fecha_fin)
                             {{ \Carbon\Carbon::parse($auditoria->fecha_fin)->format('d/m/Y') }}
+
+                        <br><small class="text-muted">Generado automáticamente</small>
+                    </td>
+                    <td>{{ ucfirst($auditoria->tipo) }}</td>
+                    <td>{{ $auditoria->auditor }}</td>
+                    <td>
+                        {{ \Carbon\Carbon::parse($auditoria->fecha_inicio)->format('d/m/Y') }}
+                        @if(\Carbon\Carbon::parse($auditoria->fecha_inicio)->isToday())
+                            <br><small class="text-success">Hoy</small>
+                        @endif
+                    </td>
+                    <td>
+                        @if($auditoria->fecha_fin)
+                            {{ \Carbon\Carbon::parse($auditoria->fecha_fin)->format('d/m/Y') }}
+                            @if(\Carbon\Carbon::parse($auditoria->fecha_fin)->isPast())
+                                <br><small class="text-danger">Vencida</small>
+                            @elseif(\Carbon\Carbon::parse($auditoria->fecha_fin)->isToday())
+                                <br><small class="text-warning">Vence hoy</small>
+                            @endif
                         @else
                             <span class="text-muted">-</span>
                         @endif
@@ -2357,6 +2433,12 @@ Swal.fire({
                             <span class="badge badge-warning">En Proceso</span>
                         @elseif($auditoria->estado == 'completada')
                             <span class="badge badge-success">Completada</span>
+                        @if($auditoria->estado == 'completada')
+                            <span class="badge badge-success">Completada</span>
+                        @elseif($auditoria->estado == 'proceso')
+                            <span class="badge badge-warning">En Proceso</span>
+                        @elseif($auditoria->estado == 'planificada')
+                            <span class="badge badge-info">Planificada</span>
                         @elseif($auditoria->estado == 'revisada')
                             <span class="badge badge-primary">Revisada</span>
                         @elseif($auditoria->estado == 'cancelada')
@@ -2365,6 +2447,14 @@ Swal.fire({
                     </td>
                     <td>
                         <a href="{{ route('auditorias.show', $auditoria->id) }}" class="btn btn-sm btn-info">
+                        @else
+                            <span class="badge badge-secondary">{{ $auditoria->estado }}</span>
+                        @endif
+                    </td>
+                    <td>
+                        <a href="{{ route('auditorias.show', $auditoria->id) }}"
+                           class="btn btn-secondary"
+                           style="padding: 8px 15px;">
                             Ver
                         </a>
                     </td>
@@ -2375,11 +2465,22 @@ Swal.fire({
         @else
         <div class="empty-state">
             <p>No hay auditorías registradas</p>
+
+        @if($auditorias->hasPages())
+        <div class="pagination-container">
+            {{ $auditorias->links() }}
+        </div>
+        @endif
+
+        @else
+        <div class="empty-state">
+            <h4>No hay auditorías registradas</h4>
+            <p>Comience registrando una nueva auditoría utilizando el formulario superior.</p>
+>>>>>>> a7a795b124fdeb3616d6b0ecc6225928b496514d
         </div>
         @endif
     </div>
 </div>
-
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const tipoAudSelect = document.getElementById('tipo_aud');
@@ -2434,9 +2535,33 @@ document.addEventListener('DOMContentLoaded', function() {
         tipoAudSelect.value = "{{ old('tipo_aud') }}";
         filtrarAuditores();
     @endif
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Establecer la fecha mínima para fecha_fin como hoy
+    const fechaFinInput = document.querySelector('input[name="fecha_fin"]');
+    const today = new Date().toISOString().split('T')[0];
+    
+    if (fechaFinInput) {
+        fechaFinInput.min = today;
+        
+        // Si el usuario intenta seleccionar una fecha pasada, resetear a hoy
+        fechaFinInput.addEventListener('change', function() {
+            const selectedDate = new Date(this.value);
+            const todayDate = new Date();
+            
+            if (selectedDate < todayDate) {
+                alert('La fecha de finalización no puede ser anterior a hoy');
+                this.value = today;
+            }
+        });
+    }
+>>>>>>> a7a795b124fdeb3616d6b0ecc6225928b496514d
 });
 </script>
 @endpush
+
+
 <!-- ================= REPORTES ================= -->
 <div id="reportes" class="content-section">
     <h2 class="section-title">Dashboard de Reportes y Estadísticas</h2>

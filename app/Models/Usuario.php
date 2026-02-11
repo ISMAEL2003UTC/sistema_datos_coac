@@ -47,6 +47,8 @@ class Usuario extends Authenticatable
             'auditor_interno'         => 'Auditor Interno',
             'auditor_externo'         => 'Auditor Externo',
             'operador'                => 'Operador',
+            'operador'                => 'Operador',
+            'auditor_interno'         => 'Auditor Interno',
             'gestor_consentimientos'  => 'Gestor de Consentimientos',
             'gestor_incidentes'       => 'Gestor de Incidentes',
             'titular'                 => 'Titular',
@@ -126,3 +128,5 @@ class Usuario extends Authenticatable
         });
     }
 }
+
+
