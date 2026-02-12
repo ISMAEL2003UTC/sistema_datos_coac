@@ -35,7 +35,7 @@
 
         <p>
             Más de <strong>11 años</strong> en el mercado.<br>
-            Cotiza con nosotros ‼
+            Cotiza con nosotros
         </p>
 
      
