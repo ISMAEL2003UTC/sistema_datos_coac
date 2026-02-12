@@ -9,14 +9,14 @@ class SolicitudDsar extends Model
     protected $table = 'solicitudes_dsar';
 
     protected $fillable = [
-        'numero_solicitud',
-        'sujeto_id',
-        'tipo',
-        'descripcion',
-        'fecha_solicitud',
-        'fecha_limite',
-        'estado'
-    ];
+    'numero_solicitud',
+    'sujeto_id',
+    'tipo',
+    'descripcion',
+    'fecha_solicitud',
+    'fecha_limite',
+    'estado',
+];
 
     public function sujeto()
     {

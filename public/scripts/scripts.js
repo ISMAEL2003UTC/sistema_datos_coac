@@ -32,52 +32,71 @@
 
         
         //PARA EDITAR USUARIO ----------------------------------------------
-        function editarUsuario(id, nombre, email, rol) {
-            Swal.fire({
-                icon: 'info',
-                title: 'Editar usuario',
-                text: 'El formulario ha entrado en modo edición'
-            });
+        // PARA EDITAR USUARIO ----------------------------------------------
+function editarUsuario(id, nombre, apellido, email, cedula, provincia, ciudad, direccion, rol) {
+    Swal.fire({
+        icon: 'info',
+        title: 'Editar usuario',
+        text: 'El formulario ha entrado en modo edición'
+    });
 
-            $('#usuario_id').val(id);
-            $('#nombre_completo').val(nombre);
-            $('input[name="email"]').val(email);
-            $('#rol').val(rol);
+    // Rellenar los campos del formulario
+    $('#usuario_id').val(id);
+    $('#nombre').val(nombre);
+    $('#apellido').val(apellido);
+    $('#cedula').val(cedula);
+    $('#email').val(email);
+    $('#provincia').val(provincia);
+    $('#ciudad').val(ciudad);
+    $('#direccion').val(direccion);
+    $('#rol').val(rol);
 
-            $('#form_method').val('PUT');
-            $('#formUsuarios').attr('action', '/usuarios/' + id);
+    // Cambiar el método del formulario a PUT para edición
+    $('#form_method').val('PUT');
+    $('#formUsuarios').attr('action', '/usuarios/' + id);
 
-            $('button[type="submit"]').text('Actualizar Usuario');
-        }
+    // Cambiar el texto del botón
+    $('button[type="submit"]').text('Actualizar Usuario');
+}
 
 
 
 
 
         //  EDITAR SUJETOS --------------------
-        function editarSujeto(id, cedula, nombre, email, telefono, direccion, tipo) {
-            Swal.fire({
-                icon: 'info',
-                title: 'Editar Sujeto de datos',
-                text: 'El formulario ha entrado en modo edición'
-            });
-            const form = document.getElementById('formSujetos');
+        function editarSujeto(id, cedula, nombre, apellido, email, telefono, direccion, ciudad, provincia, tipo) {
+    Swal.fire({
+        icon: 'info',
+        title: 'Editar Sujeto de datos',
+        text: 'El formulario ha entrado en modo edición'
+    });
 
-            form.querySelector('input[name="cedula"]').value = cedula;
-            form.querySelector('input[name="nombre"]').value = nombre;
-            form.querySelector('input[name="email"]').value = email;
-            form.querySelector('input[name="telefono"]').value = telefono;
-            form.querySelector('input[name="direccion"]').value = direccion;
-            form.querySelector('select[name="tipo"]').value = tipo;
+    const form = document.getElementById('formSujetos');
 
-            document.getElementById('sujeto_id').value = id;
+    // Completar los inputs
+    form.querySelector('input[name="cedula"]').value = cedula;
+    form.querySelector('input[name="nombre"]').value = nombre;
+    form.querySelector('input[name="apellido"]').value = apellido;
+    form.querySelector('input[name="email"]').value = email;
+    form.querySelector('input[name="telefono"]').value = telefono;
+    form.querySelector('input[name="direccion"]').value = direccion;
+    form.querySelector('input[name="ciudad"]').value = ciudad;
+    form.querySelector('select[name="provincia"]').value = provincia;
+    form.querySelector('select[name="tipo"]').value = tipo;
 
-            // Cambiar el método a PUT
-            document.getElementById('form_sujeto_method').value = 'PUT';
+    // Asignar el id oculto
+    document.getElementById('sujeto_id').value = id;
 
-            form.action = `/sujetos/${id}`;
-            form.querySelector('button[type="submit"]').innerText = 'Actualizar Sujeto';
-        }
+    // Cambiar el método a PUT
+    document.getElementById('form_sujeto_method').value = 'PUT';
+
+    // Actualizar la acción del formulario
+    form.action = `/sujetos/${id}`;
+
+    // Cambiar el texto del botón
+    form.querySelector('button[type="submit"]').innerText = 'Actualizar Sujeto';
+}
+
 
         // mensaje unico de eliminar para sujetos y usuarios------------------------
             function confirmarEliminacion(boton) {
@@ -136,132 +155,221 @@
     }, "Solo se permiten números");
 
     // validaciones usuarioss--------------------------------
-    $("#formUsuarios").validate({
-        rules: {
-            nombre_completo: {
-                required: true,
-                minlength: 3,
-                soloLetras: true
-            },
-            email: {
-                required: true,
-                email: true
-            },
-            rol: {
-                required: true
+    // Validación del formulario
+// Validación del formulario
+$("#formUsuarios").validate({
+    rules: {
+        nombre: {
+            required: true,
+            minlength: 3,
+            soloLetras: true
+        },
+        apellido: {
+            required: true,
+            minlength: 3,
+            soloLetras: true
+        },
+        email: {
+            required: true,
+            email: true,
+            remote: {
+                url: "/verificar-email",
+                type: "get",
+                data: {
+                    email: function() { return $("#email").val(); },
+                    id_usuario: function() { return $("#usuario_id").val(); } // Para editar
+                }
             }
         },
-        messages: {
-            nombre_completo: {
-                required: "El nombre es obligatorio",
-                minlength: "Debe tener al menos 3 caracteres",
-                soloLetras: "Solo se permiten letras"
-            },
-            email: {
-                required: "El correo es obligatorio",
-                email: "Correo no válido"
-            },
-            rol: {
-                required: "El rol es obligatorio"
+        cedula: {
+            required: true,
+            digits: true,
+            minlength: 10,
+            maxlength: 10,
+            remote: {
+                url: "/verificar-cedula",
+                type: "get",
+                data: {
+                    cedula: function() { return $("#cedula").val(); },
+                    id: function() { return $("#usuario_id").val(); } // Para editar
+                }
             }
         },
-        errorElement: "div",
-        errorClass: "invalid-feedback",
-        highlight: function (element) {
-            $(element).addClass("is-invalid");
+        provincia: {
+            required: true
         },
-        unhighlight: function (element) {
-            $(element).removeClass("is-invalid");
+        ciudad: {
+            required: true,
+            minlength: 2
+        },
+        direccion: {
+            required: true,
+            minlength: 5
+        },
+        rol: {
+            required: true
         }
-    });
+    },
+    messages: {
+        nombre: {
+            required: "El nombre es obligatorio",
+            minlength: "Debe tener al menos 3 caracteres",
+            soloLetras: "Solo se permiten letras"
+        },
+        apellido: {
+            required: "El apellido es obligatorio",
+            minlength: "Debe tener al menos 3 caracteres",
+            soloLetras: "Solo se permiten letras"
+        },
+        email: {
+            required: "El correo es obligatorio",
+            email: "Correo no válido",
+            remote: "Este correo ya está registrado"
+        },
+        cedula: {
+            required: "La cédula es obligatoria",
+            digits: "Solo se permiten números",
+            minlength: "Debe tener 10 dígitos",
+            maxlength: "Debe tener 10 dígitos",
+            remote: "Esta cédula ya está registrada"
+        },
+        provincia: {
+            required: "La provincia es obligatoria"
+        },
+        ciudad: {
+            required: "La ciudad es obligatoria",
+            minlength: "Debe tener al menos 2 caracteres"
+        },
+        direccion: {
+            required: "La dirección es obligatoria",
+            minlength: "Debe tener al menos 5 caracteres"
+        },
+        rol: {
+            required: "El rol es obligatorio"
+        }
+    },
+    errorElement: "div",
+    errorClass: "invalid-feedback",
+    highlight: function (element) {
+        $(element).addClass("is-invalid");
+    },
+    unhighlight: function (element) {
+        $(element).removeClass("is-invalid");
+    }
+});
 
-    // validaciones sujetoss ---------------------------------------
+
+$(document).ready(function() {
+
+    // Validación del formulario sujetos
     $("#formSujetos").validate({
         rules: {
             cedula: {
                 required: true,
                 minlength: 10,
                 maxlength: 10,
-                soloNumeros: true
+                soloNumeros: true,
+                remote: {
+                    url: "/verificar-cedula-sujeto",
+                    type: "get",
+                    data: {
+                        cedula: function() {
+                            return $("#cedulaInput").val();
+                        },
+                        sujeto_id: function() {
+                            return $("#sujeto_id").val();
+                        }
+                    }
+                }
             },
             nombre: {
                 required: true,
                 minlength: 3,
                 soloLetras: true
             },
+            apellido: {
+                required: true,
+                minlength: 3,
+                soloLetras: true
+            },
             email: {
-                email: true
+                required: true,
+                email: true,
+                remote: {
+                    url: "/verificar-email-sujeto",
+                    type: "get",
+                    data: {
+                        email: function() { return $("#emailInput").val(); },
+                        sujeto_id: function() { return $("#sujeto_id").val(); }
+                    }
+                }
             },
             telefono: {
+                required: true,
                 soloNumeros: true,
                 minlength: 7,
                 maxlength: 10
             },
-            tipo: {
-                required: true
-            }
+            provincia: { required: true },
+            ciudad: { required: true, minlength: 2 },
+            direccion: { required: true, minlength: 2 },
+            tipo: { required: true }
         },
         messages: {
             cedula: {
                 required: "La cédula es obligatoria",
                 minlength: "Debe tener 10 dígitos",
                 maxlength: "Debe tener 10 dígitos",
-                soloNumeros: "Solo se permiten números"
+                soloNumeros: "Solo se permiten números",
+                remote: "Esta cédula ya está registrada"
             },
             nombre: {
                 required: "El nombre es obligatorio",
                 minlength: "Debe tener al menos 3 caracteres",
                 soloLetras: "Solo se permiten letras"
             },
+            apellido: {
+                required: "El apellido es obligatorio",
+                minlength: "Debe tener al menos 3 caracteres",
+                soloLetras: "Solo se permiten letras"
+            },
             email: {
-                email: "Correo no válido"
+                required: "El email es obligatorio",
+                email: "Correo no válido",
+                remote: "Este correo ya está registrado"
             },
             telefono: {
+                required: "El teléfono es obligatorio",
                 soloNumeros: "Solo se permiten números",
                 minlength: "Mínimo 7 dígitos",
                 maxlength: "Máximo 10 dígitos"
             },
-            tipo: {
-                required: "Seleccione el tipo de sujeto"
-            }
+            provincia: { required: "Seleccione la provincia" },
+            ciudad: {
+                required: "La ciudad es obligatoria",
+                minlength: "Debe tener al menos 2 caracteres"
+            },
+            direccion: {
+                required: "La dirección es obligatoria",
+                minlength: "Debe tener al menos 2 caracteres"
+            },
+            tipo: { required: "Seleccione el tipo de sujeto" }
         },
         errorElement: "div",
         errorClass: "invalid-feedback",
-        highlight: function (element) {
+        highlight: function(element) {
             $(element).addClass("is-invalid");
         },
-        unhighlight: function (element) {
+        unhighlight: function(element) {
             $(element).removeClass("is-invalid");
         }
     });
+
 });
+});
+
     // productos finacieros
-    // ========== MOSTRAR SECCIONES ==========
-function showSection(sectionId) {
-    const sections = document.querySelectorAll('.content-section');
-    sections.forEach(section => section.classList.remove('active'));
-    
-    document.getElementById(sectionId).classList.add('active');
-    
-    const buttons = document.querySelectorAll('.nav-tabs button');
-    buttons.forEach(button => button.classList.remove('active'));
-    event.target.classList.add('active');
-}
-
-// ========== RESET FORMULARIOS ==========
-function resetFormularioUsuarios() {
-    const form = $('#formUsuarios');
-    form.attr('action', '/usuarios');
-    $('#form_method').val('POST');
-    $('#usuario_id').val('');
-    $('#nombre_completo').val('');
-    $('input[name="email"]').val('');
-    $('#rol').val('');
-    form.find('button[type="submit"]').text('Agregar Usuario');
-    $('.is-invalid').removeClass('is-invalid');
-    $('.invalid-feedback').remove();
-}
-
+    // ========== RESET FORMULARIO PRODUCTOS ==========
 function resetFormularioProductos() {
     const form = $('#formProductos');
     form.attr('action', '/productos');
@@ -277,53 +385,14 @@ function resetFormularioProductos() {
     $('.invalid-feedback').remove();
 }
 
-// ========== EDITAR USUARIO ==========
-function editarUsuario(id, nombre, email, rol) {
-    Swal.fire({
-        icon: 'info',
-        title: 'Editar usuario',
-        text: 'El formulario ha entrado en modo edición',
-        timer: 2000
-    });
-
-    $('#usuario_id').val(id);
-    $('#nombre_completo').val(nombre);
-    $('input[name="email"]').val(email);
-    $('#rol').val(rol);
-    $('#form_method').val('PUT');
-    $('#formUsuarios').attr('action', '/usuarios/' + id);
-    $('#formUsuarios button[type="submit"]').text('Actualizar Usuario');
-}
-
-// ========== EDITAR SUJETO ==========
-function editarSujeto(id, cedula, nombre, email, telefono, direccion, tipo) {
-    Swal.fire({
-        icon: 'info',
-        title: 'Editar Sujeto de datos',
-        text: 'El formulario ha entrado en modo edición',
-        timer: 2000
-    });
-    
-    const form = document.getElementById('formSujetos');
-    form.querySelector('input[name="cedula"]').value = cedula;
-    form.querySelector('input[name="nombre"]').value = nombre;
-    form.querySelector('input[name="email"]').value = email;
-    form.querySelector('input[name="telefono"]').value = telefono;
-    form.querySelector('input[name="direccion"]').value = direccion;
-    form.querySelector('select[name="tipo"]').value = tipo;
-    document.getElementById('sujeto_id').value = id;
-    document.getElementById('form_sujeto_method').value = 'PUT';
-    form.action = `/sujetos/${id}`;
-    form.querySelector('button[type="submit"]').innerText = 'Actualizar Sujeto';
-}
-
 // ========== EDITAR PRODUCTO ==========
 function editarProducto(id, codigo, nombre, tipo, descripcion, datos) {
     Swal.fire({
         icon: 'info',
         title: 'Editar producto financiero',
         text: 'El formulario ha entrado en modo edición',
-        timer: 2000
+        timer: 2000,
+        showConfirmButton: false
     });
 
     $('#producto_id').val(id);
@@ -336,122 +405,25 @@ function editarProducto(id, codigo, nombre, tipo, descripcion, datos) {
     $('#formProductos').attr('action', '/productos/' + id);
     $('#formProductos button[type="submit"]').text('Actualizar Producto');
 }
-
-// ========== CONFIRMAR ELIMINACIÓN ==========
-function confirmarEliminacion(boton) {
-    event.preventDefault();
-    const form = boton.closest('form');
-
-    Swal.fire({
-        title: '¿Estás seguro?',
-        text: 'Esta acción no se puede deshacer',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'Sí, eliminar',
-        cancelButtonText: 'Cancelar',
-        confirmButtonColor: '#d33',
-        cancelButtonColor: '#3085d6'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            form.submit();
-        }
-    });
-}
-
-// ========== VALIDACIONES JQUERY ==========
-$(document).ready(function () {
-
-    // Métodos personalizados
-    $.validator.addMethod("soloLetras", function (value, element) {
-        return this.optional(element) || /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/.test(value);
-    }, "Solo se permiten letras");
-
-    $.validator.addMethod("soloNumeros", function (value, element) {
-        return this.optional(element) || /^[0-9]+$/.test(value);
-    }, "Solo se permiten números");
-
-    // VALIDACIÓN USUARIOS
-    $("#formUsuarios").validate({
-        rules: {
-            nombre_completo: { required: true, minlength: 3, soloLetras: true },
-            email: { required: true, email: true },
-            rol: { required: true }
+// VALIDACIÓN PRODUCTOS FINANCIEROS
+$("#formProductos").validate({
+    rules: {
+        codigo: { required: true, minlength: 2 },
+        nombre: { required: true, minlength: 3 },
+        tipo: { required: true }
+    },
+    messages: {
+        codigo: {
+            required: "El código del producto es obligatorio",
+            minlength: "Debe tener al menos 2 caracteres"
         },
-        messages: {
-            nombre_completo: {
-                required: "El nombre es obligatorio",
-                minlength: "Debe tener al menos 3 caracteres",
-                soloLetras: "Solo se permiten letras"
-            },
-            email: { required: "El correo es obligatorio", email: "Correo no válido" },
-            rol: { required: "El rol es obligatorio" }
-        },
-        errorElement: "div",
-        errorClass: "invalid-feedback",
-        highlight: function (element) { $(element).addClass("is-invalid"); },
-        unhighlight: function (element) { $(element).removeClass("is-invalid"); }
-    });
-
-    // VALIDACIÓN SUJETOS
-    $("#formSujetos").validate({
-        rules: {
-            cedula: { required: true, minlength: 10, maxlength: 10, soloNumeros: true },
-            nombre: { required: true, minlength: 3, soloLetras: true },
-            email: { email: true },
-            telefono: { soloNumeros: true, minlength: 7, maxlength: 10 },
-            tipo: { required: true }
-        },
-        messages: {
-            cedula: {
-                required: "La cédula es obligatoria",
-                minlength: "Debe tener 10 dígitos",
-                maxlength: "Debe tener 10 dígitos",
-                soloNumeros: "Solo se permiten números"
-            },
-            nombre: {
-                required: "El nombre es obligatorio",
-                minlength: "Debe tener al menos 3 caracteres",
-                soloLetras: "Solo se permiten letras"
-            },
-            email: { email: "Correo no válido" },
-            telefono: {
-                soloNumeros: "Solo se permiten números",
-                minlength: "Mínimo 7 dígitos",
-                maxlength: "Máximo 10 dígitos"
-            },
-            tipo: { required: "Seleccione el tipo de sujeto" }
-        },
-        errorElement: "div",
-        errorClass: "invalid-feedback",
-        highlight: function (element) { $(element).addClass("is-invalid"); },
-        unhighlight: function (element) { $(element).removeClass("is-invalid"); }
-    });
-
-    // VALIDACIÓN PRODUCTOS FINANCIEROS
-    $("#formProductos").validate({
-        rules: {
-            codigo: { required: true, minlength: 2 },
-            nombre: { required: true, minlength: 3 },
-            tipo: { required: true }
-        },
-        messages: {
-            codigo: {
-                required: "El código del producto es obligatorio",
-                minlength: "Debe tener al menos 2 caracteres"
-            },
-            nombre: {
-                required: "El nombre del producto es obligatorio",
-                minlength: "Debe tener al menos 3 caracteres"
-            },
-            tipo: { required: "Seleccione el tipo de producto" }
-        },
-        errorElement: "div",
-        errorClass: "invalid-feedback",
-        highlight: function (element) { $(element).addClass("is-invalid"); },
-        unhighlight: function (element) { $(element).removeClass("is-invalid"); }
-    });
+        
+    },
+    errorElement: "div",
+    errorClass: "invalid-feedback",
+    highlight: function (element) { $(element).addClass("is-invalid"); },
+    unhighlight: function (element) { $(element).removeClass("is-invalid"); }
 });
-
 
 
 

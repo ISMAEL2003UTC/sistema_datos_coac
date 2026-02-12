@@ -7,89 +7,151 @@ use App\Models\IncidenteSeguridad;
 
 class IncidenteSeguridadController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
         $incidentes = IncidenteSeguridad::orderBy('id')->get();
-        return view('index', compact('incidentes'));
+
+        $ultimo = IncidenteSeguridad::orderBy('id', 'desc')->first();
+
+        $numero = 1;
+
+        if ($ultimo) {
+            $numero = intval(substr($ultimo->codigo, 4)) + 1;
+        }
+
+        $siguienteCodigo = 'INC-' . str_pad($numero, 3, '0', STR_PAD_LEFT);
+
+        return view('index', [
+            'incidentes' => $incidentes,
+            'siguienteCodigo' => $siguienteCodigo,
+            'section' => 'incidentes'
+        ]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        $request->validate([
-            'codigo' => 'required|unique:incidentes_seguridad,codigo',
-            'fecha' => 'required|date',
+        $validated = $request->validate([
+            'fecha' => [
+                'required',
+                function ($attribute, $value, $fail) {
+                    try {
+                        $fecha = \Carbon\Carbon::parse($value);
+                    } catch (\Exception $e) {
+                        return $fail('Formato de fecha/hora inválido.');
+                    }
+
+                    // Rango permitido: ayer y hoy (2 días). Ej: hoy=2026-02-05 -> 2026-02-04 y 2026-02-05
+                    $inicio = now()->subDay()->startOfDay();
+                    $limiteSuperior = now()->endOfDay();
+
+                    if ($fecha->lt($inicio) || $fecha->gt($limiteSuperior)) {
+                        return $fail('La fecha del incidente debe ser ayer o hoy (' . $inicio->format('d/m/Y') . ' - ' . $limiteSuperior->format('d/m/Y') . ').');
+                    }
+
+                    // Validar hora: permitido entre 08:00 y 21:00 (inclusive 08:00 y 21:00 exacto)
+                    $hour = (int) $fecha->format('H');
+                    $minute = (int) $fecha->format('i');
+
+                    if ($hour < 9) {
+                        return $fail('La hora del incidente debe ser a partir de las 09:00.');
+                    }
+
+                    if ($hour > 21 || ($hour === 21 && $minute > 0)) {
+                        return $fail('La hora del incidente no puede ser posterior a las 21:00.');
+                    }
+                }
+            ],
+
             'severidad' => 'required|string|max:30',
             'descripcion' => 'required|string',
             'tipo' => 'required|string|max:50',
-            'sujetos_afectados' => 'nullable|integer',
+            'sujetos_afectados' => 'required|integer|min:1',
             'estado' => 'required|string|max:30',
         ]);
 
-        IncidenteSeguridad::create($request->all());
+        // `sujetos_afectados` es requerido y debe ser >= 1 (validado arriba)
 
-        return redirect()->back()->with('success', 'Incidente registrado correctamente');
+        $ultimo = IncidenteSeguridad::orderBy('id', 'desc')->first();
+
+        $numero = 1;
+
+        if ($ultimo) {
+            $numero = intval(substr($ultimo->codigo, 4)) + 1;
+        }
+
+        $validated['codigo'] = 'INC-' . str_pad($numero, 3, '0', STR_PAD_LEFT);
+
+        // Guardar
+        IncidenteSeguridad::create($validated);
+
+        return redirect('/#incidentes')->with('success', 'Incidente registrado correctamente');
+
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(string $id)
     {
         $incidentes = IncidenteSeguridad::orderBy('id')->get();
         $incidenteEditar = IncidenteSeguridad::findOrFail($id);
-        return view('index', compact('incidentes', 'incidenteEditar'));
+
+        return view('index', [
+            'incidentes' => $incidentes,
+            'incidenteEditar' => $incidenteEditar,
+            'section' => 'incidentes'
+        ]);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, string $id)
     {
         $incidente = IncidenteSeguridad::findOrFail($id);
 
-        $request->validate([
-            'codigo' => 'required|unique:incidentes_seguridad,codigo,' . $incidente->id,
-            'fecha' => 'required|date',
+        $validated = $request->validate([
+            'fecha' => [
+                'required',
+                function ($attribute, $value, $fail) {
+                    try {
+                        $fecha = \Carbon\Carbon::parse($value);
+                    } catch (\Exception $e) {
+                        return $fail('Formato de fecha/hora inválido.');
+                    }
+
+                    // Rango permitido: ayer y hoy (2 días)
+                    $inicio = now()->subDay()->startOfDay();
+                    $limiteSuperior = now()->endOfDay();
+
+                    if ($fecha->lt($inicio) || $fecha->gt($limiteSuperior)) {
+                        return $fail('La fecha del incidente debe ser ayer o hoy (' . $inicio->format('d/m/Y') . ' - ' . $limiteSuperior->format('d/m/Y') . ').');
+                    }
+
+                    $hour = (int) $fecha->format('H');
+                    $minute = (int) $fecha->format('i');
+
+                    if ($hour < 9) {
+                        return $fail('La hora del incidente debe ser a partir de las 09:00.');
+                    }
+
+                    if ($hour > 21 || ($hour === 21 && $minute > 0)) {
+                        return $fail('La hora del incidente no puede ser posterior a las 21:00.');
+                    }
+                }
+            ],
             'severidad' => 'required|string|max:30',
             'descripcion' => 'required|string',
             'tipo' => 'required|string|max:50',
-            'sujetos_afectados' => 'nullable|integer',
+            'sujetos_afectados' => 'required|integer|min:1',
             'estado' => 'required|string|max:30',
         ]);
 
-        $incidente->update($request->all());
+        // `sujetos_afectados` es requerido y debe ser >= 1 (validado arriba)
 
-        return redirect()->back()->with('success', 'Incidente actualizado correctamente');
+        $incidente->update($validated);
+
+        return redirect('/#incidentes')->with('success', 'Incidente registrado correctamente');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(string $id)
     {
-        IncidenteSeguridad::findOrFail($id)->delete();
-        return redirect()->back()->with('success', 'Incidente eliminado correctamente');
+        abort(403, 'No está permitido eliminar incidentes de seguridad.');
     }
+
+    
 }

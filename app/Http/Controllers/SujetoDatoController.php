@@ -1,10 +1,11 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use App\Models\SujetoDato;
-
-
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
+
 
 class SujetoDatoController extends Controller
 {
@@ -14,16 +15,7 @@ class SujetoDatoController extends Controller
     public function index()
     {
         $sujetos = SujetoDato::orderBy('id')->get();
-        return view('index', compact('usuarios','sujetos'));
-
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
+        return view('index', compact('sujetos'));
     }
 
     /**
@@ -33,38 +25,33 @@ class SujetoDatoController extends Controller
     {
         $request->validate([
             'cedula' => 'required|unique:sujetos_datos,cedula',
-            'nombre' => 'required',
-            'tipo' => 'required'
+            'nombre' => 'required|string|max:100',
+            'apellido' => 'required|string|max:100',
+            'tipo' => 'required|string|max:50',
+            'email' => 'required|email|unique:sujetos_datos,email',
+            'telefono' => 'nullable|string|max:20',
+            'direccion' => 'nullable|string|max:200',
+            'ciudad' => 'nullable|string|max:100',
+            'provincia' => 'required|string|max:100',
+
         ], [
-        'cedula.unique' => 'La cédula ya existe en el sistema'
-        ]); 
+            'cedula.unique' => 'La cédula ya existe en el sistema',
+            'email.unique' => 'El email ya existe en el sistema'
+        ]);
 
         SujetoDato::create([
             'cedula' => $request->cedula,
-            'nombre_completo' => $request->nombre,
+            'nombre' => $request->nombre,
+            'apellido' => $request->apellido,
             'email' => $request->email,
             'telefono' => $request->telefono,
             'direccion' => $request->direccion,
+            'ciudad' => $request->ciudad,
             'tipo' => $request->tipo,
+            'provincia' => $request->provincia,
         ]);
 
-        return redirect('/')->with('success', 'Sujeto registrado');
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
+        return redirect('/')->with('success', 'Sujeto registrado correctamente');
     }
 
     /**
@@ -74,23 +61,112 @@ class SujetoDatoController extends Controller
     {
         $sujeto = SujetoDato::findOrFail($id);
 
-        $sujeto->cedula = $request->cedula;
-        $sujeto->nombre_completo = $request->nombre;
-        $sujeto->email = $request->email;
-        $sujeto->telefono = $request->telefono;
-        $sujeto->direccion = $request->direccion;
-        $sujeto->tipo = $request->tipo;
+        $request->validate([
+            'cedula' => "required|unique:sujetos_datos,cedula,$id",
+            'nombre' => 'required|string|max:100',
+            'apellido' => 'required|string|max:100',
+            'tipo' => 'required|string|max:50',
+            'email' => "required|email|unique:sujetos_datos,email,$id",
+            'telefono' => 'nullable|string|max:20',
+            'direccion' => 'nullable|string|max:200',
+            'ciudad' => 'nullable|string|max:100',
+            'provincia' => 'required|string|max:100',
 
-        $sujeto->save();
+        ]);
 
-        return redirect()->back()->with('success', 'Sujeto actualizado');
+        $sujeto->update([
+            'cedula' => $request->cedula,
+            'nombre' => $request->nombre,
+            'apellido' => $request->apellido,
+            'email' => $request->email,
+            'telefono' => $request->telefono,
+            'direccion' => $request->direccion,
+            'ciudad' => $request->ciudad,
+            'tipo' => $request->tipo,
+            'provincia' => $request->provincia,
+        ]);
+
+        return redirect()->back()->with('success', 'Sujeto actualizado correctamente');
     }
 
-
+    /**
+     * Remove the specified resource from storage.
+     */
     public function destroy($id)
     {
         SujetoDato::findOrFail($id)->delete();
-        return redirect('/');
+        return redirect('/')->with('success', 'Sujeto eliminado correctamente');
     }
+
+    /**
+     * Verificar si la cédula existe.
+     */
+    public function verificarCedula(Request $request)
+    {
+        $cedula = $request->cedula;
+        $id = $request->sujeto_id;
+
+        $existe = SujetoDato::where('cedula', $cedula)
+            ->when($id, fn($query) => $query->where('id', '!=', $id))
+            ->exists();
+
+        return response()->json(!$existe);
+    }
+
+    /**
+     * Verificar si el email existe.
+     */
+    public function verificarEmail(Request $request)
+    {
+        $email = trim($request->email); // 🔹 eliminar espacios
+        $id = $request->sujeto_id;
+
+        if(empty($email)) {
+            return response()->json(false); // 🔹 no permitir vacío
+        }
+
+        $existe = SujetoDato::where('email', $email)
+            ->when($id, fn($query) => $query->where('id', '!=', $id))
+            ->exists();
+
+        return response()->json(!$existe); // 🔹 true si no existe, false si existe
+    }
+    
+
+    public function buscarCedulaExterna($cedula)
+    {
+        // Validación básica
+        if(strlen($cedula) !== 10 || !is_numeric($cedula)){
+            return response()->json(['error' => 'Cédula inválida'], 422);
+        }
+
+        try {
+            // Consulta al Registro Civil
+            $response = Http::asForm()->post('https://si.secap.gob.ec/sisecap/logeo_web/json/busca_persona_registro_civil.php', [
+                'documento' => $cedula,
+                'tipo' => '1'
+            ]);
+
+            if($response->failed()){
+                return response()->json(['error' => 'Error al consultar cédula'], 500);
+            }
+
+            $data = $response->json();
+
+            if(isset($data['nombres']) && isset($data['apellidos'])){
+                return response()->json([
+                    'nombres' => $data['nombres'],
+                    'apellidos' => $data['apellidos']
+                ]);
+            } else {
+                return response()->json(['error' => 'Datos no encontrados'], 404);
+            }
+
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Excepción: '.$e->getMessage()], 500);
+        }
+    }
+
+
 
 }

@@ -10,10 +10,13 @@ class SujetoDato extends Model
 
     protected $fillable = [
         'cedula',
-        'nombre_completo',
+        'nombre',
+        'apellido',
         'email',
         'telefono',
         'direccion',
-        'tipo'
+        'ciudad',
+        'tipo',
+        'provincia'
     ];
 }
