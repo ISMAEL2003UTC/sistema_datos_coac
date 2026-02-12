@@ -14,21 +14,18 @@ class AuditoriaController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+public function index()
 {
-    // Solo usuarios activos con rol 'auditor'
-    $usuarios = Usuario::where('rol', 'auditor')
+    // ✅ SOLO UNA ASIGNACIÓN - Trae SOLO auditores internos y externos activos
+    $usuarios = Usuario::whereIn('rol', ['auditor', 'auditor_interno', 'auditor_externo'])
                    ->where('estado', 'activo')
                    ->orderBy('nombre', 'asc')
                    ->get();
 
-
-
-
-
-
-    // Traer auditorías si las necesitas
-    $auditorias = Auditoria::orderBy('created_at', 'desc')->get();
+    // Traer auditorías con la relación del auditor
+    $auditorias = Auditoria::with('usuarioAuditor')
+                   ->orderBy('created_at', 'desc')
+                   ->get();
 
     // Pasar ambas a la vista
     return view('index.index', compact('auditorias', 'usuarios'));
