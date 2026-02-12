@@ -28,7 +28,7 @@ public function index()
                    ->get();
 
     // Pasar ambas a la vista
-    return view('index.index', compact('auditorias', 'usuarios'));
+    return view('index', compact('auditorias', 'usuarios'));
 }
 
 
