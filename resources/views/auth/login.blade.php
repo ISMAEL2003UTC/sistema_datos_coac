@@ -18,9 +18,9 @@
 
     <!-- PANEL INFORMATIVO -->
     <aside class="info-panel">
-        <img src="{{ asset('images/urco.jpg') }}" alt="Urco Seguros"  class="info-image">
+        <img src="{{ asset('images/coac.png') }}" alt="Urco Seguros"  class="info-image">
 
-        <h2>URCO SEGUROS</h2>
+        <h2>SISTEMA COAC</h2>
 
         <p>
             <strong>Responsable del tratamiento:</strong><br>

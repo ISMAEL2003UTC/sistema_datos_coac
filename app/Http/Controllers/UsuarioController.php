@@ -96,7 +96,7 @@ class UsuarioController extends Controller
         'email_verificado' => false,
         'verificado' => false,
         'email_verificacion_token' => $token,
-        'password'  => Hash::make(Str::random(8)), // password temporal
+        'password'  => Hash::make('123456'), // password temporal
     ]);
 
     try {
