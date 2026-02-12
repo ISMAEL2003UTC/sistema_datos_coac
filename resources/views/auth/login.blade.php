@@ -38,8 +38,6 @@
             Cotiza con nosotros
         </p>
 
-     
-
         <hr>
 
         <small>
@@ -72,6 +70,10 @@
                 <input type="password" name="password" required>
                 @error('password') <small class="error">{{ $message }}</small> @enderror
             </div>
+            
+            <a href="{{ route('password.request') }}" class="forgot-link">
+                ¿Olvidaste tu contraseña?
+            </a>
 
             <button type="submit" class="btn btn-primary">
                 Ingresar
@@ -80,6 +82,46 @@
     </main>
 
 </div>
+
+<!-- SWEETALERT2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+{{-- EXITO --}}
+@if(session('success'))
+<script>
+Swal.fire({
+    icon: 'success',
+    title: 'Operación exitosa',
+    text: "{{ session('success') }}",
+    confirmButtonColor: '#3085d6',
+    confirmButtonText: 'Continuar'
+});
+</script>
+@endif
+
+{{-- ERROR --}}
+@if(session('error'))
+<script>
+Swal.fire({
+    icon: 'error',
+    title: 'Ocurrió un problema',
+    text: "{{ session('error') }}",
+    confirmButtonColor: '#d33'
+});
+</script>
+@endif
+
+{{-- VALIDACIONES --}}
+@if($errors->any())
+<script>
+Swal.fire({
+    icon: 'warning',
+    title: 'Datos incorrectos',
+    html: `{!! implode('<br>', $errors->all()) !!}`,
+    confirmButtonColor: '#f59e0b'
+});
+</script>
+@endif
 
 </body>
 </html>
